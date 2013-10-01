@@ -1,0 +1,1 @@
+A framework for fictitious play.  The roshambo games probably work.  The UTG3! game is a work in progress.  The AKQ game doesn't work.
