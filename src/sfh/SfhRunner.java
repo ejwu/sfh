@@ -9,8 +9,8 @@ import org.pokersource.game.*;
 public class SfhRunner {
 
     public static void main(String[] args) {
-	Strategy utg = new UTGStrategy();
-	Strategy ep = new EPStrategy();
+	Strategy utg = new UTGStrategy(Maps.<Long, Double>newHashMap());
+	Strategy ep = new EPStrategy(Maps.<Long, Double>newHashMap());
 	GameState gs = new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"));
 	System.out.println(gs.getValue(utg, ep));
     }
