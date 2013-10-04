@@ -12,7 +12,7 @@ public class EPStrategy extends AbstractUTG3Strategy<EPStrategy, UTGStrategy> {
     }
 
     public enum IPBetIntoActions implements ActionSequence {
-	C, F, RF, RC, R4
+	F, C, RF, RC, R4
     }			     
 
     public EPStrategy(Map<Long, Double> hands) {

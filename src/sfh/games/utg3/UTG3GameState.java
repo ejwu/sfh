@@ -4,7 +4,8 @@ import sfh.GameState;
 import sfh.games.utg3.AbstractUTG3Strategy.ActionSequence;
 import sfh.games.utg3.EPStrategy.IPBetIntoActions;
 import sfh.games.utg3.EPStrategy.IPCheckedToActions;
-import sfh.games.utg3.UTGStrategy.OOPActions;
+import sfh.games.utg3.UTGStrategy.OOPBetActions;
+import sfh.games.utg3.UTGStrategy.OOPCheckActions;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
@@ -36,43 +37,63 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     }
 
     // Precalculate the results of every UTG strategy vs. every EP strategy.
-    private static final Table<UTGStrategy.OOPActions,
-	AbstractUTG3Strategy.ActionSequence, StreetResults> results = HashBasedTable.create();
+    private static final Table<ActionSequence, ActionSequence, StreetResults> results =
+	HashBasedTable.create();
 
     static {
-	results.put(OOPActions.KF, IPCheckedToActions.K, StreetResults.ZERO_BETS);
-	results.put(OOPActions.KF, IPCheckedToActions.BF, StreetResults.UTG_FOLD_ZERO);
-	results.put(OOPActions.KF, IPCheckedToActions.BC, StreetResults.UTG_FOLD_ZERO);
-	results.put(OOPActions.KF, IPCheckedToActions.B3F, StreetResults.UTG_FOLD_ZERO);
-	results.put(OOPActions.KF, IPCheckedToActions.B3C, StreetResults.UTG_FOLD_ZERO);
+	results.put(OOPCheckActions.KF, IPCheckedToActions.K, StreetResults.ZERO_BETS);
+	results.put(OOPCheckActions.KF, IPCheckedToActions.BF, StreetResults.UTG_FOLD_ZERO);
+	results.put(OOPCheckActions.KF, IPCheckedToActions.BC, StreetResults.UTG_FOLD_ZERO);
+	results.put(OOPCheckActions.KF, IPCheckedToActions.B3F, StreetResults.UTG_FOLD_ZERO);
+	results.put(OOPCheckActions.KF, IPCheckedToActions.B3C, StreetResults.UTG_FOLD_ZERO);
 
-	results.put(OOPActions.KC, IPCheckedToActions.K, StreetResults.ZERO_BETS);
-	results.put(OOPActions.KC, IPCheckedToActions.BF, StreetResults.ONE_BET);
-	results.put(OOPActions.KC, IPCheckedToActions.BC, StreetResults.ONE_BET);
-	results.put(OOPActions.KC, IPCheckedToActions.B3F, StreetResults.ONE_BET);
-	results.put(OOPActions.KC, IPCheckedToActions.B3C, StreetResults.ONE_BET);
+	results.put(OOPCheckActions.KC, IPCheckedToActions.K, StreetResults.ZERO_BETS);
+	results.put(OOPCheckActions.KC, IPCheckedToActions.BF, StreetResults.ONE_BET);
+	results.put(OOPCheckActions.KC, IPCheckedToActions.BC, StreetResults.ONE_BET);
+	results.put(OOPCheckActions.KC, IPCheckedToActions.B3F, StreetResults.ONE_BET);
+	results.put(OOPCheckActions.KC, IPCheckedToActions.B3C, StreetResults.ONE_BET);
 
-	results.put(OOPActions.KRF, IPCheckedToActions.K, StreetResults.ZERO_BETS);
-	results.put(OOPActions.KRF, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
-	results.put(OOPActions.KRF, IPCheckedToActions.BC, StreetResults.TWO_BETS);
-	results.put(OOPActions.KRF, IPCheckedToActions.B3F, StreetResults.UTG_FOLD_TWO);
-	results.put(OOPActions.KRF, IPCheckedToActions.B3C, StreetResults.UTG_FOLD_TWO);
+	results.put(OOPCheckActions.KRF, IPCheckedToActions.K, StreetResults.ZERO_BETS);
+	results.put(OOPCheckActions.KRF, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
+	results.put(OOPCheckActions.KRF, IPCheckedToActions.BC, StreetResults.TWO_BETS);
+	results.put(OOPCheckActions.KRF, IPCheckedToActions.B3F, StreetResults.UTG_FOLD_TWO);
+	results.put(OOPCheckActions.KRF, IPCheckedToActions.B3C, StreetResults.UTG_FOLD_TWO);
 
-	results.put(OOPActions.KRC, IPCheckedToActions.K, StreetResults.ZERO_BETS);
-	results.put(OOPActions.KRC, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
-	results.put(OOPActions.KRC, IPCheckedToActions.BC, StreetResults.TWO_BETS);
-	results.put(OOPActions.KRC, IPCheckedToActions.B3F, StreetResults.THREE_BETS);
-	results.put(OOPActions.KRC, IPCheckedToActions.B3C, StreetResults.THREE_BETS);
+	results.put(OOPCheckActions.KRC, IPCheckedToActions.K, StreetResults.ZERO_BETS);
+	results.put(OOPCheckActions.KRC, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
+	results.put(OOPCheckActions.KRC, IPCheckedToActions.BC, StreetResults.TWO_BETS);
+	results.put(OOPCheckActions.KRC, IPCheckedToActions.B3F, StreetResults.THREE_BETS);
+	results.put(OOPCheckActions.KRC, IPCheckedToActions.B3C, StreetResults.THREE_BETS);
 
-	results.put(OOPActions.KR4, IPCheckedToActions.K, StreetResults.ZERO_BETS);
-	results.put(OOPActions.KR4, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
-	results.put(OOPActions.KR4, IPCheckedToActions.BC, StreetResults.TWO_BETS);
-	results.put(OOPActions.KR4, IPCheckedToActions.B3F, StreetResults.EP_FOLD_THREE);
-	results.put(OOPActions.KR4, IPCheckedToActions.B3C, StreetResults.FOUR_BETS);
+	results.put(OOPCheckActions.KR4, IPCheckedToActions.K, StreetResults.ZERO_BETS);
+	results.put(OOPCheckActions.KR4, IPCheckedToActions.BF, StreetResults.EP_FOLD_ONE);
+	results.put(OOPCheckActions.KR4, IPCheckedToActions.BC, StreetResults.TWO_BETS);
+	results.put(OOPCheckActions.KR4, IPCheckedToActions.B3F, StreetResults.EP_FOLD_THREE);
+	results.put(OOPCheckActions.KR4, IPCheckedToActions.B3C, StreetResults.FOUR_BETS);
 
+	results.put(OOPBetActions.BF, IPBetIntoActions.F, StreetResults.EP_FOLD_ZERO);
+	results.put(OOPBetActions.BF, IPBetIntoActions.C, StreetResults.ONE_BET);
+	results.put(OOPBetActions.BF, IPBetIntoActions.RF, StreetResults.UTG_FOLD_ONE);
+	results.put(OOPBetActions.BF, IPBetIntoActions.RC, StreetResults.UTG_FOLD_ONE);
+	results.put(OOPBetActions.BF, IPBetIntoActions.R4, StreetResults.UTG_FOLD_ONE);
 
+	results.put(OOPBetActions.BC, IPBetIntoActions.F, StreetResults.EP_FOLD_ZERO);
+	results.put(OOPBetActions.BC, IPBetIntoActions.C, StreetResults.ONE_BET);
+	results.put(OOPBetActions.BC, IPBetIntoActions.RF, StreetResults.TWO_BETS);
+	results.put(OOPBetActions.BC, IPBetIntoActions.RC, StreetResults.TWO_BETS);
+	results.put(OOPBetActions.BC, IPBetIntoActions.R4, StreetResults.TWO_BETS);
 
-	//...and many more
+	results.put(OOPBetActions.B3F, IPBetIntoActions.F, StreetResults.EP_FOLD_ZERO);
+	results.put(OOPBetActions.B3F, IPBetIntoActions.C, StreetResults.ONE_BET);
+	results.put(OOPBetActions.B3F, IPBetIntoActions.RF, StreetResults.EP_FOLD_TWO);
+	results.put(OOPBetActions.B3F, IPBetIntoActions.RC, StreetResults.THREE_BETS);
+	results.put(OOPBetActions.B3F, IPBetIntoActions.R4, StreetResults.UTG_FOLD_THREE);
+
+	results.put(OOPBetActions.B3C, IPBetIntoActions.F, StreetResults.EP_FOLD_ZERO);
+	results.put(OOPBetActions.B3C, IPBetIntoActions.C, StreetResults.ONE_BET);
+	results.put(OOPBetActions.B3C, IPBetIntoActions.RF, StreetResults.EP_FOLD_TWO);
+	results.put(OOPBetActions.B3C, IPBetIntoActions.RC, StreetResults.THREE_BETS);
+	results.put(OOPBetActions.B3C, IPBetIntoActions.R4, StreetResults.FOUR_BETS);
     }
 
     // Pot size in big bets
@@ -92,35 +113,54 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 	this.board = board;
 
 	utgHands.put(Deck.parseCardMask("AcAh"), 1.0);
-	epHands.put(Deck.parseCardMask("QcQs"), 0.5);
+	epHands.put(Deck.parseCardMask("QcQs"), 1.0);
 	//	epHands.put(Deck.parseCardMask("AsKs"), 0.5);
     }
 
     @Override
     public double getValue(UTGStrategy utg, EPStrategy ep) {
-	for (Long utgHand : utgHands.keySet()) {
-	    for (Long epHand : epHands.keySet()) {
-		// TODO: filter for hands that contain duplicate cards
-		double handEv = eval(utg.getActions(utgHand),
-				     ep.getActions(epHand),
-				     getEV(utgHand, epHand, board, potSizeBB, 1.0),
-				     potSizeBB,
-				     1.0); // River, bet 1 unit
+	double value = 0.0;
+	for (Map.Entry<Long, Double> utgEntry : utgHands.entrySet()) {
+	    if (utgEntry.getValue() > 0.0) {
+		for (Map.Entry<Long, Double> epEntry : epHands.entrySet()) {
+		    if (epEntry.getValue() > 0.0) {
+			// TODO: filter for hands that contain duplicate cards
+			double handEv = eval(utg.getActions(utgEntry.getKey()),
+					     ep.getActions(epEntry.getKey()),
+					     getEV(utgEntry.getKey(), epEntry.getKey(), board,
+						   potSizeBB, 1.0),
+					     potSizeBB,
+					     1.0); // River, bet 1 unit
+			value += utgEntry.getValue() * epEntry.getValue() * handEv;
+
+			System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " " +
+					   utgEntry.getValue());
+			System.out.println(Deck.cardMaskString(epEntry.getKey(), "") + " " +
+					   epEntry.getValue());
+			System.out.println(handEv);
+		    }
+		}
 	    }
 	}
 
-	return 0.0;
+	return value;
     }
 
     // TODO: This probably won't work on the flop and turn - maybe value of the game does
     // Return the EV for hand1 on the given board with the given potsize, independent of action
     private double getEV(long hand1, long hand2, long board, double potSize, double betSize) {
-	return 3.5;
+	// Set to -1 for the moment while utg is drawing dead
+	return -1;
     }
 
 
+    private boolean isValidPair(ActionSequence utg, ActionSequence ep) {
+	return (utg instanceof OOPCheckActions && ep instanceof IPCheckedToActions)
+	    || (utg instanceof OOPBetActions && ep instanceof IPBetIntoActions);
+    }
+
     /**
-     *
+     * Return the value of this game state given the full set of strategies for both players
      *
      * @param staticEV value of the game if the action goes check/check
      */
@@ -129,11 +169,71 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 			double staticEV,
 			double potSize,
 			double betSize) {
-	for (ActionSequence utgStrategy : utgStrategies.keySet()) {
-	    for (ActionSequence epStrategy : epStrategies.keySet()) {
-		// do something smart
+	double value = 0.0;
+	// The value of a pair of strategies for UTG
+	double strategyPairValue = 0.0;
+	for (Map.Entry<ActionSequence, Double> utgEntry : utgStrategies.entrySet()) {
+	    if (utgEntry.getValue() > 0.0) {
+		double utgFrequency = utgEntry.getValue();
+		for (Map.Entry<ActionSequence, Double> epEntry : epStrategies.entrySet()) {
+		    // isValidPair is a hack
+		    if (epEntry.getValue() > 0.0
+			&& isValidPair(utgEntry.getKey(), epEntry.getKey())) {
+
+			double epFrequency = epEntry.getValue();
+			StreetResults result = results.get(utgEntry.getKey(), epEntry.getKey());
+			System.out.println(result);
+			switch (result) {
+			case ZERO_BETS:
+			    strategyPairValue = staticEV * potSize;
+			    break;
+			case ONE_BET:
+			    strategyPairValue = staticEV * (potSize + 2);
+			    break;
+			case TWO_BETS:
+			    strategyPairValue = staticEV * (potSize + 4);
+			    break;
+			case THREE_BETS:
+			    strategyPairValue = staticEV * (potSize + 6);
+			    break;
+			case FOUR_BETS:
+			    strategyPairValue = staticEV * (potSize + 8);
+			    break;
+			case UTG_FOLD_ZERO:
+			    strategyPairValue = 0;
+			    break;
+			case UTG_FOLD_ONE:
+			    strategyPairValue = -1;
+			    break;
+			case UTG_FOLD_TWO:
+			    strategyPairValue = -2;
+			    break;
+			case UTG_FOLD_THREE:
+			    strategyPairValue = -3;
+			    break;
+			case EP_FOLD_ZERO:
+			    strategyPairValue = potSize;
+			    break;
+			case EP_FOLD_ONE:
+			    strategyPairValue = potSize + 1;
+			    break;
+			case EP_FOLD_TWO:
+			    strategyPairValue = potSize + 2;
+			    break;
+			case EP_FOLD_THREE:
+			    strategyPairValue = potSize + 3;
+			    break;
+			default:
+			    throw new IllegalStateException("Should always have a result");
+			}
+			
+			value += utgFrequency * epFrequency * strategyPairValue;
+			System.out.println(utgEntry + " " + epEntry + " " + strategyPairValue);
+		    }
+
+		}
 	    }
 	}
-	return 0.0;
+	return value;
     }
 }

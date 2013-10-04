@@ -22,6 +22,8 @@ public abstract class AbstractUTG3Strategy<Hero, Villain> implements Strategy<He
      * Return a map of each possible ActionSequence and its frequency for the given hand.
      */
     protected Map<ActionSequence, Double> getActions(long hand) {
+	System.out.println(hand);
+	System.out.println(actions);
 	return actions.row(hand);
     }
 
