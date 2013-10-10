@@ -108,13 +108,14 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     private Map<Long, Double> utgHands = Maps.newHashMap();
     private Map<Long, Double> epHands = Maps.newHashMap();
 
-    public UTG3GameState(double potSizeBB, long board) {
+    public UTG3GameState(double potSizeBB, long board,
+	Map<Long, Double> utgHands, Map<Long, Double> epHands) {
+	
 	this.potSizeBB = potSizeBB;
 	this.board = board;
 
-	utgHands.put(Deck.parseCardMask("AcAh"), 1.0);
-	epHands.put(Deck.parseCardMask("QcQs"), 1.0);
-	//	epHands.put(Deck.parseCardMask("AsKs"), 0.5);
+	this.utgHands.putAll(utgHands);
+	this.epHands.putAll(epHands);
     }
 
     @Override
@@ -124,20 +125,24 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 	    if (utgEntry.getValue() > 0.0) {
 		for (Map.Entry<Long, Double> epEntry : epHands.entrySet()) {
 		    if (epEntry.getValue() > 0.0) {
+			System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " vs " +
+			    Deck.cardMaskString(epEntry.getKey(), "") + "\n");
 			// TODO: filter for hands that contain duplicate cards
 			double handEv = eval(utg.getActions(utgEntry.getKey()),
-					     ep.getActions(epEntry.getKey()),
-					     getEV(utgEntry.getKey(), epEntry.getKey(), board,
-						   potSizeBB, 1.0),
-					     potSizeBB,
-					     1.0); // River, bet 1 unit
+			    ep.getActions(epEntry.getKey()),
+			    getEV(utgEntry.getKey(), epEntry.getKey(), board,
+				potSizeBB, 1.0),
+			    potSizeBB,
+			    1.0); // River, bet 1 unit
 			value += utgEntry.getValue() * epEntry.getValue() * handEv;
 
+			/*
 			System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " " +
 					   utgEntry.getValue());
 			System.out.println(Deck.cardMaskString(epEntry.getKey(), "") + " " +
 					   epEntry.getValue());
 			System.out.println(handEv);
+			*/
 		    }
 		}
 	    }
@@ -149,7 +154,10 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     // TODO: This probably won't work on the flop and turn - maybe value of the game does
     // Return the EV for hand1 on the given board with the given potsize, independent of action
     private double getEV(long hand1, long hand2, long board, double potSize, double betSize) {
-	// Set to -1 for the moment while utg is drawing dead
+	// Hack until some eval function gets added
+	if (hand1 == Deck.parseCardMask("KcJc")) {
+	    return 1;
+	}
 	return -1;
     }
 
@@ -182,7 +190,6 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
 			double epFrequency = epEntry.getValue();
 			StreetResults result = results.get(utgEntry.getKey(), epEntry.getKey());
-			System.out.println(result);
 			switch (result) {
 			case ZERO_BETS:
 			    strategyPairValue = staticEV * potSize;
@@ -227,13 +234,39 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 			    throw new IllegalStateException("Should always have a result");
 			}
 			
-			value += utgFrequency * epFrequency * strategyPairValue;
-			System.out.println(utgEntry + " " + epEntry + " " + strategyPairValue);
+			double globalValue = utgFrequency * epFrequency * strategyPairValue;
+
+			value += globalValue;
+			System.out.println(utgEntry + " " + epEntry + " " + result + " " +
+			    strategyPairValue + " " + globalValue);
 		    }
 
 		}
 	    }
 	}
+	System.out.println("Overall: " + value + "\n");
 	return value;
+    }
+
+    private String formatHands(Map<Long, Double> hands) {
+	StringBuilder sb = new StringBuilder();
+	for (Long hand : hands.keySet()) {
+	    sb.append(Deck.cardMaskString(hand, "") + ": " + hands.get(hand));
+	}
+	return sb.toString();
+    } 
+
+    @Override
+    public String toString() {
+	StringBuilder sb = new StringBuilder();
+	sb.append("UTG:\n");
+	sb.append(formatHands(utgHands));
+	sb.append("\n\n");
+	sb.append("EP:\n");
+	sb.append(formatHands(epHands));
+	sb.append("\n");
+	sb.append("\nBoard: " + Deck.cardMaskString(board) + "\n");
+	sb.append("Pot size (BB): " + potSizeBB + "\n");
+	return sb.toString();
     }
 }

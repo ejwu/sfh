@@ -3,9 +3,13 @@ package sfh.games.utg3;
 import sfh.Strategy;
 import sfh.games.utg3.AbstractUTG3Strategy.ActionSequence;
 
+import com.google.common.collect.*;
+
+import org.pokersource.game.*;
+
 import java.util.Map;
 
-public class UTGStrategy extends AbstractUTG3Strategy<UTGStrategy, EPStrategy> {
+public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy, EPStrategy> {
 
     // All possible actions when out of position on any street
     public enum OOPCheckActions implements ActionSequence {
@@ -30,13 +34,52 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTGStrategy, EPStrategy> {
 	}
     }
 
+    private UTGStrategy(Table<Long, ActionSequence, Double> actions) {
+	this.actions.putAll(actions);
+    }
+
     @Override
-    public UTGStrategy getBestResponse(EPStrategy ep) {
-	return null;
+    public UTGStrategy getBestResponse(UTG3GameState gs, EPStrategy ep) {
+	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
+
+	for (Long hand : actions.rowKeySet()) {
+	    System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
+	    double bestValue = -1.0000000000d;
+	    ActionSequence bestAction = null;
+	    Table<Long, ActionSequence, Double> tempFreqs = HashBasedTable.create();
+
+	    Map<ActionSequence, Double> valueList = Maps.newLinkedHashMap();
+	    
+	    for (ActionSequence action : OOPCheckActions.values()) {
+		tempFreqs.clear();
+		tempFreqs.put(hand, action, 1.0);
+		UTGStrategy pure = new UTGStrategy(tempFreqs);
+		
+		double value = gs.getValue(pure, ep);
+		System.out.println("Pure " + action.name() + ": " + value);
+		valueList.put(action, value);
+		if (value > bestValue) {
+		    bestValue = value;
+		    bestAction = action;
+		}
+	    }
+
+
+	    System.out.println("\nBest for " + Deck.cardMaskString(hand, "") + ": " +
+		bestAction.name() + " " + bestValue);
+	    System.out.println("All: " + valueList);
+	    if (bestAction == null) {
+		throw new IllegalStateException("No action");
+	    }
+	    bestFreqs.put(hand, bestAction, bestValue);
+	}
+
+	return new UTGStrategy(bestFreqs);
     }
 
     @Override
     public void mergeFrom(UTGStrategy other, double epsilon) {
 
     }
+
 }

@@ -14,7 +14,8 @@ public class SfhRunner {
 
     public static void main(String[] args) {
 	Map<Long, Double> utgFrequencies = Maps.newHashMap();
-	utgFrequencies.put(Deck.parseCardMask("AcAh"), 1.0);
+	utgFrequencies.put(Deck.parseCardMask("AcAh"), 0.5);
+	utgFrequencies.put(Deck.parseCardMask("KcJc"), 0.5);
 
 	Map<Long, Double> epFrequencies = Maps.newHashMap();
 	epFrequencies.put(Deck.parseCardMask("QcQs"), 1.0);
@@ -22,23 +23,29 @@ public class SfhRunner {
 	EPStrategy ep = new EPStrategy(epFrequencies);
 
 	GameState<UTGStrategy, EPStrategy> gs =
-	    new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"));
-	System.out.println(gs.getValue(utg, ep));
+	    new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"), utgFrequencies, epFrequencies);
+	System.out.println(gs);
+
+	System.out.println("UTG strategy:\n\n" + utg);
+	System.out.println("EP strategy:\n\n" + ep);
+	System.out.println("UTG EV: " + gs.getValue(utg, ep));
+
+	play(1, gs, utg, ep);
+
     }
 
-    public static void play(int iterations, Strategy strategy1, Strategy strategy2) {
+    public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
         double epsilon = 0.02;
-        for (int i = 1; i < iterations; i++) {
-            strategy1.mergeFrom(strategy1.getBestResponse(strategy2), epsilon);
-            strategy2.mergeFrom(strategy1.getBestResponse(strategy1), epsilon);
+        for (int i = 0; i < iterations; i++) {
+            strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon);
+	    //            strategy2.mergeFrom(strategy1.getBestResponse(strategy1), epsilon);
             
-            if ((i % 10000) == 0) {
-
-                System.out.println(i + " iterations");
-                System.out.println("hero: " + strategy1);
-                System.out.println("villain: " + strategy2);
-            }
         }
+
+	System.out.println("\n-----------------------------\n");
+	System.out.println("UTG strategy:\n\n" + strategy1);
+	System.out.println("EP strategy:\n\n" + strategy2);
+	System.out.println("UTG EV: " + gs.getValue(strategy1, strategy2));
     }
     
 }

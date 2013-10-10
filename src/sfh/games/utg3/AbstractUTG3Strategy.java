@@ -1,14 +1,25 @@
 package sfh.games.utg3;
 
 import sfh.Strategy;
+import sfh.games.utg3.EPStrategy.IPBetIntoActions;
+import sfh.games.utg3.EPStrategy.IPCheckedToActions;
+import sfh.games.utg3.UTGStrategy.OOPBetActions;
+import sfh.games.utg3.UTGStrategy.OOPCheckActions;
 
 import com.google.common.collect.*;
 
+import org.pokersource.game.*;
+
 import java.util.Map;
 
-public abstract class AbstractUTG3Strategy<Hero, Villain> implements Strategy<Hero, Villain> {
+public abstract class AbstractUTG3Strategy<State, Hero, Villain>
+    implements Strategy<State, Hero, Villain> {
+    
     // A repreentation for all possible actions for a given hand
-    public interface ActionSequence {};
+    public interface ActionSequence {
+	// just a hack to get the enum name
+	String name();
+    };
 
     static final int FLOP = 0;
     static final int TURN = 1;
@@ -22,9 +33,64 @@ public abstract class AbstractUTG3Strategy<Hero, Villain> implements Strategy<He
      * Return a map of each possible ActionSequence and its frequency for the given hand.
      */
     protected Map<ActionSequence, Double> getActions(long hand) {
-	System.out.println(hand);
-	System.out.println(actions);
 	return actions.row(hand);
+    }
+
+    @Override
+    public String toString() {
+	StringBuilder sb = new StringBuilder();
+	for (Long hand : actions.rowKeySet()) {
+	    sb.append(Deck.cardMaskString(hand, "") + ": ");
+	    Map<ActionSequence, Double> actionFreqs = actions.row(hand);
+	    boolean printed = false;
+	    for (ActionSequence action : OOPCheckActions.values()) {
+		if (actionFreqs.containsKey(action)) {
+		    sb.append(String.format("%3s %4.2f  ",
+					    action.name(),
+					    actions.row(hand).get(action)));
+		    printed = true;
+		}
+	    }
+	    if (printed) {
+		sb.append("\n      ");
+		printed = false;
+	    }
+
+	    for (ActionSequence action : OOPBetActions.values()) {
+		if (actionFreqs.containsKey(action)) {
+		    sb.append(String.format("%3s %4.2f  ",
+					    action.name(),
+					    actions.row(hand).get(action)));
+		}
+	    }
+
+	    for (ActionSequence action : IPCheckedToActions.values()) {
+		if (actionFreqs.containsKey(action)) {
+		    sb.append(String.format("%3s %4.2f  ",
+					    action.name(),
+					    actions.row(hand).get(action)));
+		    printed = true;
+		}
+	    }
+	    if (printed) {
+		sb.append("\n      ");
+		printed = false;
+	    }
+
+	    for (ActionSequence action : IPBetIntoActions.values()) {
+		if (actionFreqs.containsKey(action)) {
+		    sb.append(String.format("%3s %4.2f  ",
+					    action.name(),
+					    actions.row(hand).get(action)));
+		}
+	    }
+	    if (printed) {
+		sb.append("\n");
+		printed = false;
+	    }
+	    sb.append("\n\n");
+	}
+	return sb.toString();
     }
 
 }
