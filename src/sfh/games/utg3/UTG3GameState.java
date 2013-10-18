@@ -17,7 +17,7 @@ import java.util.*;
 
 public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public enum StreetResults {
 	// Both players put in some bets

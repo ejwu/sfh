@@ -26,9 +26,9 @@ public class SfhRunner {
 	    new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"), utgFrequencies, epFrequencies);
 	System.out.println(gs);
 
-	System.out.println("UTG strategy:\n\n" + utg);
-	System.out.println("EP strategy:\n\n" + ep);
-	System.out.println("UTG EV: " + gs.getValue(utg, ep));
+	System.out.println("Original UTG strategy:\n\n" + utg);
+	System.out.println("Original EP strategy:\n\n" + ep);
+	System.out.println("Original UTG EV: " + gs.getValue(utg, ep));
 
 	play(1, gs, utg, ep);
 
@@ -43,9 +43,9 @@ public class SfhRunner {
         }
 
 	System.out.println("\n-----------------------------\nFinal strategies:\n");
-	System.out.println("UTG strategy:\n\n" + strategy1);
-	System.out.println("EP strategy:\n\n" + strategy2);
-	System.out.println("UTG EV: " + gs.getValue(strategy1, strategy2));
+	System.out.println("Final UTG strategy:\n\n" + strategy1);
+	System.out.println("Final EP strategy:\n\n" + strategy2);
+	System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
     }
     
 }

@@ -44,7 +44,6 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
 
 	for (Long hand : actions.rowKeySet()) {
-            
             if (DEBUG) {
                 System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
             }
@@ -79,9 +78,9 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    if (bestAction == null) {
 		throw new IllegalStateException("No action");
 	    }
-	    bestFreqs.put(hand, bestAction, bestValue);
+            // TODO: Might be nice to mix between equivalent strategies.
+	    bestFreqs.put(hand, bestAction, 1.0);
 	}
-
 	return new UTGStrategy(bestFreqs);
     }
 
