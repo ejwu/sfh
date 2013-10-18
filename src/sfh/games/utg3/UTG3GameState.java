@@ -17,6 +17,8 @@ import java.util.*;
 
 public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
+    public static final boolean DEBUG = false;
+
     public enum StreetResults {
 	// Both players put in some bets
 	ZERO_BETS,
@@ -125,8 +127,10 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 	    if (utgEntry.getValue() > 0.0) {
 		for (Map.Entry<Long, Double> epEntry : epHands.entrySet()) {
 		    if (epEntry.getValue() > 0.0) {
-			System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " vs " +
-			    Deck.cardMaskString(epEntry.getKey(), "") + "\n");
+                        if (DEBUG) {
+                            System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " vs " +
+                                Deck.cardMaskString(epEntry.getKey(), "") + "\n");
+                        }
 			// TODO: filter for hands that contain duplicate cards
 			double handEv = eval(utg.getActions(utgEntry.getKey()),
 			    ep.getActions(epEntry.getKey()),
@@ -237,21 +241,25 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 			double globalValue = utgFrequency * epFrequency * strategyPairValue;
 
 			value += globalValue;
-			System.out.println(utgEntry + " " + epEntry + " " + result + " " +
-			    strategyPairValue + " " + globalValue);
+                        if (DEBUG) {
+                            System.out.println(utgEntry + " " + epEntry + " " + result + " " +
+                                strategyPairValue + " " + globalValue);
+                        }
 		    }
 
 		}
 	    }
 	}
-	System.out.println("Overall: " + value + "\n");
+        if (DEBUG) {
+            System.out.println("Overall: " + value + "\n");
+        }
 	return value;
     }
 
     private String formatHands(Map<Long, Double> hands) {
 	StringBuilder sb = new StringBuilder();
 	for (Long hand : hands.keySet()) {
-	    sb.append(Deck.cardMaskString(hand, "") + ": " + hands.get(hand));
+	    sb.append(Deck.cardMaskString(hand, "") + ": " + hands.get(hand) + "  ");
 	}
 	return sb.toString();
     } 

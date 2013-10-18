@@ -2,6 +2,7 @@ package sfh.games.utg3;
 
 import sfh.Strategy;
 import sfh.games.utg3.AbstractUTG3Strategy.ActionSequence;
+import static sfh.games.utg3.UTG3GameState.DEBUG;
 
 import com.google.common.collect.*;
 
@@ -43,7 +44,10 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
 
 	for (Long hand : actions.rowKeySet()) {
-	    System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
+            
+            if (DEBUG) {
+                System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
+            }
 	    double bestValue = -1.0000000000d;
 	    ActionSequence bestAction = null;
 	    Table<Long, ActionSequence, Double> tempFreqs = HashBasedTable.create();
@@ -56,7 +60,9 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 		UTGStrategy pure = new UTGStrategy(tempFreqs);
 		
 		double value = gs.getValue(pure, ep);
-		System.out.println("Pure " + action.name() + ": " + value);
+                if (DEBUG) {
+                    System.out.println("Pure " + action.name() + ": " + value);
+                }
 		valueList.put(action, value);
 		if (value > bestValue) {
 		    bestValue = value;
@@ -65,9 +71,11 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    }
 
 
-	    System.out.println("\nBest for " + Deck.cardMaskString(hand, "") + ": " +
-		bestAction.name() + " " + bestValue);
-	    System.out.println("All: " + valueList);
+            if (DEBUG) {
+                System.out.println("\nBest for " + Deck.cardMaskString(hand, "") + ": " +
+                    bestAction.name() + " " + bestValue);
+                System.out.println("All: " + valueList);
+            }
 	    if (bestAction == null) {
 		throw new IllegalStateException("No action");
 	    }
@@ -79,7 +87,8 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 
     @Override
     public void mergeFrom(UTGStrategy other, double epsilon) {
-
+        this.actions.clear();
+        this.actions.putAll(other.actions);
     }
 
 }

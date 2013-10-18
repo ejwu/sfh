@@ -42,7 +42,7 @@ public class SfhRunner {
             
         }
 
-	System.out.println("\n-----------------------------\n");
+	System.out.println("\n-----------------------------\nFinal strategies:\n");
 	System.out.println("UTG strategy:\n\n" + strategy1);
 	System.out.println("EP strategy:\n\n" + strategy2);
 	System.out.println("UTG EV: " + gs.getValue(strategy1, strategy2));
