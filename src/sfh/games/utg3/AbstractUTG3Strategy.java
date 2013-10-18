@@ -12,8 +12,9 @@ import org.pokersource.game.*;
 
 import java.util.Map;
 
-public abstract class AbstractUTG3Strategy<State, Hero, Villain>
-    implements Strategy<State, Hero, Villain> {
+// Game state, hero, villain
+public abstract class AbstractUTG3Strategy<GS, H, V>
+    implements Strategy<GS, H, V> {
     
     // A repreentation for all possible actions for a given hand
     public interface ActionSequence {
@@ -92,5 +93,4 @@ public abstract class AbstractUTG3Strategy<State, Hero, Villain>
 	}
 	return sb.toString();
     }
-
 }

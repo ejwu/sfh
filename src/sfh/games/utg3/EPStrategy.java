@@ -4,7 +4,7 @@ import sfh.Strategy;
 
 import java.util.Map;
 
-public class EPStrategy extends AbstractUTG3Strategy<EPStrategy, UTGStrategy> {
+public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, UTGStrategy> {
 
     // All possible strategies when in position
     public enum IPCheckedToActions implements ActionSequence {
@@ -30,7 +30,7 @@ public class EPStrategy extends AbstractUTG3Strategy<EPStrategy, UTGStrategy> {
     }
 
     @Override
-    public EPStrategy getBestResponse(UTGStrategy ep) {
+    public EPStrategy getBestResponse(UTG3GameState gs, UTGStrategy ep) {
 	return null;
     }
 
