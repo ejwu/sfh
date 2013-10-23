@@ -1,8 +1,13 @@
 package sfh.games.utg3;
 
 import sfh.Strategy;
+import static sfh.games.utg3.UTG3GameState.DEBUG;
+
+import com.google.common.collect.*;
 
 import java.util.Map;
+
+import org.pokersource.game.*;
 
 public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, UTGStrategy> {
 
@@ -14,6 +19,10 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
     public enum IPBetIntoActions implements ActionSequence {
 	F, C, RF, RC, R4
     }			     
+
+    EPStrategy(Table<Long, ActionSequence, Double> actions) {
+	this.actions.putAll(actions);
+    }
 
     public EPStrategy(Map<Long, Double> hands) {
 	for (Long hand : hands.keySet()) {
@@ -30,12 +39,18 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
     }
 
     @Override
-    public EPStrategy getBestResponse(UTG3GameState gs, UTGStrategy ep) {
-	return null;
+    public EPStrategy getBestResponse(UTG3GameState gs, UTGStrategy utg) {
+	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
+
+	for (Long hand : actions.rowKeySet()) {
+            if (DEBUG) {
+                System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
+            }
+	    
+            updateBestActionForHand(gs, hand, IPBetIntoActions.values(), utg, bestFreqs, false);
+            updateBestActionForHand(gs, hand, IPCheckedToActions.values(), utg, bestFreqs, false);
+	}
+	return new EPStrategy(bestFreqs);
     }
 
-    @Override
-    public void mergeFrom(EPStrategy other, double epsilon) {
-
-    }
 }

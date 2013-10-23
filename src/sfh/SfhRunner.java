@@ -38,7 +38,7 @@ public class SfhRunner {
         double epsilon = 0.02;
         for (int i = 0; i < iterations; i++) {
             strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon);
-	    //            strategy2.mergeFrom(strategy1.getBestResponse(strategy1), epsilon);
+            strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon);
             
         }
 

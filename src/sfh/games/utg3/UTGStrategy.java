@@ -21,6 +21,10 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	BF, BC, B3F, B3C // bet first
     }
 
+    UTGStrategy(Table<Long, ActionSequence, Double> actions) {
+	this.actions.putAll(actions);
+    }
+
     public UTGStrategy(Map<Long, Double> hands) {
 	for (Long hand : hands.keySet()) {
 	    for (OOPCheckActions action : OOPCheckActions.values()) {
@@ -35,10 +39,6 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	}
     }
 
-    private UTGStrategy(Table<Long, ActionSequence, Double> actions) {
-	this.actions.putAll(actions);
-    }
-
     @Override
     public UTGStrategy getBestResponse(UTG3GameState gs, EPStrategy ep) {
 	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
@@ -47,47 +47,12 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
             if (DEBUG) {
                 System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
             }
-	    double bestValue = -1.0000000000d;
-	    ActionSequence bestAction = null;
-	    Table<Long, ActionSequence, Double> tempFreqs = HashBasedTable.create();
-
-	    Map<ActionSequence, Double> valueList = Maps.newLinkedHashMap();
 	    
-	    for (ActionSequence action : OOPCheckActions.values()) {
-		tempFreqs.clear();
-		tempFreqs.put(hand, action, 1.0);
-		UTGStrategy pure = new UTGStrategy(tempFreqs);
-		
-		double value = gs.getValue(pure, ep);
-                if (DEBUG) {
-                    System.out.println("Pure " + action.name() + ": " + value);
-                }
-		valueList.put(action, value);
-		if (value > bestValue) {
-		    bestValue = value;
-		    bestAction = action;
-		}
-	    }
-
-
-            if (DEBUG) {
-                System.out.println("\nBest for " + Deck.cardMaskString(hand, "") + ": " +
-                    bestAction.name() + " " + bestValue);
-                System.out.println("All: " + valueList);
-            }
-	    if (bestAction == null) {
-		throw new IllegalStateException("No action");
-	    }
-            // TODO: Might be nice to mix between equivalent strategies.
-	    bestFreqs.put(hand, bestAction, 1.0);
+            updateBestActionForHand(gs, hand, OOPBetActions.values(), ep, bestFreqs, true);
+            updateBestActionForHand(gs, hand, OOPCheckActions.values(), ep, bestFreqs, true);
 	}
 	return new UTGStrategy(bestFreqs);
     }
 
-    @Override
-    public void mergeFrom(UTGStrategy other, double epsilon) {
-        this.actions.clear();
-        this.actions.putAll(other.actions);
-    }
 
 }
