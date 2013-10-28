@@ -1,7 +1,9 @@
+package sfh.games.akq;
 
-//abstract class AbstractAKQStrategy implements Strategy<AbstractAKQStrategy, AbstractAKQStrategy> {
-abstract class AbstractAKQStrategy<H extends AbstractAKQStrategy<H, V>, V extends AbstractAKQStrategy<V, H>>
-    implements Strategy<H, V> {
+import sfh.Strategy;
+
+public abstract class AbstractAKQStrategy<GS, H extends AbstractAKQStrategy, V extends AbstractAKQStrategy>
+    implements Strategy<GS, H, V> {
     
     public static final int ACE = 0;
     public static final int KING = 1;

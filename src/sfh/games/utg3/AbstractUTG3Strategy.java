@@ -18,10 +18,10 @@ public abstract class AbstractUTG3Strategy<
     GS, H extends AbstractUTG3Strategy, V extends AbstractUTG3Strategy>
     implements Strategy<GS, H, V> {
     
-    // A repreentation for all possible actions for a given hand
+    // A representation for all possible actions for a given hand
     public interface ActionSequence {
 	// just a hack to get the enum name
-	String name();
+    	String name();
     };
 
     static final int FLOP = 0;
@@ -36,7 +36,7 @@ public abstract class AbstractUTG3Strategy<
      * Return a map of each possible ActionSequence and its frequency for the given hand.
      */
     protected Map<ActionSequence, Double> getActions(long hand) {
-	return actions.row(hand);
+    	return actions.row(hand);
     }
 
     // update bestFreqs

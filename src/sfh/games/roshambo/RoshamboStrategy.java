@@ -5,7 +5,7 @@ import sfh.Strategy;
 import java.util.Arrays;
 
 
-public class RoshamboStrategy implements Strategy<RoshamboStrategy, RoshamboStrategy> {
+public class RoshamboStrategy implements Strategy<RoshamboGameState, RoshamboStrategy, RoshamboStrategy> {
 
     public static final int ROCK = 0;
     public static final int PAPER = 1;
@@ -38,7 +38,7 @@ public class RoshamboStrategy implements Strategy<RoshamboStrategy, RoshamboStra
     }
     
     @Override
-    public RoshamboStrategy getBestResponse(RoshamboStrategy villain) {
+    public RoshamboStrategy getBestResponse(RoshamboGameState gs, RoshamboStrategy villain) {
         double rockValue = 0.0;
         double paperValue = 0.0;
         double scissorsValue = 0.0;
