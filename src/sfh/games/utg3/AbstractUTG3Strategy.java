@@ -11,6 +11,7 @@ import com.google.common.collect.*;
 
 import org.pokersource.game.*;
 
+import java.util.Arrays;
 import java.util.Map;
 
 // Game state, hero, villain
@@ -31,6 +32,12 @@ public abstract class AbstractUTG3Strategy<
     // Hands, actions, frequencies.  For any given hand, the frequencies of all its actions
     // should sum to 1.
     protected Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
+
+    protected AbstractUTG3Strategy(Table<Long, ActionSequence, Double> actions) {
+        this.actions.putAll(actions);
+        checkSanity();
+    }
+
 
     /**
      * Return a map of each possible ActionSequence and its frequency for the given hand.
@@ -61,6 +68,13 @@ public abstract class AbstractUTG3Strategy<
                 EPStrategy ep = (EPStrategy) villain;
                 value = gs.getValue(pure, ep);
             } else {
+                // TODO: is this even sane?  do the UTG and EP strategies match properly?
+                // TODO: this is a hack to make checkSanity work, do something smarter
+                if (Arrays.asList(possibleActions).contains(IPBetIntoActions.C)) {
+                    tempFreqs.put(hand, IPCheckedToActions.K, 1.0);
+                } else {
+                    tempFreqs.put(hand, IPBetIntoActions.C, 1.0);
+                }
                 EPStrategy pure = new EPStrategy(tempFreqs);
                 UTGStrategy utg = (UTGStrategy) villain;
                 // getValue returns UTG's EV, so we reverse it
@@ -90,9 +104,15 @@ public abstract class AbstractUTG3Strategy<
 
     @Override
     public void mergeFrom(H other, double epsilon) {
-        this.actions.clear();
-        this.actions.putAll(other.actions);
+        //        this.actions.clear();
+        //this.actions.putAll(other.actions);
         // TODO: use epsilon to actually merge, instead of just copy
+        for (long hand : actions.rowKeySet()) {
+            Map<ActionSequence, Double> actionFreqs = other.getActions(hand);
+            for (ActionSequence otherAction : actionFreqs.keySet()) {
+
+            }
+        }
     }
 
     @Override
@@ -112,7 +132,7 @@ public abstract class AbstractUTG3Strategy<
 	    }
 	    if (printed) {
 		sb.append("\n      ");
-		printed = false;
+                printed = false;
 	    }
 
 	    for (ActionSequence action : OOPBetActions.values()) {
@@ -150,5 +170,45 @@ public abstract class AbstractUTG3Strategy<
 	    sb.append("\n\n");
 	}
 	return sb.toString();
+    }
+
+    protected Table<Long, ActionSequence, Double> normalize(
+        Table<Long, ActionSequence, Double> freqs) {
+
+        Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
+        for (long hand : freqs.rowKeySet()) {
+            double sum = 0.0d;
+            for (ActionSequence action : freqs.row(hand).keySet()) {
+                sum += freqs.row(hand).get(action);
+            }
+            for (ActionSequence action : freqs.row(hand).keySet()) {
+                newFreqs.put(hand, action, freqs.row(hand).get(action) / sum);
+            }
+
+        }
+        return newFreqs;
+    }
+
+    /**
+     * Verify that this strategy is well formed.  Action frequencies should add up to 1 where
+     * appropriate.
+     */
+    abstract void checkSanity();
+
+    protected void checkSanity(ActionSequence[]... actionSets) {
+        for (long hand : actions.rowKeySet()) {
+            for (ActionSequence[] actionSet : actionSets) {
+                double sum = 0.0d;
+                for (ActionSequence action : actionSet) {
+                    if (actions.row(hand).containsKey(action)) {
+                        sum += actions.row(hand).get(action);
+                    }
+                }
+                if (sum != 1.0d) {
+                    throw new IllegalStateException("Frequencies must add to 1, are: " + sum
+                        + "\n" + toString());
+                }
+            }
+        }
     }
 }

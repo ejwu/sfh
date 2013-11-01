@@ -22,10 +22,11 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
     }
 
     UTGStrategy(Table<Long, ActionSequence, Double> actions) {
-	this.actions.putAll(actions);
+        super(actions);
     }
 
-    public UTGStrategy(Map<Long, Double> hands) {
+    public static UTGStrategy create(Map<Long, Double> hands) {
+        Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
 	for (Long hand : hands.keySet()) {
 	    for (OOPCheckActions action : OOPCheckActions.values()) {
 		actions.put(hand, action, 0.0);
@@ -37,6 +38,7 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    actions.put(hand, OOPBetActions.B3C, 0.5);
 	    actions.put(hand, OOPCheckActions.KF, 0.5);
 	}
+        return new UTGStrategy(actions);
     }
 
     @Override
@@ -51,8 +53,13 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
             updateBestActionForHand(gs, hand, OOPBetActions.values(), ep, bestFreqs, true);
             updateBestActionForHand(gs, hand, OOPCheckActions.values(), ep, bestFreqs, true);
 	}
-	return new UTGStrategy(bestFreqs);
+	return new UTGStrategy(normalize(bestFreqs));
     }
 
+    @Override
+    public void checkSanity() {
+        checkSanity(ObjectArrays.concat(OOPBetActions.values(), OOPCheckActions.values(),
+                ActionSequence.class));
+    }
 
 }

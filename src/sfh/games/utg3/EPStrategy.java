@@ -21,10 +21,12 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
     }			     
 
     EPStrategy(Table<Long, ActionSequence, Double> actions) {
-	this.actions.putAll(actions);
+        super(actions);
     }
 
-    public EPStrategy(Map<Long, Double> hands) {
+    public static EPStrategy create(Map<Long, Double> hands) {
+        Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
+
 	for (Long hand : hands.keySet()) {
 	    for (IPCheckedToActions action : IPCheckedToActions.values()) {
 		actions.put(hand, action, 0.0);
@@ -36,21 +38,32 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
 	    actions.put(hand, IPCheckedToActions.B3C, 1.0);
 	    actions.put(hand, IPBetIntoActions.R4, 1.0);
 	}
+        return new EPStrategy(actions);
     }
 
     @Override
     public EPStrategy getBestResponse(UTG3GameState gs, UTGStrategy utg) {
-	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
-
+	Table<Long, ActionSequence, Double> bestBetFreqs = HashBasedTable.create();
+	Table<Long, ActionSequence, Double> bestCheckFreqs = HashBasedTable.create();
+        
 	for (Long hand : actions.rowKeySet()) {
             if (DEBUG) {
                 System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
             }
 	    
-            updateBestActionForHand(gs, hand, IPBetIntoActions.values(), utg, bestFreqs, false);
-            updateBestActionForHand(gs, hand, IPCheckedToActions.values(), utg, bestFreqs, false);
+            updateBestActionForHand(gs, hand, IPBetIntoActions.values(), utg, bestBetFreqs, false);
+            updateBestActionForHand(gs, hand, IPCheckedToActions.values(), utg, bestCheckFreqs,
+                false);
 	}
-	return new EPStrategy(bestFreqs);
+        bestBetFreqs = normalize(bestBetFreqs);
+        bestCheckFreqs = normalize(bestCheckFreqs);
+        bestBetFreqs.putAll(bestCheckFreqs);
+	return new EPStrategy(bestBetFreqs);
+    }
+
+    @Override
+    void checkSanity() {
+        checkSanity(IPBetIntoActions.values(), IPCheckedToActions.values());
     }
 
 }
