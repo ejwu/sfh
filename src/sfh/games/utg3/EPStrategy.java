@@ -55,10 +55,15 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
             updateBestActionForHand(gs, hand, IPCheckedToActions.values(), utg, bestCheckFreqs,
                 false);
 	}
-        bestBetFreqs = normalize(bestBetFreqs);
-        bestCheckFreqs = normalize(bestCheckFreqs);
+        bestBetFreqs = normalized(bestBetFreqs, IPBetIntoActions.values());
+        bestCheckFreqs = normalized(bestCheckFreqs, IPCheckedToActions.values());
         bestBetFreqs.putAll(bestCheckFreqs);
 	return new EPStrategy(bestBetFreqs);
+    }
+
+    @Override
+    void normalize() {
+        this.actions = normalized(actions, IPBetIntoActions.values(), IPCheckedToActions.values());
     }
 
     @Override

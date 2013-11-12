@@ -26,7 +26,7 @@ public class SfhRunner {
 	    new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"), utgFrequencies, epFrequencies);
 	System.out.println("Game state:\n" + gs);
 
-	play(1, gs, utg, ep);
+	play(200, gs, utg, ep);
 
     }
 
@@ -38,14 +38,11 @@ public class SfhRunner {
         double epsilon = 0.1;
         for (int i = 0; i < iterations; i++) {
             strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon);
-            System.out.println("#" + i + " UTG strategy:\n\n" + strategy1);
+            System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
             System.out.println("EV: " + gs.getValue(strategy1, strategy2));
             strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon);
-            System.out.println("#" + i + " EP strategy:\n\n" + strategy2);
+            System.out.println("\n--------------------\n#" + i + " EP strategy:\n\n" + strategy2);
             System.out.println("EV: " + gs.getValue(strategy1, strategy2));
-            strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon);
-            System.out.println("Final UTG strategy:\n\n" + strategy1);
-            
         }
 
 	System.out.println("\n-----------------------------\nFinal strategies:\n");

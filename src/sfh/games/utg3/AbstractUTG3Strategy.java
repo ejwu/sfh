@@ -104,15 +104,35 @@ public abstract class AbstractUTG3Strategy<
 
     @Override
     public void mergeFrom(H other, double epsilon) {
-        this.actions.clear();
-        this.actions.putAll(other.actions);
-        // TODO: use epsilon to actually merge, instead of just copy
+        Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
+
         for (long hand : actions.rowKeySet()) {
             Map<ActionSequence, Double> actionFreqs = other.getActions(hand);
+            // First update everything that has a new frequency
             for (ActionSequence otherAction : actionFreqs.keySet()) {
-
+                double oldFreq = 0.0;
+                if (actions.row(hand).containsKey(otherAction)) {
+                    oldFreq = actions.row(hand).get(otherAction);
+                }
+                double newFreq = actionFreqs.get(otherAction);
+                newFreqs.put(hand, otherAction, oldFreq + ((newFreq - oldFreq) * epsilon));
+            }
+            // Anything not already updated must have an update frequency of 0
+            for (ActionSequence action : actions.row(hand).keySet()) {
+                if (!newFreqs.row(hand).containsKey(action)) {
+                    newFreqs.put(hand, action, actions.row(hand).get(action) * (1 - epsilon));
+                }
             }
         }
+        if (DEBUG) {
+            System.out.println(actions);
+            System.out.println(other.actions);
+            System.out.println(newFreqs);
+        }
+        this.actions.clear();
+        this.actions.putAll(newFreqs);
+        normalize();
+        checkSanity();
     }
 
     @Override
@@ -172,22 +192,29 @@ public abstract class AbstractUTG3Strategy<
 	return sb.toString();
     }
 
+    abstract void normalize();
+
     /**
-     * Return a table where all the frequencies sum to 1.
+     * Return a table where all the frequencies for each set of ActionSequences sum to 1.
      */
-    protected Table<Long, ActionSequence, Double> normalize(
-        Table<Long, ActionSequence, Double> freqs) {
+    protected Table<Long, ActionSequence, Double> normalized(
+        Table<Long, ActionSequence, Double> freqs, ActionSequence[]... actionSets) {
 
         Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
         for (long hand : freqs.rowKeySet()) {
-            double sum = 0.0d;
-            for (ActionSequence action : freqs.row(hand).keySet()) {
-                sum += freqs.row(hand).get(action);
+            for (ActionSequence[] actionSet : actionSets) {
+                double sum = 0.0d;
+                for (ActionSequence action : actionSet) {
+                    if (freqs.row(hand).containsKey(action)) {
+                        sum += freqs.row(hand).get(action);
+                    }
+                }
+                for (ActionSequence action : actionSet) {
+                    if (freqs.row(hand).containsKey(action)) {
+                        newFreqs.put(hand, action, freqs.row(hand).get(action) / sum);
+                    }
+                }
             }
-            for (ActionSequence action : freqs.row(hand).keySet()) {
-                newFreqs.put(hand, action, freqs.row(hand).get(action) / sum);
-            }
-
         }
         return newFreqs;
     }
@@ -198,6 +225,11 @@ public abstract class AbstractUTG3Strategy<
      */
     abstract void checkSanity();
 
+    /**
+     * Check that all actions within each action set have frequencies adding up to 1.  For the 
+     * UTG player, the action set consists of all actions.  For the EP player, there are separate
+     * action sets depending on whether he's facing a bet or a check.
+     */
     protected void checkSanity(ActionSequence[]... actionSets) {
         for (long hand : actions.rowKeySet()) {
             for (ActionSequence[] actionSet : actionSets) {
@@ -207,7 +239,8 @@ public abstract class AbstractUTG3Strategy<
                         sum += actions.row(hand).get(action);
                     }
                 }
-                if (sum != 1.0d) {
+                // close enough
+                if (Math.abs(1.0 - sum) > 0.0000001d) {
                     throw new IllegalStateException("Frequencies must add to 1, are: " + sum
                         + "\n" + toString());
                 }

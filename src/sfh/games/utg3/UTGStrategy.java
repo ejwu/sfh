@@ -55,7 +55,14 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
                     ActionSequence.class),
                 ep, bestFreqs, true);
 	}
-	return new UTGStrategy(normalize(bestFreqs));
+	return new UTGStrategy(normalized(bestFreqs, ObjectArrays.concat(
+                    OOPBetActions.values(), OOPCheckActions.values(), ActionSequence.class)));
+    }
+
+    @Override
+    void normalize() {
+        this.actions = normalized(actions, ObjectArrays.concat(
+                OOPBetActions.values(), OOPCheckActions.values(), ActionSequence.class));
     }
 
     @Override
