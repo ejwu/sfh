@@ -36,7 +36,7 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    }
 	    // Default strategy for every hand is to shovel money in
 	    actions.put(hand, OOPBetActions.B3C, 0.5);
-	    actions.put(hand, OOPCheckActions.KF, 0.5);
+	    actions.put(hand, OOPCheckActions.KR4, 0.5);
 	}
         return new UTGStrategy(actions);
     }
@@ -50,8 +50,10 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
                 System.out.println("\noptimizing " + Deck.cardMaskString(hand, ""));
             }
 	    
-            updateBestActionForHand(gs, hand, OOPBetActions.values(), ep, bestFreqs, true);
-            updateBestActionForHand(gs, hand, OOPCheckActions.values(), ep, bestFreqs, true);
+            updateBestActionForHand(gs, hand,
+                ObjectArrays.concat(OOPBetActions.values(), OOPCheckActions.values(),
+                    ActionSequence.class),
+                ep, bestFreqs, true);
 	}
 	return new UTGStrategy(normalize(bestFreqs));
     }

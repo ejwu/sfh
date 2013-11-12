@@ -165,7 +165,7 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 	return -1;
     }
 
-
+    // such a brutal hack
     private boolean isValidPair(ActionSequence utg, ActionSequence ep) {
 	return (utg instanceof OOPCheckActions && ep instanceof IPCheckedToActions)
 	    || (utg instanceof OOPBetActions && ep instanceof IPBetIntoActions);

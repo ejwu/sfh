@@ -104,8 +104,8 @@ public abstract class AbstractUTG3Strategy<
 
     @Override
     public void mergeFrom(H other, double epsilon) {
-        //        this.actions.clear();
-        //this.actions.putAll(other.actions);
+        this.actions.clear();
+        this.actions.putAll(other.actions);
         // TODO: use epsilon to actually merge, instead of just copy
         for (long hand : actions.rowKeySet()) {
             Map<ActionSequence, Double> actionFreqs = other.getActions(hand);
@@ -172,6 +172,9 @@ public abstract class AbstractUTG3Strategy<
 	return sb.toString();
     }
 
+    /**
+     * Return a table where all the frequencies sum to 1.
+     */
     protected Table<Long, ActionSequence, Double> normalize(
         Table<Long, ActionSequence, Double> freqs) {
 
