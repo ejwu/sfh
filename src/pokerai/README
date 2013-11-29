@@ -1,0 +1,1 @@
+pokerai.game.eval.StateTableEvaluator has been modified to update the path for HAND_RANKS_FILE.  Yoiu'll have to update it as well to whatever path you want to use.

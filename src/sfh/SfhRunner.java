@@ -8,17 +8,22 @@ import com.google.common.collect.Maps;
 
 import org.pokersource.game.*;
 
+import pokerai.game.eval.spears2p2.StateTableEvaluator;
+
 import java.util.Map;
 
 public class SfhRunner {
 
     public static void main(String[] args) {
+        StateTableEvaluator.initialize();
+
 	Map<Long, Double> utgFrequencies = Maps.newHashMap();
 	utgFrequencies.put(Deck.parseCardMask("AcAh"), 0.5);
-	utgFrequencies.put(Deck.parseCardMask("KcJc"), 0.5);
+        utgFrequencies.put(Deck.parseCardMask("KcJc"), 0.5);
 
 	Map<Long, Double> epFrequencies = Maps.newHashMap();
-	epFrequencies.put(Deck.parseCardMask("QcQs"), 1.0);
+	epFrequencies.put(Deck.parseCardMask("QcQs"), 0.5);
+        epFrequencies.put(Deck.parseCardMask("KsJs"), 0.5);
 	UTGStrategy utg = UTGStrategy.create(utgFrequencies);
 	EPStrategy ep = EPStrategy.create(epFrequencies);
 

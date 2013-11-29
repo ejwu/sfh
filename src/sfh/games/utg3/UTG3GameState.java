@@ -13,6 +13,9 @@ import com.google.common.collect.Table;
 
 import org.pokersource.game.*;
 
+import pokerai.game.eval.spears2p2.Hand;
+import pokerai.game.eval.spears2p2.StateTableEvaluator;
+
 import java.util.*;
 
 public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
@@ -158,11 +161,21 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     // TODO: This probably won't work on the flop and turn - maybe value of the game does
     // Return the EV for hand1 on the given board with the given potsize, independent of action
     private double getEV(long hand1, long hand2, long board, double potSize, double betSize) {
-	// Hack until some eval function gets added
-	if (hand1 == Deck.parseCardMask("KcJc")) {
-	    return 1;
-	}
-	return -1;
+        long h1l = hand1 | board;
+        long h2l = hand2 | board;
+
+        Hand h1 = Hand.parse(Deck.cardMaskString(h1l, ""));
+        Hand h2 = Hand.parse(Deck.cardMaskString(h2l, ""));
+
+        int rank1 = StateTableEvaluator.getRank(h1);
+        int rank2 = StateTableEvaluator.getRank(h2);
+
+        if (rank1 > rank2) {
+            return 1;
+        } else if (rank2 > rank1) {
+            return -1;
+        }
+        return 0.5;
     }
 
     // such a brutal hack
