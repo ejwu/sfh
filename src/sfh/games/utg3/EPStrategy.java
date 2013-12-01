@@ -34,9 +34,9 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
 	    for (IPBetIntoActions action : IPBetIntoActions.values()) {
 		actions.put(hand, action, 0.0);
 	    }
-	    // Default strategy for every hand is to shovel money in
-	    actions.put(hand, IPCheckedToActions.B3C, 1.0);
-	    actions.put(hand, IPBetIntoActions.R4, 1.0);
+	    // Default strategy for every hand is to check
+	    actions.put(hand, IPCheckedToActions.K, 1.0);
+	    actions.put(hand, IPBetIntoActions.C, 1.0);
 	}
         return new EPStrategy(actions);
     }

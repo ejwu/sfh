@@ -34,9 +34,8 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    for (OOPBetActions action : OOPBetActions.values()) {
 		actions.put(hand, action, 0.0);
 	    }
-	    // Default strategy for every hand is to shovel money in
-	    actions.put(hand, OOPBetActions.B3C, 0.5);
-	    actions.put(hand, OOPCheckActions.KR4, 0.5);
+	    // Default strategy for every hand is to check
+	    actions.put(hand, OOPCheckActions.KC, 1.0);
 	}
         return new UTGStrategy(actions);
     }

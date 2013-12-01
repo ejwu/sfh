@@ -125,42 +125,61 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
     @Override
     public double getValue(UTGStrategy utg, EPStrategy ep) {
+        return getValue(utg, ep, false);
+    }
+
+    // partial allows getting the value of a strategy for only the hands specified in the strategy,
+    // ignoring other hands possible in the game state
+    public double getValue(UTGStrategy utg, EPStrategy ep, boolean allowPartial) {
 	double value = 0.0;
+        double sum = 0.0;
+
 	for (Map.Entry<Long, Double> utgEntry : utgHands.entrySet()) {
 	    if (utgEntry.getValue() > 0.0) {
 		for (Map.Entry<Long, Double> epEntry : epHands.entrySet()) {
 		    if (epEntry.getValue() > 0.0) {
-                        if (DEBUG) {
-                            System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " vs " +
-                                Deck.cardMaskString(epEntry.getKey(), "") + "\n");
+                        if (!allowPartial ||
+                            (!utg.getActions(utgEntry.getKey()).isEmpty() &&
+                                !ep.getActions(epEntry.getKey()).isEmpty())) {
+                            if (DEBUG) {
+                                System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") +
+                                    " vs " + Deck.cardMaskString(epEntry.getKey(), "") + "\n");
+                            }
+                            // TODO: filter for hands that contain duplicate cards
+                            double handEv = eval(utg.getActions(utgEntry.getKey()),
+                                ep.getActions(epEntry.getKey()),
+                                getEV(utgEntry.getKey(), epEntry.getKey(), board,
+                                    potSizeBB),
+                                potSizeBB);
+                            value += utgEntry.getValue() * epEntry.getValue() * handEv;
+                            sum += utgEntry.getValue() * epEntry.getValue();
                         }
-			// TODO: filter for hands that contain duplicate cards
-			double handEv = eval(utg.getActions(utgEntry.getKey()),
-			    ep.getActions(epEntry.getKey()),
-			    getEV(utgEntry.getKey(), epEntry.getKey(), board,
-				potSizeBB, 1.0),
-			    potSizeBB,
-			    1.0); // River, bet 1 unit
-			value += utgEntry.getValue() * epEntry.getValue() * handEv;
-
-			/*
-			System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") + " " +
-					   utgEntry.getValue());
-			System.out.println(Deck.cardMaskString(epEntry.getKey(), "") + " " +
-					   epEntry.getValue());
-			System.out.println(handEv);
-			*/
-		    }
+                    }
 		}
 	    }
 	}
 
-	return value;
+        // If no partial strategies are allowed, sum should be 1.  Otherwise, sum should be the
+        // percentage of results reachable from a partial strategy;
+
+        if (!allowPartial && sum != 1.0) {
+            throw new IllegalStateException("Sum must be 1.0 for full strategies");
+        }
+
+        if (allowPartial && sum > 1.0) {
+            throw new IllegalStateException("Partial strategies cannot reach more than 100%");
+        }
+
+	return value / sum;
     }
 
     // TODO: This probably won't work on the flop and turn - maybe value of the game does
     // Return the EV for hand1 on the given board with the given potsize, independent of action
-    private double getEV(long hand1, long hand2, long board, double potSize, double betSize) {
+
+    // FIXME: river only
+
+    // Returns the percentage of the pot hand1 gets
+    private double getEV(long hand1, long hand2, long board, double potSize) {
         long h1l = hand1 | board;
         long h2l = hand2 | board;
 
@@ -173,7 +192,7 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
         if (rank1 > rank2) {
             return 1;
         } else if (rank2 > rank1) {
-            return -1;
+            return 0;
         }
         return 0.5;
     }
@@ -192,8 +211,7 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     private double eval(Map<ActionSequence, Double> utgStrategies,
 			Map<ActionSequence, Double> epStrategies,
 			double staticEV,
-			double potSize,
-			double betSize) {
+			double potSize) {
 	double value = 0.0;
 	// The value of a pair of strategies for UTG
 	double strategyPairValue = 0.0;
@@ -212,16 +230,16 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 			    strategyPairValue = staticEV * potSize;
 			    break;
 			case ONE_BET:
-			    strategyPairValue = staticEV * (potSize + 2);
+			    strategyPairValue = staticEV * (potSize + 2) - 1;
 			    break;
 			case TWO_BETS:
-			    strategyPairValue = staticEV * (potSize + 4);
+			    strategyPairValue = staticEV * (potSize + 4) - 2;
 			    break;
 			case THREE_BETS:
-			    strategyPairValue = staticEV * (potSize + 6);
+			    strategyPairValue = staticEV * (potSize + 6) - 3;
 			    break;
 			case FOUR_BETS:
-			    strategyPairValue = staticEV * (potSize + 8);
+			    strategyPairValue = staticEV * (potSize + 8) - 4;
 			    break;
 			case UTG_FOLD_ZERO:
 			    strategyPairValue = 0;

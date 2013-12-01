@@ -51,6 +51,10 @@ public abstract class AbstractUTG3Strategy<
         ActionSequence[] possibleActions, AbstractUTG3Strategy villain,
         Table<Long, ActionSequence, Double> bestFreqs, boolean isUTG) {
 
+        if (DEBUG) {
+            System.out.println("\n\n\nbest action for " + Deck.cardMaskString(hand));
+        }
+
         double bestValue = -100000000000.0d;
         ActionSequence bestAction = null;
 
@@ -66,7 +70,7 @@ public abstract class AbstractUTG3Strategy<
             if (isUTG) {
                 UTGStrategy pure = new UTGStrategy(tempFreqs);
                 EPStrategy ep = (EPStrategy) villain;
-                value = gs.getValue(pure, ep);
+                value = gs.getValue(pure, ep, true);
             } else {
                 // TODO: is this even sane?  do the UTG and EP strategies match properly?
                 // TODO: this is a hack to make checkSanity work, do something smarter
@@ -78,10 +82,11 @@ public abstract class AbstractUTG3Strategy<
                 EPStrategy pure = new EPStrategy(tempFreqs);
                 UTGStrategy utg = (UTGStrategy) villain;
                 // getValue returns UTG's EV, so we reverse it
-                value = -1 * gs.getValue(utg, pure);
+                value = -1 * gs.getValue(utg, pure, true);
             }
             if (DEBUG) {
-                System.out.println("Pure " + action.name() + ": " + value);
+                System.out.println("\nPure " + action.name() + " for " + Deck.cardMaskString(hand) +
+                    ": " + value);
             }
             valueList.put(action, value);
             if (value > bestValue) {
