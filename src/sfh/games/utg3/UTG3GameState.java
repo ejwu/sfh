@@ -162,11 +162,11 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
         // If no partial strategies are allowed, sum should be 1.  Otherwise, sum should be the
         // percentage of results reachable from a partial strategy;
 
-        if (!allowPartial && sum != 1.0) {
-            throw new IllegalStateException("Sum must be 1.0 for full strategies");
+        if (!allowPartial && Math.abs(sum - 1.0) > 0.0000000001) {
+            throw new IllegalStateException("Sum must be 1.0 for full strategies, is " + sum);
         }
 
-        if (allowPartial && sum > 1.0) {
+        if (allowPartial && sum > .9999999999) {
             throw new IllegalStateException("Partial strategies cannot reach more than 100%");
         }
 

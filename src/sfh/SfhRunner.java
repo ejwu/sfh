@@ -18,17 +18,20 @@ public class SfhRunner {
         StateTableEvaluator.initialize();
 
 	Map<Long, Double> utgFrequencies = Maps.newHashMap();
-	utgFrequencies.put(Deck.parseCardMask("AcAh"), 0.5);
-        utgFrequencies.put(Deck.parseCardMask("KcKh"), 0.5);
+	utgFrequencies.put(Deck.parseCardMask("AcAh"), 0.3333);
+        utgFrequencies.put(Deck.parseCardMask("KcKh"), 0.3333);
+        utgFrequencies.put(Deck.parseCardMask("QcQh"), 0.3334);
 
 	Map<Long, Double> epFrequencies = Maps.newHashMap();
-	epFrequencies.put(Deck.parseCardMask("AsAd"), 0.5);
-        epFrequencies.put(Deck.parseCardMask("KsKd"), 0.5);
+	epFrequencies.put(Deck.parseCardMask("AsAd"), 0.3333);
+        epFrequencies.put(Deck.parseCardMask("KsKd"), 0.3333);
+        epFrequencies.put(Deck.parseCardMask("QsQd"), 0.3334);
+
 	UTGStrategy utg = UTGStrategy.create(utgFrequencies);
 	EPStrategy ep = EPStrategy.create(epFrequencies);
 
 	GameState<UTGStrategy, EPStrategy> gs =
-	    new UTG3GameState(6.5, Deck.parseCardMask("QhTc5h2c9d"), utgFrequencies, epFrequencies);
+	    new UTG3GameState(6.5, Deck.parseCardMask("JhTc5h2c9d"), utgFrequencies, epFrequencies);
 	System.out.println("Game state:\n" + gs);
 
 	play(100, gs, utg, ep);
