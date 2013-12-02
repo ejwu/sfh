@@ -188,12 +188,12 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
         int rank1 = StateTableEvaluator.getRank(h1);
         int rank2 = StateTableEvaluator.getRank(h2);
-
         if (rank1 > rank2) {
             return 1;
         } else if (rank2 > rank1) {
             return 0;
         }
+
         return 0.5;
     }
 
