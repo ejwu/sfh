@@ -46,6 +46,22 @@ public abstract class AbstractUTG3Strategy<
     	return actions.row(hand);
     }
 
+    public static Map<Long, Double> createEqualFrequencies(String... hands) {
+        Map<Long, Double> frequencies = Maps.newHashMap();
+        for (String hand : hands) {
+            if (Long.bitCount(Deck.parseCardMask(hand)) != 2) {
+                throw new IllegalArgumentException(hand + " is not a valid hand");
+            }
+            if (frequencies.containsKey(Deck.parseCardMask(hand))) {
+                throw new IllegalArgumentException(hand + " is repeated");
+            }
+
+            frequencies.put(Deck.parseCardMask(hand), 1.0 / hands.length);
+        }
+
+        return frequencies;
+    }
+
     // update bestFreqs
     protected void updateBestActionForHand(UTG3GameState gs, long hand, 
         ActionSequence[] possibleActions, AbstractUTG3Strategy villain,

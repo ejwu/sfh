@@ -17,17 +17,18 @@ public class SfhRunner {
     public static void main(String[] args) {
         StateTableEvaluator.initialize();
 
-	Map<Long, Double> utgFrequencies = Maps.newHashMap();
-	utgFrequencies.put(Deck.parseCardMask("AcAh"), 0.3333);
-        utgFrequencies.put(Deck.parseCardMask("KcKh"), 0.3333);
-        utgFrequencies.put(Deck.parseCardMask("QcQh"), 0.3334);
+	Map<Long, Double> utgFrequencies = UTGStrategy.createEqualFrequencies(
+            "AsAd",
+            "KsKd",
+            "QsQd"
+        );
+        UTGStrategy utg = UTGStrategy.create(utgFrequencies);
 
-	Map<Long, Double> epFrequencies = Maps.newHashMap();
-	epFrequencies.put(Deck.parseCardMask("AsAd"), 0.3333);
-        epFrequencies.put(Deck.parseCardMask("KsKd"), 0.3333);
-        epFrequencies.put(Deck.parseCardMask("QsQd"), 0.3334);
-
-	UTGStrategy utg = UTGStrategy.create(utgFrequencies);
+        Map<Long, Double> epFrequencies = EPStrategy.createEqualFrequencies(
+            "AhAc",
+            "KhKc",
+            "QhQc"
+        );
 	EPStrategy ep = EPStrategy.create(epFrequencies);
 
 	GameState<UTGStrategy, EPStrategy> gs =
@@ -35,7 +36,6 @@ public class SfhRunner {
 	System.out.println("Game state:\n" + gs);
 
 	play(100, gs, utg, ep);
-
     }
 
     public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
