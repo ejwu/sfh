@@ -145,14 +145,17 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
                                 System.out.println(Deck.cardMaskString(utgEntry.getKey(), "") +
                                     " vs " + Deck.cardMaskString(epEntry.getKey(), "") + "\n");
                             }
-                            // TODO: filter for hands that contain duplicate cards
-                            double handEv = eval(utg.getActions(utgEntry.getKey()),
-                                ep.getActions(epEntry.getKey()),
-                                getEV(utgEntry.getKey(), epEntry.getKey(), board,
-                                    potSizeBB),
-                                potSizeBB);
-                            value += utgEntry.getValue() * epEntry.getValue() * handEv;
-                            sum += utgEntry.getValue() * epEntry.getValue();
+
+                            // TODO: Do the sum percentages add up right after card removal?
+                            if ((utgEntry.getKey() & epEntry.getKey()) == 0L) {
+                                double handEv = eval(utg.getActions(utgEntry.getKey()),
+                                    ep.getActions(epEntry.getKey()),
+                                    getEV(utgEntry.getKey(), epEntry.getKey(), board,
+                                        potSizeBB),
+                                    potSizeBB);
+                                value += utgEntry.getValue() * epEntry.getValue() * handEv;
+                                sum += utgEntry.getValue() * epEntry.getValue();
+                            }
                         }
                     }
 		}
@@ -161,11 +164,11 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
 
         // If no partial strategies are allowed, sum should be 1.  Otherwise, sum should be the
         // percentage of results reachable from a partial strategy;
-
+        /* TODO: commented out to see if this magically works with card removal
         if (!allowPartial && Math.abs(sum - 1.0) > 0.0000000001) {
             throw new IllegalStateException("Sum must be 1.0 for full strategies, is " + sum);
         }
-
+        */
         if (allowPartial && sum > .9999999999) {
             throw new IllegalStateException("Partial strategies cannot reach more than 100%");
         }

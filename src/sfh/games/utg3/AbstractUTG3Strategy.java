@@ -12,7 +12,11 @@ import com.google.common.collect.*;
 import org.pokersource.game.*;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 // Game state, hero, villain
 public abstract class AbstractUTG3Strategy<
@@ -47,7 +51,7 @@ public abstract class AbstractUTG3Strategy<
     }
 
     public static Map<Long, Double> createEqualFrequencies(String... hands) {
-        Map<Long, Double> frequencies = Maps.newHashMap();
+        Map<Long, Double> frequencies = Maps.newLinkedHashMap();
         for (String hand : hands) {
             if (Long.bitCount(Deck.parseCardMask(hand)) != 2) {
                 throw new IllegalArgumentException(hand + " is not a valid hand");
@@ -159,7 +163,17 @@ public abstract class AbstractUTG3Strategy<
     @Override
     public String toString() {
 	StringBuilder sb = new StringBuilder();
-	for (Long hand : actions.rowKeySet()) {
+
+        // TODO: ugly hack to pretty print sort of in order.  Ordering AKQJT correctly would be nice
+        SortedSet<Long> sortedHands = Sets.<Long>newTreeSet(
+            new Comparator<Long>() {
+                public int compare(Long first, Long second) {
+                    return Deck.cardMaskString(first).compareTo(Deck.cardMaskString(second)) * -1;
+                }
+            });
+        sortedHands.addAll(actions.rowKeySet());
+
+	for (Long hand : sortedHands) {
 	    sb.append(Deck.cardMaskString(hand, "") + ": ");
 	    Map<ActionSequence, Double> actionFreqs = actions.row(hand);
 	    boolean printed = false;
