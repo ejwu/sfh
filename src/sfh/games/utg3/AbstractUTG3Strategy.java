@@ -173,57 +173,79 @@ public abstract class AbstractUTG3Strategy<
             });
         sortedHands.addAll(actions.rowKeySet());
 
+        // We assume here that insertion is in sorted order, so the existence of a key in this map
+        // means that it's the first hand to have that strategy.  For the other hands with the
+        // same strategy, refer to equalHands
+        Map<Long, String> handToStrategyMap = Maps.newHashMap();
+        // Every strategy, with every hand that has the same strategy, in order
+        Multimap<String, Long> equalHands = ArrayListMultimap.create(); 
+
 	for (Long hand : sortedHands) {
-	    sb.append(Deck.cardMaskString(hand, "") + ": ");
+            StringBuilder strategy = new StringBuilder();
 	    Map<ActionSequence, Double> actionFreqs = actions.row(hand);
 	    boolean printed = false;
 	    for (ActionSequence action : OOPCheckActions.values()) {
 		if (actionFreqs.containsKey(action)) {
-		    sb.append(String.format("%3s %4.2f  ",
-					    action.name(),
-					    actions.row(hand).get(action)));
+		    strategy.append(String.format("%4s %4.2f  ",
+                            action.name(),
+                            actions.row(hand).get(action)));
 		    printed = true;
 		}
 	    }
 	    if (printed) {
-		sb.append("\n      ");
+		strategy.append("\n");
                 printed = false;
 	    }
 
 	    for (ActionSequence action : OOPBetActions.values()) {
 		if (actionFreqs.containsKey(action)) {
-		    sb.append(String.format("%3s %4.2f  ",
-					    action.name(),
-					    actions.row(hand).get(action)));
+		    strategy.append(String.format("%4s %4.2f  ",
+                            action.name(),
+                            actions.row(hand).get(action)));
 		}
 	    }
 
 	    for (ActionSequence action : IPCheckedToActions.values()) {
 		if (actionFreqs.containsKey(action)) {
-		    sb.append(String.format("%3s %4.2f  ",
-					    action.name(),
-					    actions.row(hand).get(action)));
+		    strategy.append(String.format("%4s %4.2f  ",
+                            action.name(),
+                            actions.row(hand).get(action)));
 		    printed = true;
 		}
 	    }
 	    if (printed) {
-		sb.append("\n      ");
+		strategy.append("\n");
 		printed = false;
 	    }
 
 	    for (ActionSequence action : IPBetIntoActions.values()) {
 		if (actionFreqs.containsKey(action)) {
-		    sb.append(String.format("%3s %4.2f  ",
-					    action.name(),
-					    actions.row(hand).get(action)));
+		    strategy.append(String.format("%4s %4.2f  ",
+                            action.name(),
+                            actions.row(hand).get(action)));
 		}
 	    }
 	    if (printed) {
-		sb.append("\n");
+		strategy.append("\n");
 		printed = false;
 	    }
-	    sb.append("\n\n");
+	    strategy.append("\n\n");
+            if (!equalHands.containsKey(strategy.toString())) {
+                handToStrategyMap.put(hand, strategy.toString());
+            }
+            equalHands.put(strategy.toString(), hand);
 	}
+
+        for (Long hand : handToStrategyMap.keySet()) {
+            String handStrategy = handToStrategyMap.get(hand);
+            for (Long similarHand : equalHands.get(handStrategy)) {
+                sb.append(Deck.cardMaskString(similarHand, "") + " ");
+            }
+            sb.append("\n");
+            sb.append(handStrategy);
+            sb.append("\n");
+        }
+
 	return sb.toString();
     }
 

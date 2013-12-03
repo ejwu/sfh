@@ -52,7 +52,7 @@ public class SfhRunner {
 	    new UTG3GameState(13.25, Deck.parseCardMask("8c6d2hJs2s"), utgFrequencies, epFrequencies);
 	System.out.println("Game state:\n" + gs);
 
-	play(0, gs, utg, ep);
+	play(10, gs, utg, ep);
     }
 
     public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
