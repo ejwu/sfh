@@ -1,11 +1,11 @@
-package sfh.games.utg3;
+package sfh.games.hulhe;
 
 import sfh.GameState;
-import sfh.games.utg3.AbstractUTG3Strategy.ActionSequence;
-import sfh.games.utg3.EPStrategy.IPBetIntoActions;
-import sfh.games.utg3.EPStrategy.IPCheckedToActions;
-import sfh.games.utg3.UTGStrategy.OOPBetActions;
-import sfh.games.utg3.UTGStrategy.OOPCheckActions;
+import sfh.games.hulhe.AbstractHulheStrategy.ActionSequence;
+import sfh.games.hulhe.IpStrategy.IPBetIntoActions;
+import sfh.games.hulhe.IpStrategy.IPCheckedToActions;
+import sfh.games.hulhe.OopStrategy.OOPBetActions;
+import sfh.games.hulhe.OopStrategy.OOPCheckActions;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
@@ -18,7 +18,7 @@ import pokerai.game.eval.spears2p2.StateTableEvaluator;
 
 import java.util.*;
 
-public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
+public class HulheGameState implements GameState<OopStrategy, IpStrategy> {
 
     public static final boolean DEBUG = false;
 
@@ -113,7 +113,7 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     private Map<Long, Double> utgHands = Maps.newHashMap();
     private Map<Long, Double> epHands = Maps.newHashMap();
 
-    public UTG3GameState(double potSizeBB, long board,
+    public HulheGameState(double potSizeBB, long board,
 	Map<Long, Double> utgHands, Map<Long, Double> epHands) {
 	
 	this.potSizeBB = potSizeBB;
@@ -124,13 +124,13 @@ public class UTG3GameState implements GameState<UTGStrategy, EPStrategy> {
     }
 
     @Override
-    public double getValue(UTGStrategy utg, EPStrategy ep) {
+    public double getValue(OopStrategy utg, IpStrategy ep) {
         return getValue(utg, ep, false);
     }
 
     // partial allows getting the value of a strategy for only the hands specified in the strategy,
     // ignoring other hands possible in the game state
-    public double getValue(UTGStrategy utg, EPStrategy ep, boolean allowPartial) {
+    public double getValue(OopStrategy utg, IpStrategy ep, boolean allowPartial) {
 	double value = 0.0;
         double sum = 0.0;
 

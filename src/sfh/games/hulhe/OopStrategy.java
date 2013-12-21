@@ -1,8 +1,8 @@
-package sfh.games.utg3;
+package sfh.games.hulhe;
 
 import sfh.Strategy;
-import sfh.games.utg3.AbstractUTG3Strategy.ActionSequence;
-import static sfh.games.utg3.UTG3GameState.DEBUG;
+import sfh.games.hulhe.AbstractHulheStrategy.ActionSequence;
+import static sfh.games.hulhe.HulheGameState.DEBUG;
 
 import com.google.common.collect.*;
 
@@ -10,7 +10,7 @@ import org.pokersource.game.*;
 
 import java.util.Map;
 
-public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy, EPStrategy> {
+public class OopStrategy extends AbstractHulheStrategy<HulheGameState, OopStrategy, IpStrategy> {
 
     // All possible actions when out of position on any street
     public enum OOPCheckActions implements ActionSequence {
@@ -21,11 +21,11 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	BF, BC, B3F, B3C // bet first
     }
 
-    UTGStrategy(Table<Long, ActionSequence, Double> actions) {
+    OopStrategy(Table<Long, ActionSequence, Double> actions) {
         super(actions);
     }
 
-    public static UTGStrategy create(Map<Long, Double> hands) {
+    public static OopStrategy create(Map<Long, Double> hands) {
         Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
 	for (Long hand : hands.keySet()) {
 	    for (OOPCheckActions action : OOPCheckActions.values()) {
@@ -37,11 +37,11 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
 	    // Default strategy for every hand is to check
 	    actions.put(hand, OOPCheckActions.KC, 1.0);
 	}
-        return new UTGStrategy(actions);
+        return new OopStrategy(actions);
     }
 
     @Override
-    public UTGStrategy getBestResponse(UTG3GameState gs, EPStrategy ep) {
+    public OopStrategy getBestResponse(HulheGameState gs, IpStrategy ep) {
 	Table<Long, ActionSequence, Double> bestFreqs = HashBasedTable.create();
 
 	for (Long hand : actions.rowKeySet()) {
@@ -54,7 +54,7 @@ public class UTGStrategy extends AbstractUTG3Strategy<UTG3GameState, UTGStrategy
                     ActionSequence.class),
                 ep, bestFreqs, true);
 	}
-	return new UTGStrategy(normalized(bestFreqs, ObjectArrays.concat(
+	return new OopStrategy(normalized(bestFreqs, ObjectArrays.concat(
                     OOPBetActions.values(), OOPCheckActions.values(), ActionSequence.class)));
     }
 

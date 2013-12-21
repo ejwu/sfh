@@ -1,11 +1,11 @@
-package sfh.games.utg3;
+package sfh.games.hulhe;
 
 import sfh.Strategy;
-import sfh.games.utg3.EPStrategy.IPBetIntoActions;
-import sfh.games.utg3.EPStrategy.IPCheckedToActions;
-import sfh.games.utg3.UTGStrategy.OOPBetActions;
-import sfh.games.utg3.UTGStrategy.OOPCheckActions;
-import static sfh.games.utg3.UTG3GameState.DEBUG;
+import sfh.games.hulhe.IpStrategy.IPBetIntoActions;
+import sfh.games.hulhe.IpStrategy.IPCheckedToActions;
+import sfh.games.hulhe.OopStrategy.OOPBetActions;
+import sfh.games.hulhe.OopStrategy.OOPCheckActions;
+import static sfh.games.hulhe.HulheGameState.DEBUG;
 
 import com.google.common.collect.*;
 
@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.SortedSet;
 
 // Game state, hero, villain
-public abstract class AbstractUTG3Strategy<
-    GS, H extends AbstractUTG3Strategy, V extends AbstractUTG3Strategy>
+public abstract class AbstractHulheStrategy<
+    GS, H extends AbstractHulheStrategy, V extends AbstractHulheStrategy>
     implements Strategy<GS, H, V> {
     
     // A representation for all possible actions for a given hand
@@ -37,7 +37,7 @@ public abstract class AbstractUTG3Strategy<
     // should sum to 1.
     protected Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
 
-    protected AbstractUTG3Strategy(Table<Long, ActionSequence, Double> actions) {
+    protected AbstractHulheStrategy(Table<Long, ActionSequence, Double> actions) {
         this.actions.putAll(actions);
         checkSanity();
     }
@@ -67,9 +67,9 @@ public abstract class AbstractUTG3Strategy<
     }
 
     // update bestFreqs
-    protected void updateBestActionForHand(UTG3GameState gs, long hand, 
-        ActionSequence[] possibleActions, AbstractUTG3Strategy villain,
-        Table<Long, ActionSequence, Double> bestFreqs, boolean isUTG) {
+    protected void updateBestActionForHand(HulheGameState gs, long hand, 
+        ActionSequence[] possibleActions, AbstractHulheStrategy villain,
+        Table<Long, ActionSequence, Double> bestFreqs, boolean isOop) {
 
         if (DEBUG) {
             System.out.println("\n\n\nbest action for " + Deck.cardMaskString(hand));
@@ -87,9 +87,9 @@ public abstract class AbstractUTG3Strategy<
             tempFreqs.put(hand, action, 1.0);
 
             Double value = null;
-            if (isUTG) {
-                UTGStrategy pure = new UTGStrategy(tempFreqs);
-                EPStrategy ep = (EPStrategy) villain;
+            if (isOop) {
+                OopStrategy pure = new OopStrategy(tempFreqs);
+                IpStrategy ep = (IpStrategy) villain;
                 value = gs.getValue(pure, ep, true);
             } else {
                 // TODO: is this even sane?  do the UTG and EP strategies match properly?
@@ -99,8 +99,8 @@ public abstract class AbstractUTG3Strategy<
                 } else {
                     tempFreqs.put(hand, IPBetIntoActions.C, 1.0);
                 }
-                EPStrategy pure = new EPStrategy(tempFreqs);
-                UTGStrategy utg = (UTGStrategy) villain;
+                IpStrategy pure = new IpStrategy(tempFreqs);
+                OopStrategy utg = (OopStrategy) villain;
                 // getValue returns UTG's EV, so we reverse it
                 value = -1 * gs.getValue(utg, pure, true);
             }

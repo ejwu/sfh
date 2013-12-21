@@ -1,7 +1,7 @@
-package sfh.games.utg3;
+package sfh.games.hulhe;
 
 import sfh.Strategy;
-import static sfh.games.utg3.UTG3GameState.DEBUG;
+import static sfh.games.hulhe.HulheGameState.DEBUG;
 
 import com.google.common.collect.*;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.pokersource.game.*;
 
-public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, UTGStrategy> {
+public class IpStrategy extends AbstractHulheStrategy<HulheGameState, IpStrategy, OopStrategy> {
 
     // All possible strategies when in position
     public enum IPCheckedToActions implements ActionSequence {
@@ -20,11 +20,11 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
 	F, C, RF, RC, R4
     }			     
 
-    EPStrategy(Table<Long, ActionSequence, Double> actions) {
+    IpStrategy(Table<Long, ActionSequence, Double> actions) {
         super(actions);
     }
 
-    public static EPStrategy create(Map<Long, Double> hands) {
+    public static IpStrategy create(Map<Long, Double> hands) {
         Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
 
 	for (Long hand : hands.keySet()) {
@@ -38,11 +38,11 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
 	    actions.put(hand, IPCheckedToActions.K, 1.0);
 	    actions.put(hand, IPBetIntoActions.C, 1.0);
 	}
-        return new EPStrategy(actions);
+        return new IpStrategy(actions);
     }
 
     @Override
-    public EPStrategy getBestResponse(UTG3GameState gs, UTGStrategy utg) {
+    public IpStrategy getBestResponse(HulheGameState gs, OopStrategy utg) {
 	Table<Long, ActionSequence, Double> bestBetFreqs = HashBasedTable.create();
 	Table<Long, ActionSequence, Double> bestCheckFreqs = HashBasedTable.create();
         
@@ -58,7 +58,7 @@ public class EPStrategy extends AbstractUTG3Strategy<UTG3GameState, EPStrategy, 
         bestBetFreqs = normalized(bestBetFreqs, IPBetIntoActions.values());
         bestCheckFreqs = normalized(bestCheckFreqs, IPCheckedToActions.values());
         bestBetFreqs.putAll(bestCheckFreqs);
-	return new EPStrategy(bestBetFreqs);
+	return new IpStrategy(bestBetFreqs);
     }
 
     @Override
