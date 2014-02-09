@@ -284,7 +284,7 @@ public abstract class AbstractHulheStrategy<
 
     /**
      * Check that all actions within each action set have frequencies adding up to 1.  For the 
-     * UTG player, the action set consists of all actions.  For the EP player, there are separate
+     * OOP player, the action set consists of all actions.  For the IP player, there are separate
      * action sets depending on whether he's facing a bet or a check.
      */
     protected void checkSanity(ActionSequence[]... actionSets) {
