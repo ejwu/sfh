@@ -58,12 +58,14 @@ public class RoshamboStrategy implements Strategy<RoshamboGameState, RoshamboStr
     }
     
     @Override
-    public void mergeFrom(RoshamboStrategy other, double epsilon) {
+    public double mergeFrom(RoshamboStrategy other, double epsilon) {
         for (int i = 0; i < frequencies.length; i++) {
             double diff = frequencies[i] - other.frequencies[i];
             frequencies[i] -= (diff * epsilon);
         }
         normalize(frequencies);
+        // not a real value
+        return 0.0;
     }
     
     // hack, make it add to 1 properly

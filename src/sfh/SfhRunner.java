@@ -1,16 +1,16 @@
 package sfh;
 
-import sfh.games.hulhe.IpStrategy;
-import sfh.games.hulhe.HulheGameState;
-import sfh.games.hulhe.OopStrategy;
+import java.util.List;
+import java.util.Map;
 
-import com.google.common.collect.Maps;
-
-import org.pokersource.game.*;
+import org.pokersource.game.Deck;
 
 import pokerai.game.eval.spears2p2.StateTableEvaluator;
+import sfh.games.hulhe.HulheGameState;
+import sfh.games.hulhe.IpStrategy;
+import sfh.games.hulhe.OopStrategy;
 
-import java.util.Map;
+import com.google.common.collect.Lists;
 
 public class SfhRunner {
 
@@ -62,10 +62,10 @@ public class SfhRunner {
 		IpStrategy ip = IpStrategy.create(ipFrequencies);
 
 		GameState<OopStrategy, IpStrategy> gs =
-				new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
+			new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
 		System.out.println("Game state:\n" + gs);
 
-		play(1000, gs, oop, ip);
+		play(100, gs, oop, ip);
 	}
 
 	public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
@@ -73,6 +73,11 @@ public class SfhRunner {
 		System.out.println("Original IP strategy:\n\n" + strategy2);
 		System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
 
+		List<Double> oopDiff = Lists.newArrayList();
+		List<Double> ipDiff = Lists.newArrayList();
+		
+		long startTime = System.currentTimeMillis();
+		
 		double epsilon;
 		for (int i = 0; i < iterations; i++) {
 			// just taking random shots in the dark at some function that makes things converge quickly
@@ -82,15 +87,14 @@ public class SfhRunner {
 			
 			epsilon = 0.1;
 			
-//			epsilon = 10.0 / (iterations + 10);
-			strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon);
+			//epsilon = 10.0 / (iterations + 10);
+			oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
 			System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
 			System.out.println("EV: " + gs.getValue(strategy1, strategy2));
-
-			strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon);
+			
+			ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
 			System.out.println("\n--------------------\n#" + i + " IP strategy:\n\n" + strategy2);
 			System.out.println("EV: " + gs.getValue(strategy1, strategy2));
-
 		}
 
 		System.out.println("\n-----------------------------\nFinal strategies:\n");
@@ -99,6 +103,13 @@ public class SfhRunner {
 		System.out.println("IP");
 		System.out.println(strategy2);
 		System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
+
+		System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
+
+		System.out.println(oopDiff);
+		System.out.println(ipDiff);
+
+		
 	}
 
 }

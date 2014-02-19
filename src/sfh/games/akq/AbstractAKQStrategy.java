@@ -19,11 +19,13 @@ public abstract class AbstractAKQStrategy<GS, H extends AbstractAKQStrategy, V e
     }
        
     @Override
-    public void mergeFrom(H other, double epsilon) {
+    public double mergeFrom(H other, double epsilon) {
         for (int i : CARDS) {
             double diff = frequencies[i] - other.getFrequency(i);
             frequencies[i] -= diff * epsilon;
         }
+        // not an actual value
+        return 0.0;
     }
 
 }

@@ -1,13 +1,16 @@
 package sfh.games.hulhe;
 
-import sfh.Strategy;
 import static sfh.games.hulhe.HulheGameState.DEBUG;
 
-import com.google.common.collect.*;
-
 import java.util.Map;
+import java.util.Set;
 
-import org.pokersource.game.*;
+import org.pokersource.game.Deck;
+
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ObjectArrays;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
 
 public class IpStrategy extends AbstractHulheStrategy<HulheGameState, IpStrategy, OopStrategy> {
 
@@ -71,4 +74,9 @@ public class IpStrategy extends AbstractHulheStrategy<HulheGameState, IpStrategy
         checkSanity(IPBetIntoActions.values(), IPCheckedToActions.values());
     }
 
+    @Override
+    Set<ActionSequence> getValidActions() {
+    	return Sets.newHashSet(ObjectArrays.concat(IPBetIntoActions.values(), IPCheckedToActions.values(), ActionSequence.class));
+    }
+    
 }
