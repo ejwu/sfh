@@ -83,9 +83,9 @@ public class SfhRunner {
 			// just taking random shots in the dark at some function that makes things converge quickly
 
 			// Doesn't converge very fast
-			// epsilon = 1.0 / (iterations + 1);
+			 epsilon = 1.0 / (iterations + 1);
 			
-			epsilon = 0.1;
+			//epsilon = 0.1;
 			
 			//epsilon = 10.0 / (iterations + 10);
 			oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
@@ -106,10 +106,28 @@ public class SfhRunner {
 
 		System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
 
-		System.out.println(oopDiff);
-		System.out.println(ipDiff);
+		System.out.println("OOP");
+		prettyPrintDiffs(oopDiff);
+		System.out.println("IP");
+		prettyPrintDiffs(ipDiff);
 
 		
 	}
 
+	// print diffs in groups of 10
+	private static void prettyPrintDiffs(List<Double> diffs) {
+		StringBuilder sb = new StringBuilder();
+		int count = 0;
+		for (Double diff : diffs) {
+			sb.append(diff);
+			sb.append(" ");
+			count++;
+			if (count % 10 == 0) {
+				count = 0;
+				System.out.println(sb);
+				sb = new StringBuilder();
+			}
+		}
+	}
+	
 }
