@@ -65,7 +65,7 @@ public class SfhRunner {
 			new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
 		System.out.println("Game state:\n" + gs);
 
-		play(100, gs, oop, ip);
+		play(1000, gs, oop, ip);
 	}
 
 	public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
@@ -75,6 +75,7 @@ public class SfhRunner {
 
 		List<Double> oopDiff = Lists.newArrayList();
 		List<Double> ipDiff = Lists.newArrayList();
+		List<Double> oopValue = Lists.newArrayList();
 		
 		long startTime = System.currentTimeMillis();
 		
@@ -87,14 +88,17 @@ public class SfhRunner {
 			
 			//epsilon = 0.1;
 			
-			//epsilon = 10.0 / (iterations + 10);
+			epsilon = 5.0 / (iterations + 5);
+
 			oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
 			System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
 			System.out.println("EV: " + gs.getValue(strategy1, strategy2));
 			
 			ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
 			System.out.println("\n--------------------\n#" + i + " IP strategy:\n\n" + strategy2);
-			System.out.println("EV: " + gs.getValue(strategy1, strategy2));
+			double value = gs.getValue(strategy1, strategy2);
+			System.out.println("EV: " + value);
+			oopValue.add(value);
 		}
 
 		System.out.println("\n-----------------------------\nFinal strategies:\n");
@@ -106,14 +110,28 @@ public class SfhRunner {
 
 		System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
 
-		System.out.println("OOP");
-		prettyPrintDiffs(oopDiff);
-		System.out.println("IP");
-		prettyPrintDiffs(ipDiff);
-
-		
+//		prettyPrintDiffs(oopDiff);
+//		System.out.println("IP");
+//		prettyPrintDiffs(ipDiff);
+		printCsvForStupidGoogleDocs(oopDiff, "OOP");
+		System.out.println();
+		printCsvForStupidGoogleDocs(ipDiff, "IP");
+		System.out.println();
+		printCsvForStupidGoogleDocs(oopValue, "EV");
+		System.out.println();
 	}
 
+	private static void printCsvForStupidGoogleDocs(List<Double> diffs, String name) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(name);
+		sb.append(',');
+		for (Double diff : diffs) {
+			sb.append(diff);
+			sb.append(',');
+		}
+		System.out.println(sb);
+	}
+	
 	// print diffs in groups of 10
 	private static void prettyPrintDiffs(List<Double> diffs) {
 		StringBuilder sb = new StringBuilder();
