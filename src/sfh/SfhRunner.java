@@ -84,7 +84,7 @@ public class SfhRunner {
 			// just taking random shots in the dark at some function that makes things converge quickly
 
 			// Doesn't converge very fast
-			 epsilon = 1.0 / (iterations + 1);
+			// epsilon = 1.0 / (iterations + 1);
 			
 			//epsilon = 0.1;
 			
@@ -110,9 +110,6 @@ public class SfhRunner {
 
 		System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
 
-//		prettyPrintDiffs(oopDiff);
-//		System.out.println("IP");
-//		prettyPrintDiffs(ipDiff);
 		printCsvForStupidGoogleDocs(oopDiff, "OOP");
 		System.out.println();
 		printCsvForStupidGoogleDocs(ipDiff, "IP");
@@ -130,22 +127,6 @@ public class SfhRunner {
 			sb.append(',');
 		}
 		System.out.println(sb);
-	}
-	
-	// print diffs in groups of 10
-	private static void prettyPrintDiffs(List<Double> diffs) {
-		StringBuilder sb = new StringBuilder();
-		int count = 0;
-		for (Double diff : diffs) {
-			sb.append(diff);
-			sb.append(" ");
-			count++;
-			if (count % 10 == 0) {
-				count = 0;
-				System.out.println(sb);
-				sb = new StringBuilder();
-			}
-		}
 	}
 	
 }

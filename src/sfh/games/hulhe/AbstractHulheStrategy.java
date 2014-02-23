@@ -126,8 +126,21 @@ public abstract class AbstractHulheStrategy<
 		if (bestAction == null) {
 			throw new IllegalStateException("No action");
 		}
-		// TODO: Might be nice to mix between equivalent strategies.
-		bestFreqs.put(hand, bestAction, 1.0);
+		
+		
+		// Give every action with the highest EV equal weight
+		int numBestActions = 0;
+		List<ActionSequence> bestActions = Lists.newArrayList();
+		for (ActionSequence action : valueList.keySet()) {
+			if (valueList.get(action) == bestValue) {
+				numBestActions++;
+				bestActions.add(action);
+			}
+		}
+
+		for (ActionSequence action : bestActions) {
+			bestFreqs.put(hand, action, 1.0 / numBestActions);
+		}
 	}
 
 	@Override
