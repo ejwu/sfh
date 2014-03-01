@@ -61,14 +61,14 @@ public class SfhRunner {
 		OopStrategy oop = OopStrategy.create(oopFrequencies);
 		IpStrategy ip = IpStrategy.create(ipFrequencies);
 
-		GameState<OopStrategy, IpStrategy> gs =
+		HulheGameState gs =
 			new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
 		System.out.println("Game state:\n" + gs);
 
-		play(1000, gs, oop, ip);
+		play(10, gs, oop, ip);
 	}
 
-	public static void play(int iterations, GameState gs, Strategy strategy1, Strategy strategy2) {
+	public static <GS extends GameState<H,V>, H extends Strategy<GS,H,V>, V extends Strategy<GS,V,H>> void play(int iterations, GS gs, H strategy1, V strategy2) {
 		System.out.println("Original UTG strategy:\n\n" + strategy1);
 		System.out.println("Original IP strategy:\n\n" + strategy2);
 		System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
@@ -78,7 +78,7 @@ public class SfhRunner {
 		List<Double> oopValue = Lists.newArrayList();
 		
 		long startTime = System.currentTimeMillis();
-		
+
 		double epsilon;
 		for (int i = 0; i < iterations; i++) {
 			// just taking random shots in the dark at some function that makes things converge quickly
@@ -99,6 +99,8 @@ public class SfhRunner {
 			double value = gs.getValue(strategy1, strategy2);
 			System.out.println("EV: " + value);
 			oopValue.add(value);
+			long elapsed = (System.currentTimeMillis() - startTime);
+			System.out.println(" avg " + ((float)elapsed/(i+1)) + " mseconds/iter");
 		}
 
 		System.out.println("\n-----------------------------\nFinal strategies:\n");
