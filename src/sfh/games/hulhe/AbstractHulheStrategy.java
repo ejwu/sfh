@@ -50,7 +50,7 @@ public abstract class AbstractHulheStrategy<
 	/**
 	 * Return a map of each possible ActionSequence and its frequency for the given hand.
 	 */
-	protected Map<ActionSequence, Double> getActions(long hand) {
+	protected Map<ActionSequence, Double> getActions(Long hand) {
 		return actions.row(hand);
 	}
 
@@ -71,7 +71,7 @@ public abstract class AbstractHulheStrategy<
 	}
 
 	// update bestFreqs
-	protected void updateBestActionForHand(HulheGameState gs, long hand, 
+	protected void updateBestActionForHand(HulheGameState gs, Long hand, 
 			ActionSequence[] possibleActions, V villain,
 			Table<Long, ActionSequence, Double> bestFreqs, boolean isOop) {
 
@@ -148,7 +148,7 @@ public abstract class AbstractHulheStrategy<
 	public double mergeFrom(H other, double epsilon) {
 		Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
 		
-		for (long hand : actions.rowKeySet()) {
+		for (Long hand : actions.rowKeySet()) {
 			Map<ActionSequence, Double> actionFreqs = other.getActions(hand);
 			// First update everything that has a new frequency
 			for (ActionSequence otherAction : actionFreqs.keySet()) {
@@ -186,7 +186,7 @@ public abstract class AbstractHulheStrategy<
 	 */
 	private double difference(H other) {
 		double sumDeltas = 0.0;
-		for (long hand : actions.rowKeySet()) {
+		for (Long hand : actions.rowKeySet()) {
 			Map<ActionSequence, Double> otherActions = other.getActions(hand);
 			double delta = 0.0;
 			for (ActionSequence action : getValidActions()) {
@@ -311,7 +311,7 @@ public abstract class AbstractHulheStrategy<
 			Table<Long, ActionSequence, Double> freqs, ActionSequence[]... actionSets) {
 
 		Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
-		for (long hand : freqs.rowKeySet()) {
+		for (Long hand : freqs.rowKeySet()) {
 			for (ActionSequence[] actionSet : actionSets) {
 				double sum = 0.0d;
 				for (ActionSequence action : actionSet) {
@@ -341,7 +341,7 @@ public abstract class AbstractHulheStrategy<
 	 * action sets depending on whether he's facing a bet or a check.
 	 */
 	protected void checkSanity(ActionSequence[]... actionSets) {
-		for (long hand : actions.rowKeySet()) {
+		for (Long hand : actions.rowKeySet()) {
 			for (ActionSequence[] actionSet : actionSets) {
 				double sum = 0.0d;
 				for (ActionSequence action : actionSet) {
