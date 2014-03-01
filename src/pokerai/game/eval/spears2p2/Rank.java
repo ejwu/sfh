@@ -15,7 +15,14 @@ public enum Rank {
 	Ace		("A");
 	
 	private final String toString;
-
+	private final static Rank[] valuesByChar = new Rank[255];
+	static {
+		for (Rank r : Rank.values()) {
+			valuesByChar[(int)r.toString().toUpperCase().charAt(0)] = r;
+			valuesByChar[(int)r.toString().toLowerCase().charAt(0)] = r;
+		}
+		
+	}
 
 	private Rank(String toString) {
 		this.toString = toString;
@@ -26,10 +33,11 @@ public enum Rank {
 	}
 	
 	public static Rank parse(String s)  {
-		for (Rank r : Rank.values()) {
-			if(s.equalsIgnoreCase(r.toString)) return r;
+		Rank r = valuesByChar[(int)s.charAt(0)];
+		if (r == null) {
+			throw new RuntimeException("Unrecognized rank: " + s);
 		}
-		throw new RuntimeException("Unrecognized rank: " + s);
+		return r;
 	}
 	
 
