@@ -12,7 +12,7 @@ import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
-public class OopStrategy extends AbstractHulheStrategy<HulheGameState, OopStrategy, IpStrategy> {
+public class OopStrategy extends AbstractHulheStrategy<OopStrategy, IpStrategy> {
 
 	// All possible actions when out of position on any street
 	public enum OOPCheckActions implements ActionSequence {

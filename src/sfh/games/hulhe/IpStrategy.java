@@ -12,7 +12,7 @@ import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 
-public class IpStrategy extends AbstractHulheStrategy<HulheGameState, IpStrategy, OopStrategy> {
+public class IpStrategy extends AbstractHulheStrategy<IpStrategy, OopStrategy> {
 
     // All possible strategies when in position
     public enum IPCheckedToActions implements ActionSequence {

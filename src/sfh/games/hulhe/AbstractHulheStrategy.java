@@ -1,5 +1,6 @@
 package sfh.games.hulhe;
 
+import sfh.GameState;
 import sfh.Strategy;
 import sfh.games.hulhe.IpStrategy.IPBetIntoActions;
 import sfh.games.hulhe.IpStrategy.IPCheckedToActions;
@@ -21,8 +22,8 @@ import java.util.SortedSet;
 
 // Game state, hero, villain
 public abstract class AbstractHulheStrategy<
-	GS, H extends AbstractHulheStrategy, V extends AbstractHulheStrategy>
-	implements Strategy<GS, H, V> {
+	H extends AbstractHulheStrategy<?,?>, V extends AbstractHulheStrategy<?,?>>
+	implements Strategy<HulheGameState, H, V> {
 
 	// A representation for all possible actions for a given hand
 	public interface ActionSequence {

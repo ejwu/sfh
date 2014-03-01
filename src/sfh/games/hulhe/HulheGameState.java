@@ -18,7 +18,7 @@ import pokerai.game.eval.spears2p2.StateTableEvaluator;
 
 import java.util.*;
 
-public class HulheGameState implements GameState<OopStrategy, IpStrategy> {
+public class HulheGameState implements GameState<AbstractHulheStrategy<?, ?>, AbstractHulheStrategy<?, ?>> {
 
     public static final boolean DEBUG = false;
 
@@ -124,13 +124,13 @@ public class HulheGameState implements GameState<OopStrategy, IpStrategy> {
     }
 
     @Override
-    public double getValue(OopStrategy utg, IpStrategy ep) {
+    public double getValue(AbstractHulheStrategy<?, ?> utg, AbstractHulheStrategy<?, ?> ep) {
         return getValue(utg, ep, false);
     }
 
     // partial allows getting the value of a strategy for only the hands specified in the strategy,
     // ignoring other hands possible in the game state
-    public double getValue(OopStrategy utg, IpStrategy ep, boolean allowPartial) {
+    public double getValue(AbstractHulheStrategy<?, ?> utg, AbstractHulheStrategy<?, ?> ep, boolean allowPartial) {
 	double value = 0.0;
         double sum = 0.0;
 

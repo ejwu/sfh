@@ -68,7 +68,7 @@ public class SfhRunner {
 		play(10, gs, oop, ip);
 	}
 
-	public static <GS extends GameState<H,V>, H extends Strategy<GS,H,V>, V extends Strategy<GS,V,H>> void play(int iterations, GS gs, H strategy1, V strategy2) {
+	public static <GS extends GameState<? super H,? super V>, H extends Strategy<GS,H,V>, V extends Strategy<GS,V,H>> void play(int iterations, GS gs, H strategy1, V strategy2) {
 		System.out.println("Original UTG strategy:\n\n" + strategy1);
 		System.out.println("Original IP strategy:\n\n" + strategy2);
 		System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
