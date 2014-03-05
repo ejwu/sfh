@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.pokersource.game.Deck;
 
+import sfh.games.hulhe.IpStrategy.IPCheckedToActions;
+
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
@@ -60,6 +62,31 @@ public class OopStrategy extends AbstractHulheStrategy<OopStrategy, IpStrategy> 
 				OOPBetActions.values(), OOPCheckActions.values(), ActionSequence.class)));
 	}
 
+	@Override
+	String visualizeRange() {
+		StringBuilder sb = new StringBuilder();
+        sb.append("By action:\n");
+
+        appendActions(sb, "K*: ", 2, OOPCheckActions.values());
+        appendActions(sb, "  KF: ", 3, OOPCheckActions.KF);
+        appendActions(sb, "  KC: ", 3, OOPCheckActions.KC);
+        appendActions(sb, "  KR*:", 3, OOPCheckActions.KRF, OOPCheckActions.KRC, OOPCheckActions.KR4);
+        
+        appendActions(sb, "    KRF:", 4, OOPCheckActions.KRF);
+        appendActions(sb, "    KRC:", 4, OOPCheckActions.KRC);
+        appendActions(sb, "    KR4:", 4, OOPCheckActions.KR4);
+        
+        appendActions(sb, "B*: ", 2, OOPBetActions.values());
+        appendActions(sb, "  BF: ", 3, OOPBetActions.BF);
+        appendActions(sb, "  BC: ", 3, OOPBetActions.BC);
+        appendActions(sb, "  B3*:", 3, OOPBetActions.B3F, OOPBetActions.B3C);
+
+        appendActions(sb, "    B3F:", 4, OOPBetActions.B3F);
+        appendActions(sb, "    B3C:", 4, OOPBetActions.B3C);
+
+		return sb.toString();
+	}
+	
 	@Override
 	void normalize() {
 		this.actions = normalized(actions, ObjectArrays.concat(

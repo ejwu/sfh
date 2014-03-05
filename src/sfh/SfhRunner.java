@@ -40,7 +40,8 @@ public class SfhRunner {
 				"QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
 				"KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
 				"AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
-/*
+				
+				/*
 				"8h6h", "8s6s",
 				"8d7d", "8h7h", "8s7s",
 				"8d9d", "8h9h", "8s9s",
