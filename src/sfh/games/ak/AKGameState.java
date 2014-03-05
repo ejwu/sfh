@@ -30,6 +30,24 @@ public class AKGameState implements GameState<AKBettingStrategy, AKCallingStrate
         value += .25 * potSize * p1.bettingFrequency / 100.0 * (1 - p2.callingFrequency / 100.0);
         value += .25 * (potSize / 2) * p1.bettingFrequency / 100.0 * p2.callingFrequency / 100.0;
         value += .25 * (potSize / 2) * (1 - p1.bettingFrequency / 100.0);
+        
+        // Start with the no-bluff, no-snap value.
+        double x = potSize;
+        double v2 = (0.25) * (x/2.0 + x + 0 + x/2.0); // == x / 2, as there is no advantage to p1
+        // Adjust for bluffing and snapping
+        double p = p1.bettingFrequency / 100.0;
+        double q = p2.callingFrequency / 100.0;
+        // AA: No change
+        // AK: earn an extra bet when P2 calls
+        v2 += .25 * 1 * q;
+        // KA: lose a bet when bluffing
+        v2 += .25 * -1 * p;
+        // KK: win half the pot when folding out p2
+        v2 += .25 * p * (1-q) * x / 2.0;
+
+        if (Math.abs(v2 - value) > .00001) {
+            throw new RuntimeException("want " + v2 + " = " + value);
+        }
         return value;
     }
 

@@ -13,12 +13,12 @@ public class SfhAKGameRunner {
         // TODO Auto-generated method stub
 
         AKGameState gs = new AKGameState(8.0);
-        AKBettingStrategy bet = new AKBettingStrategy(50);
-        AKCallingStrategy call = new AKCallingStrategy(50);
+        AKBettingStrategy bet = new AKBettingStrategy(68);
+        AKCallingStrategy call = new AKCallingStrategy(75);
         System.out.println(bet + " " + call);
         System.out.println(gs.getValue(bet, call));
         for (int i = 0; i < 1000; i++) {
-            double epsilon = 1.0 / (i + 1);
+            double epsilon = 5.0 / (i + 5);
             bet.mergeFrom(bet.getBestResponse(gs, call), epsilon);
             System.out.println("new bet strat");
             System.out.println(bet + " " + call);
