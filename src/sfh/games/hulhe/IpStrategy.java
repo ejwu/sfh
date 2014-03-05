@@ -72,26 +72,26 @@ public class IpStrategy extends AbstractHulheStrategy<IpStrategy, OopStrategy> {
     String visualizeRange() {
         StringBuilder sb = new StringBuilder();
         sb.append("By action:\n");
-        
+
         sb.append("When checked to:\n");
 
         appendActions(sb, "K:  ", 2, IPCheckedToActions.K);
         appendActions(sb, "B*: ", 2, IPCheckedToActions.BF, IPCheckedToActions.BC, IPCheckedToActions.B3F,
             IPCheckedToActions.B3C);
-        
+
         appendActions(sb, "  BC: ", 3, IPCheckedToActions.BC);
         appendActions(sb, "  BF: ", 3, IPCheckedToActions.BF);
         appendActions(sb, "  B3*:", 3, IPCheckedToActions.B3F, IPCheckedToActions.B3C);
 
         appendActions(sb, "    B3F:", 4, IPCheckedToActions.B3F);
         appendActions(sb, "    B3C:", 4, IPCheckedToActions.B3C);
-        
+
         sb.append("When bet into:\n");
 
         appendActions(sb, "F:  ", 2, IPBetIntoActions.F);
         appendActions(sb, "C:  ", 2, IPBetIntoActions.C);
         appendActions(sb, "R*: ", 2, IPBetIntoActions.RF, IPBetIntoActions.RC, IPBetIntoActions.R4);
-        
+
         appendActions(sb, "  RF: ", 3, IPBetIntoActions.RF);
         appendActions(sb, "  RC: ", 3, IPBetIntoActions.RC);
         appendActions(sb, "  R4: ", 3, IPBetIntoActions.R4);

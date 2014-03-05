@@ -253,7 +253,7 @@ implements Strategy<HulheGameState, H, V> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("By hand:\n");
-        
+
         SortedSet<Long> sortedHands = Sets.<Long>newTreeSet(getHandComparator());
         sortedHands.addAll(actions.rowKeySet());
 
@@ -347,7 +347,7 @@ implements Strategy<HulheGameState, H, V> {
         }
         Multimap<Double, Long> freqToHandMap = TreeMultimap.create(Ordering.natural(), getHandComparator());
         double totalFreq = getTotalFreqAndPopulate(hands, freqToHandMap);
-        
+
         sb.append(prefix);
         appendFrequencies(sb, freqToHandMap, totalFreq, indent);
     }
@@ -361,7 +361,7 @@ implements Strategy<HulheGameState, H, V> {
             }
         }
     }
-    
+
     private double getTotalFreqAndPopulate(Map<Long, Double> handFrequencies, Multimap<Double, Long> freqToHandMap) {
         double totalFreq = 0.0;
         for (Long hand : handFrequencies.keySet()) {
@@ -371,9 +371,9 @@ implements Strategy<HulheGameState, H, V> {
         }
         return totalFreq;
     }
-    
+
     private void appendFrequencies(StringBuilder sb, Multimap<Double, Long> freqToHandMap, double totalFreq,
-            int indent) {
+        int indent) {
         boolean first = true;
         if (totalFreq > 0) {
             for (Double freq : freqToHandMap.keySet()) {
@@ -389,7 +389,7 @@ implements Strategy<HulheGameState, H, V> {
                 sb.append("\n");
             }
         } else {
-            
+
             sb.append("   None");
         }
         sb.append("\n");

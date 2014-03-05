@@ -14,16 +14,16 @@ import com.google.common.collect.Lists;
 
 public class SfhRunner {
 
-	public static void main(String[] args) {
-		StateTableEvaluator.initialize();
+    public static void main(String[] args) {
+        StateTableEvaluator.initialize();
 
-		Map<Long, Double> oopFrequencies = OopStrategy.createEqualFrequencies(
-				"JcJd", "JcJh", "JdJh",
-				"QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
-				"KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
-				"AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
+        Map<Long, Double> oopFrequencies = OopStrategy.createEqualFrequencies(
+            "JcJd", "JcJh", "JdJh",
+            "QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
+            "KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
+            "AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
 
-				/*
+            /*
 				"7c7d", "7c7h", "7c7s", "7d7h", "7d7s", "7h7s",
 				//            "8d8h", "8d8s", "8h8s",
 				"9c9d", "9c9h", "9c9s", "9d9h", "9d9s", "9h9s",
@@ -32,16 +32,16 @@ public class SfhRunner {
 				"QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
 				"KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
 				"AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
-*/
-				);
+             */
+            );
 
-		Map<Long, Double> ipFrequencies = IpStrategy.createEqualFrequencies(
-				"JcJd", "JcJh", "JdJh",
-				"QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
-				"KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
-				"AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
-				
-				/*
+        Map<Long, Double> ipFrequencies = IpStrategy.createEqualFrequencies(
+            "JcJd", "JcJh", "JdJh",
+            "QcQd", "QcQh", "QcQs", "QdQh", "QdQs", "QhQs",
+            "KcKd", "KcKh", "KcKs", "KdKh", "KdKs", "KhKs",
+            "AcAd", "AcAh", "AcAs", "AdAh", "AdAs", "AhAs"
+
+            /*
 				"8h6h", "8s6s",
 				"8d7d", "8h7h", "8s7s",
 				"8d9d", "8h9h", "8s9s",
@@ -56,80 +56,80 @@ public class SfhRunner {
 				"8d8h", "8d8s", "8h8s",
 				"6c6h", "6c6s", "6h6s"
 				//            "5c4c", "5d4d", "5h4h", "5s4s"
-*/
-				);
+             */
+            );
 
-		OopStrategy oop = OopStrategy.create(oopFrequencies);
-		IpStrategy ip = IpStrategy.create(ipFrequencies);
+        OopStrategy oop = OopStrategy.create(oopFrequencies);
+        IpStrategy ip = IpStrategy.create(ipFrequencies);
 
-		HulheGameState gs =
-			new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
-		System.out.println("Game state:\n" + gs);
+        HulheGameState gs =
+            new HulheGameState(10.0, Deck.parseCardMask("8c6d2hJs2s"), oopFrequencies, ipFrequencies);
+        System.out.println("Game state:\n" + gs);
 
-		play(10, gs, oop, ip);
-	}
+        play(10, gs, oop, ip);
+    }
 
-	public static <GS extends GameState<? super H,? super V>, H extends Strategy<GS,H,V>, V extends Strategy<GS,V,H>> void play(int iterations, GS gs, H strategy1, V strategy2) {
-		System.out.println("Original UTG strategy:\n\n" + strategy1);
-		System.out.println("Original IP strategy:\n\n" + strategy2);
-		System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
+    public static <GS extends GameState<? super H,? super V>, H extends Strategy<GS,H,V>, V extends Strategy<GS,V,H>> void play(int iterations, GS gs, H strategy1, V strategy2) {
+        System.out.println("Original UTG strategy:\n\n" + strategy1);
+        System.out.println("Original IP strategy:\n\n" + strategy2);
+        System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
 
-		List<Double> oopDiff = Lists.newArrayList();
-		List<Double> ipDiff = Lists.newArrayList();
-		List<Double> oopValue = Lists.newArrayList();
-		
-		long startTime = System.currentTimeMillis();
+        List<Double> oopDiff = Lists.newArrayList();
+        List<Double> ipDiff = Lists.newArrayList();
+        List<Double> oopValue = Lists.newArrayList();
 
-		double epsilon;
-		for (int i = 0; i < iterations; i++) {
-			// just taking random shots in the dark at some function that makes things converge quickly
+        long startTime = System.currentTimeMillis();
 
-			// Doesn't converge very fast
-			// epsilon = 1.0 / (iterations + 1);
-			
-			//epsilon = 0.1;
-			
-			epsilon = 5.0 / (iterations + 5);
+        double epsilon;
+        for (int i = 0; i < iterations; i++) {
+            // just taking random shots in the dark at some function that makes things converge quickly
 
-			oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
-			System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
-			System.out.println("EV: " + gs.getValue(strategy1, strategy2));
-			
-			ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
-			System.out.println("\n--------------------\n#" + i + " IP strategy:\n\n" + strategy2);
-			double value = gs.getValue(strategy1, strategy2);
-			System.out.println("EV: " + value);
-			oopValue.add(value);
-			long elapsed = (System.currentTimeMillis() - startTime);
-			System.out.println(" avg " + ((float)elapsed/(i+1)) + " mseconds/iter");
-		}
+            // Doesn't converge very fast
+            // epsilon = 1.0 / (iterations + 1);
 
-		System.out.println("\n-----------------------------\nFinal strategies:\n");
-		System.out.println("OOP:");
-		System.out.println(strategy1);
-		System.out.println("IP");
-		System.out.println(strategy2);
-		System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
+            //epsilon = 0.1;
 
-		System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
+            epsilon = 5.0 / (iterations + 5);
 
-		printCsvForStupidGoogleDocs(oopDiff, "OOP");
-		System.out.println();
-		printCsvForStupidGoogleDocs(ipDiff, "IP");
-		System.out.println();
-		printCsvForStupidGoogleDocs(oopValue, "EV");
-		System.out.println();
-	}
+            oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
+            System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
+            System.out.println("EV: " + gs.getValue(strategy1, strategy2));
 
-	private static void printCsvForStupidGoogleDocs(List<Double> diffs, String name) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(name);
-		sb.append(',');
-		for (Double diff : diffs) {
-			sb.append(diff);
-			sb.append(',');
-		}
-		System.out.println(sb);
-	}
-	
+            ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
+            System.out.println("\n--------------------\n#" + i + " IP strategy:\n\n" + strategy2);
+            double value = gs.getValue(strategy1, strategy2);
+            System.out.println("EV: " + value);
+            oopValue.add(value);
+            long elapsed = (System.currentTimeMillis() - startTime);
+            System.out.println(" avg " + ((float)elapsed/(i+1)) + " mseconds/iter");
+        }
+
+        System.out.println("\n-----------------------------\nFinal strategies:\n");
+        System.out.println("OOP:");
+        System.out.println(strategy1);
+        System.out.println("IP");
+        System.out.println(strategy2);
+        System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
+
+        System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
+
+        printCsvForStupidGoogleDocs(oopDiff, "OOP");
+        System.out.println();
+        printCsvForStupidGoogleDocs(ipDiff, "IP");
+        System.out.println();
+        printCsvForStupidGoogleDocs(oopValue, "EV");
+        System.out.println();
+    }
+
+    private static void printCsvForStupidGoogleDocs(List<Double> diffs, String name) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name);
+        sb.append(',');
+        for (Double diff : diffs) {
+            sb.append(diff);
+            sb.append(',');
+        }
+        System.out.println(sb);
+    }
+
 }
