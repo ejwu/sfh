@@ -26,6 +26,7 @@ public class AKCallingStrategy implements Strategy<AKGameState, AKCallingStrateg
 
     @Override
     public double mergeFrom(AKCallingStrategy other, double epsilon) {
+        System.out.println("XXXX " + epsilon);
         callingFrequency = (int) (callingFrequency + ((other.callingFrequency - callingFrequency) * epsilon));
         return 0.0;
     }
