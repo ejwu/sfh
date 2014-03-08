@@ -205,9 +205,9 @@ if(0) {
 # We now have the system of equations. Flatten into one matrix.
 my $coeff = [];
 my $result = [];
-my $row = 0;
 foreach my $hHand ($QQ..$JJ) {
     foreach my $hStrat ($KF..$R4) {
+        my $row = $hHand * 19 + $hStrat;
         $result->[$row] = [0];
         foreach my $vHand ($QQ..$JJ) {
             foreach my $vStrat ($KF..$R4) {
@@ -216,40 +216,76 @@ foreach my $hHand ($QQ..$JJ) {
                 $coeff->[$row]->[$col] = $c;
             }
         }
-        $row++;
     }
 }
 # Append the constraints that certain things must add to 1
 foreach my $hHand ($QQ..$JJ) {
-    $result->[$row] = [1];
+    my $row;
+    $row=[];
+    push(@$result, [1]);
     foreach my $p1Strat ($KF..$B3C) {
         my $col = $hHand * 19 + $p1Strat;
-        $coeff->[$row]->[$col] = 1;
+        $row->[$col] = 1;
     }
-    $row++;
-    $result->[$row] = [1];
+    push($coeff, $row);
+    
+    $row=[];
+    push(@$result, [1]);
     foreach my $p2Strat ($K..$_B3C) {
         my $col = $hHand * 19 + $p2Strat;
-        $coeff->[$row]->[$col] = 1;
+        $row->[$col] = 1;
     }
-    $row++;
-    $result->[$row] = [1];
+    push($coeff, $row);
+
+    $row=[];
+    push(@$result, [1]);
     foreach my $p2Strat ($F..$R4) {
         my $col = $hHand * 19 + $p2Strat;
-        $coeff->[$row]->[$col] = 1;
+        $row->[$col] = 1;
     }
-    $row++;
+    push($coeff, $row);
 }
 
 # even out size of rows
-foreach my $i (0..$row-1) {
-    foreach my $j (0..$JJ*19+$R4) {
+foreach my $i (0..$#$coeff) {
+    foreach my $j (0..4*19-1) {
         $coeff->[$i]->[$j] += 0;
     }
 }
 
-# now actually try to solve, following the perldoc
-print "Solving: ", scalar(localtime),"\n";
+use PDL;
+use PDL::LinearAlgebra;
+# Though there are 88 rows, the rank is still only 76. Eliminate rows to
+# get a square nonsingular matrix.
+my $square = [];
+my $newResult;
+my $rank = 0;
+foreach my $row (@$coeff) {
+    push(@$square, $row);
+    push(@$newResult, pop(@$result));
+    my $newRank = mrank(pdl($square));
+    if ($newRank == $rank) {
+        pop(@$square);
+        pop(@$newResult);
+    }
+    $rank = $newRank;
+}
+my $A = pdl($square);
+my $b = pdl($newResult);
+
+print "Rank: ", mrank($A), "\n";
+print "Rows: ", scalar(@$square), "\n";
+print "Dims: ", $A->dims, "\n";
+#print $A, "\n";
+my $x = msolve($A,$b);
+print $x;
+exit;
+my $A = mpdl($coeff);
+my $b = vpdl($result);
+my ($r1, $s, $r2) = svd($A);
+print "SVD: ", scalar(localtime),"\n";
+print $s;
+exit;
 use Math::MatrixReal;
 my $A = Math::MatrixReal->new_from_rows($coeff);
 
