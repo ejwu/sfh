@@ -79,38 +79,43 @@ public class DeckUtils {
      * then rank of the second card.  It's pretty ugly.
      */
     public static Comparator<Long> getHandComparator() {
-        return new Comparator<Long>() {
-            public int compare(Long first, Long second) {
-                // Try the first card in each hand
-                int rankDiff =
-                    Deck.parseRank(Deck.cardMaskString(second).split(" ")[0].substring(0, 1)) -
-                    Deck.parseRank(Deck.cardMaskString(first).split(" ")[0].substring(0, 1));
-                if (rankDiff != 0) {
-                    return rankDiff;
-                }
+        if (HAND_COMPARATOR != null) {
+            return HAND_COMPARATOR;
+        } else {
+            return new Comparator<Long>() {
+                public int compare(Long first, Long second) {
+                    // Try the first card in each hand
+                    int rankDiff =
+                        Deck.parseRank(Deck.cardMaskString(second).split(" ")[0].substring(0, 1)) -
+                        Deck.parseRank(Deck.cardMaskString(first).split(" ")[0].substring(0, 1));
+                    if (rankDiff != 0) {
+                        return rankDiff;
+                    }
+                    
+                    // Try the second card in each hand.  Since cards within hands are sorted, this
+                    // makes pairs come before unpaired hands
+                    int secondRankDiff =
+                        Deck.parseRank(Deck.cardMaskString(second).split(" ")[1].substring(0, 1)) -
+                        Deck.parseRank(Deck.cardMaskString(first).split(" ")[1].substring(0, 1));
+                    if (secondRankDiff != 0) {
+                        return secondRankDiff;
+                    }
+                    
+                    // Both cards same, check suit of first card
+                    int suitDiff =
+                        Deck.parseSuit(Deck.cardMaskString(second).split(" ")[0].substring(1, 2)) -
+                        Deck.parseSuit(Deck.cardMaskString(first).split(" ")[0].substring(1, 2));
+                    if (suitDiff != 0) {
+                        return suitDiff;
+                    }
 
-                // Try the second card in each hand.  Since cards within hands are sorted, this
-                // makes pairs come before unpaired hands
-                int secondRankDiff =
-                    Deck.parseRank(Deck.cardMaskString(second).split(" ")[1].substring(0, 1)) -
-                    Deck.parseRank(Deck.cardMaskString(first).split(" ")[1].substring(0, 1));
-                if (secondRankDiff != 0) {
-                    return secondRankDiff;
+                    // Finally, check suit of second card
+                    return Deck.parseSuit(
+                        Deck.cardMaskString(second).split(" ")[1].substring(1, 2)) -
+                        Deck.parseSuit(Deck.cardMaskString(first).split(" ")[1].substring(1, 2));
                 }
-
-                // Both cards same, check suit of first card
-                int suitDiff =
-                    Deck.parseSuit(Deck.cardMaskString(second).split(" ")[0].substring(1, 2)) -
-                    Deck.parseSuit(Deck.cardMaskString(first).split(" ")[0].substring(1, 2));
-                if (suitDiff != 0) {
-                    return suitDiff;
-                }
-
-                // Finally, check suit of second card
-                return Deck.parseSuit(Deck.cardMaskString(second).split(" ")[1].substring(1, 2)) -
-                    Deck.parseSuit(Deck.cardMaskString(first).split(" ")[1].substring(1, 2));
-            }
-        };
+            };
+        }
     }
 
 }
