@@ -2,10 +2,11 @@ package sfh.games.hulhe;
 
 import sfh.GameState;
 import sfh.Strategy;
-import sfh.games.hulhe.IpStrategy.IPBetIntoActions;
-import sfh.games.hulhe.IpStrategy.IPCheckedToActions;
-import sfh.games.hulhe.OopStrategy.OOPBetActions;
-import sfh.games.hulhe.OopStrategy.OOPCheckActions;
+import sfh.games.hulhe.IpTwoStreetStrategy.IPBetIntoActions;
+import sfh.games.hulhe.IpTwoStreetStrategy.IPCheckedToActions;
+import sfh.games.hulhe.OneStreetHandStrategy;
+import sfh.games.hulhe.OopTwoStreetStrategy.OOPBetActions;
+import sfh.games.hulhe.OopTwoStreetStrategy.OOPCheckActions;
 import static sfh.games.hulhe.HulheGameState.DEBUG;
 
 import com.google.common.base.Predicate;
@@ -23,8 +24,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 // Game state, hero, villain
-public abstract class AbstractHulheStrategy<
-    H extends AbstractHulheStrategy<?,?>, V extends AbstractHulheStrategy<?,?>>
+public abstract class AbstractTwoStreetHulheStrategy<
+    H extends AbstractTwoStreetHulheStrategy<?,?>, V extends AbstractTwoStreetHulheStrategy<?,?>>
     implements Strategy<HulheGameState, H, V> {
 
     // A representation for all possible actions for a given hand.  Every street should be
@@ -34,24 +35,27 @@ public abstract class AbstractHulheStrategy<
         String name();
     };
 
-    // Hands, actions, frequencies.  For any given hand, the frequencies of all its actions
-    // should sum to 1.  An empty entry for a hand/action pair means the frequency of that action
-    // is 0.  The set of hands represented in this table should be identical to the hands
-    // used in the actions table for the opposing strategy.
-    protected Table<Long, ActionSequence, Double> actions = HashBasedTable.create();
-
-    protected AbstractHulheStrategy(Table<Long, ActionSequence, Double> actions) {
-        this.actions.putAll(actions);
-        checkSanity();
+    // All possible combinations of results for a street that end with another street being seen
+    public enum StreetResult {
+        KK, KBC, KBRC, KBR3C, KBR34C, BC, BRC, BR3C, BR34C
     }
 
-    /**
-     * Return a map of each possible ActionSequence and its frequency for the given hand.
-     */
-    protected Map<ActionSequence, Double> getActions(Long hand) {
-        return actions.row(hand);
+    // First table is hand->turn strategy->complete river strategy for all possible results from
+    // the turn.
+    // Second table is StreetResult->river card->strategy.  Not all StreetResults need to exist.
+    // For every StreetResult that does exist, all unknown cards must have a column.
+    protected Table<Long, OneStreetHandStrategy, Table<StreetResult, Long, OneStreetHandStrategy>>
+        turnAndRiverActions = HashBasedTable.create();
+
+    protected AbstractTwoStreetHulheStrategy(
+        Table<Long, OneStreetHandStrategy,
+            Table<StreetResult, Long, OneStreetHandStrategy>> actions) {
+
+        turnAndRiverActions.putAll(actions);
+        checkSanity2();
     }
 
+    // TODO: Not actually using frequencies here
     public static Map<Long, Double> createEqualFrequencies(String... hands) {
         Map<Long, Double> frequencies = Maps.newLinkedHashMap();
         for (String hand : hands) {
@@ -68,11 +72,37 @@ public abstract class AbstractHulheStrategy<
         return frequencies;
     }
 
+    /**
+     * Create the table of default strategies for every hand.
+     */
+    protected static Table<Long, OneStreetHandStrategy, Table<
+        StreetResult, Long, OneStreetHandStrategy>> getDefaultStrategy(
+            Iterable<Long> hands, Long deadCards, OneStreetHandStrategy defaultOshs) {
+
+        Table<Long, OneStreetHandStrategy,
+            Table<StreetResult, Long, OneStreetHandStrategy>> allActions = HashBasedTable.create();
+
+        for (Long hand : hands) {;
+            Table<StreetResult, Long, OneStreetHandStrategy> riverStrategies =
+                HashBasedTable.create();
+            
+            for (StreetResult streetResult : StreetResult.values()) {
+                long allDeadCards = deadCards | hand;
+                for (Long card : DeckUtils.deckWithout(allDeadCards)) {
+                    riverStrategies.put(streetResult, card, defaultOshs);
+                }
+            }
+
+            allActions.put(hand, defaultOshs, riverStrategies);
+        }
+        return allActions;
+    }
+
     // update bestFreqs
     protected void updateBestActionForHand(HulheGameState gs, Long hand, 
         ActionSequence[] possibleActions, V villain,
         Table<Long, ActionSequence, Double> bestFreqs, boolean isOop) {
-
+        /*
         if (DEBUG) {
             System.out.println("\n\n\nbest action for " + Deck.cardMaskString(hand));
         }
@@ -140,10 +170,12 @@ public abstract class AbstractHulheStrategy<
         for (ActionSequence action : bestActions) {
             bestFreqs.put(hand, action, 1.0 / numBestActions);
         }
+        */
     }
 
     @Override
     public double mergeFrom(H other, double epsilon) {
+        /*
         Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
 
         for (Long hand : actions.rowKeySet()) {
@@ -174,125 +206,113 @@ public abstract class AbstractHulheStrategy<
         normalize();
         checkSanity();
         return difference(other);
+        */
+        return 0.0;
     }
 
     /**
-     * A completely arbitrary measure of the distance between two strategies.  In this case,
-     * for every hand, the difference in the strategies is the average difference between 
-     * frequencies for each action sequence, squared.  Difference for the full strategy is the
-     * average difference per hand.
+     * Verify that this strategy is well formed.  Action frequencies should add up to 1 where
+     * appropriate.
      */
-    private double difference(H other) {
-        double sumDeltas = 0.0;
+    abstract void checkSanity();
+
+
+    /**
+     * Check that all actions within each action set have frequencies adding up to 1.  For the 
+     * OOP player, the action set consists of all actions.  For the IP player, there are separate
+     * action sets depending on whether he's facing a bet or a check.
+     */
+    protected void checkSanity(ActionSequence[]... actionSets) {
+        /*
         for (Long hand : actions.rowKeySet()) {
-            Map<ActionSequence, Double> otherActions = other.getActions(hand);
-            double delta = 0.0;
-            for (ActionSequence action : getValidActions()) {
-                // If either table has no entry for this hand/action pair, the frequency of the action is 0.
-                double thisFreq = 0.0;
-                double otherFreq = 0.0;
-                if (actions.contains(hand, action)) {
-                    thisFreq = actions.get(hand, action);
+            for (ActionSequence[] actionSet : actionSets) {
+                double sum = 0.0d;
+                for (ActionSequence action : actionSet) {
+                    if (actions.row(hand).containsKey(action)) {
+                        sum += actions.row(hand).get(action);
+                    }
                 }
-                if (otherActions.containsKey(action)) {
-                    otherFreq = otherActions.get(action);
+                // close enough
+                if (Math.abs(1.0 - sum) > 0.0000001d) {
+                    throw new IllegalStateException("Frequencies must add to 1, are: " + sum
+                        + "\n" + toString());
                 }
-                delta += Math.pow(thisFreq - otherFreq, 2);
             }
-            sumDeltas += delta / getValidActions().size();
         }
-
-        // average delta per hand
-        return sumDeltas / actions.rowKeySet().size();
+        */
     }
 
-    /**
-     * @return a set of the valid ActionSequences this strategy can use
-     */
-    abstract Set<ActionSequence> getValidActions();
+    void checkSanity2() {
+    };
+
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("By hand:\n");
+        sb.append("  Turn:\n");
+        // Map of every strategy to the hands using that strategy, used to group hands with the
+        // same strategy
+        Multimap<OneStreetHandStrategy, Long> equalHands = ArrayListMultimap.create();
 
-        SortedSet<Long> sortedHands = Sets.<Long>newTreeSet(DeckUtils.getHandComparator());
-        sortedHands.addAll(actions.rowKeySet());
-
-        // We assume here that insertion is in sorted order, so the existence of a key in this map
-        // means that it's the first hand to have that strategy.  For the other hands with the
-        // same strategy, refer to equalHands
-        Map<Long, String> handToStrategyMap = Maps.newHashMap();
-        // Every strategy, with every hand that has the same strategy, in order
-        Multimap<String, Long> equalHands = ArrayListMultimap.create(); 
-
-        for (Long hand : sortedHands) {
-            StringBuilder strategy = new StringBuilder();
-            Map<ActionSequence, Double> actionFreqs = actions.row(hand);
-            boolean printed = false;
-            for (ActionSequence action : OOPCheckActions.values()) {
-                if (actionFreqs.containsKey(action)) {
-                    strategy.append(String.format("%4s %4.2f  ",
-                        action.name(),
-                        actions.row(hand).get(action)));
-                    printed = true;
-                }
-            }
-            if (printed) {
-                strategy.append("\n");
-                printed = false;
-            }
-
-            for (ActionSequence action : OOPBetActions.values()) {
-                if (actionFreqs.containsKey(action)) {
-                    strategy.append(String.format("%4s %4.2f  ",
-                        action.name(),
-                        actions.row(hand).get(action)));
-                }
-            }
-
-            for (ActionSequence action : IPCheckedToActions.values()) {
-                if (actionFreqs.containsKey(action)) {
-                    strategy.append(String.format("%4s %4.2f  ",
-                        action.name(),
-                        actions.row(hand).get(action)));
-                    printed = true;
-                }
-            }
-            if (printed) {
-                strategy.append("\n");
-                printed = false;
-            }
-
-            for (ActionSequence action : IPBetIntoActions.values()) {
-                if (actionFreqs.containsKey(action)) {
-                    strategy.append(String.format("%4s %4.2f  ",
-                        action.name(),
-                        actions.row(hand).get(action)));
-                }
-            }
-            if (printed) {
-                strategy.append("\n");
-                printed = false;
-            }
-            strategy.append("\n\n");
-            if (!equalHands.containsKey(strategy.toString())) {
-                handToStrategyMap.put(hand, strategy.toString());
-            }
-            equalHands.put(strategy.toString(), hand);
+        for (Long hand : turnAndRiverActions.rowKeySet()) {
+            // backdoor assertion here that every hand only has one turn strategy
+            OneStreetHandStrategy oshStrategy = Iterables.getOnlyElement(
+                turnAndRiverActions.row(hand).keySet());
+            equalHands.put(oshStrategy, hand);
         }
 
-        for (Long hand : handToStrategyMap.keySet()) {
-            String handStrategy = handToStrategyMap.get(hand);
-            for (Long similarHand : equalHands.get(handStrategy)) {
-                sb.append(Deck.cardMaskString(similarHand, "") + " ");
+        for (OneStreetHandStrategy turnStrategy : equalHands.keySet()) {
+            List<Long> sortedHands = Lists.newArrayList(equalHands.get(turnStrategy));
+            Collections.sort(sortedHands, DeckUtils.getHandComparator());
+            String indent = "  ";
+            sb.append(indent);
+            for (Long hand : sortedHands) {
+                sb.append(Deck.cardMaskString(hand, ""));
+                sb.append(" ");
             }
             sb.append("\n");
-            sb.append(handStrategy);
-            sb.append("\n");
+            turnStrategy.appendTo(sb, indent);
+
+            indent += "  ";
+            String innerIndent = indent + "  ";
+            sb.append(indent);
+            sb.append("Turn results:\n");
+            for (StreetResult sr : StreetResult.values()) {
+                sb.append(indent);
+                sb.append(sr.name());
+                sb.append("\n");
+
+
+                for (Long hand : sortedHands) {
+                    sb.append(indent);
+                    sb.append(Deck.cardMaskString(hand, ""));
+                    sb.append("\n");
+
+                    Multimap<OneStreetHandStrategy, Long> equalRiverCardStrategies =
+                        ArrayListMultimap.create();
+                    Map<Long, OneStreetHandStrategy> riverActions =
+                        turnAndRiverActions.get(hand, turnStrategy).row(sr);
+
+                    List<Long> sortedRiverCards = Lists.newArrayList(riverActions.keySet());
+                    Collections.sort(sortedRiverCards, DeckUtils.getCardComparator());
+                    for (Long card : sortedRiverCards) {
+                        equalRiverCardStrategies.put(riverActions.get(card), card);
+                    }
+
+                    for (OneStreetHandStrategy riverStrategy : equalRiverCardStrategies.keySet()) {
+                        sb.append(indent);
+                        for (Long card : equalRiverCardStrategies.get(riverStrategy)) {
+                            sb.append(Deck.cardMaskString(card));
+                            sb.append(" ");
+                        }
+                        sb.append("\n");
+                        riverStrategy.appendTo(sb, innerIndent);
+                    }
+                }
+            }
         }
 
-        sb.append(visualizeRange());
+
 
         return sb.toString();
     }
@@ -300,6 +320,7 @@ public abstract class AbstractHulheStrategy<
     abstract String visualizeRange();
 
     protected void appendActions(StringBuilder sb, String prefix, int indent, ActionSequence... actionsForDisplay) {
+        /*
         if (actionsForDisplay.length == 0) {
             throw new IllegalArgumentException("Must have at least one action");
         }
@@ -307,13 +328,14 @@ public abstract class AbstractHulheStrategy<
         for (ActionSequence action : actionsForDisplay) {
             incrementFrequencies(hands, actions.column(action));
         }
-        Multimap<Double, Long> freqToHandMap = TreeMultimap.create(Ordering.natural(), DeckUtils.getHandComparator());
+        Multimap<Double, Long> freqToHandMap = TreeMultimap.create(Ordering.natural(), getHandComparator());
         double totalFreq = getTotalFreqAndPopulate(hands, freqToHandMap);
 
         sb.append(prefix);
         appendFrequencies(sb, freqToHandMap, totalFreq, indent);
+*/
     }
-
+    /*
     private void incrementFrequencies(Map<Long, Double> base, Map<Long, Double> add) {
         for (Long handToAdd : add.keySet()) {
             if (base.containsKey(handToAdd)) {
@@ -356,7 +378,7 @@ public abstract class AbstractHulheStrategy<
         }
         sb.append("\n");
     }
-
+    */
     abstract void normalize();
 
     /**
@@ -364,7 +386,7 @@ public abstract class AbstractHulheStrategy<
      */
     protected Table<Long, ActionSequence, Double> normalized(
         Table<Long, ActionSequence, Double> freqs, ActionSequence[]... actionSets) {
-
+        /*
         Table<Long, ActionSequence, Double> newFreqs = HashBasedTable.create();
         for (Long hand : freqs.rowKeySet()) {
             for (ActionSequence[] actionSet : actionSets) {
@@ -382,19 +404,22 @@ public abstract class AbstractHulheStrategy<
             }
         }
         return newFreqs;
+        */
+        return null;
     }
 
     /**
      * Verify that this strategy is well formed.  Action frequencies should add up to 1 where
      * appropriate.
      */
-    abstract void checkSanity();
+    //abstract void checkSanity();
 
     /**
      * Check that all actions within each action set have frequencies adding up to 1.  For the 
      * OOP player, the action set consists of all actions.  For the IP player, there are separate
      * action sets depending on whether he's facing a bet or a check.
      */
+    /*
     protected void checkSanity(ActionSequence[]... actionSets) {
         for (Long hand : actions.rowKeySet()) {
             for (ActionSequence[] actionSet : actionSets) {
@@ -412,4 +437,11 @@ public abstract class AbstractHulheStrategy<
             }
         }
     }
+    */
+
+    /**
+     * @return a set of the valid ActionSequences this strategy can use
+     */
+    abstract Set<ActionSequence> getValidActions();
+
 }
