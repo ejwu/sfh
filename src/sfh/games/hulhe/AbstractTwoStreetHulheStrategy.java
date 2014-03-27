@@ -249,18 +249,20 @@ public abstract class AbstractTwoStreetHulheStrategy<
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("  Turn:\n");
+        sb.append("Turn:\n");
         // Map of every strategy to the hands using that strategy, used to group hands with the
         // same strategy
         Multimap<OneStreetHandStrategy, Long> equalHands = ArrayListMultimap.create();
 
         for (Long hand : turnAndRiverActions.rowKeySet()) {
-            // backdoor assertion here that every hand only has one turn strategy
+            // backdoor assertion here that every hand only has one turn strategy despite the fact that we get a Set
+            // of them
             OneStreetHandStrategy oshStrategy = Iterables.getOnlyElement(
                 turnAndRiverActions.row(hand).keySet());
             equalHands.put(oshStrategy, hand);
         }
 
+        // Print the turn strategy for each cluster of hands
         for (OneStreetHandStrategy turnStrategy : equalHands.keySet()) {
             List<Long> sortedHands = Lists.newArrayList(equalHands.get(turnStrategy));
             Collections.sort(sortedHands, DeckUtils.getHandComparator());
@@ -273,47 +275,55 @@ public abstract class AbstractTwoStreetHulheStrategy<
             sb.append("\n");
             turnStrategy.appendTo(sb, indent);
 
+            // Turn results
             indent += "  ";
-            String innerIndent = indent + "  ";
             sb.append(indent);
             sb.append("Turn results:\n");
             for (StreetResult sr : StreetResult.values()) {
                 sb.append(indent);
+                sb.append("-------------------------------------------------------\n");
+                sb.append(indent);
                 sb.append(sr.name());
                 sb.append("\n");
 
-
-                for (Long hand : sortedHands) {
-                    sb.append(indent);
-                    sb.append(Deck.cardMaskString(hand, ""));
-                    sb.append("\n");
-
-                    Multimap<OneStreetHandStrategy, Long> equalRiverCardStrategies =
-                        ArrayListMultimap.create();
-                    Map<Long, OneStreetHandStrategy> riverActions =
-                        turnAndRiverActions.get(hand, turnStrategy).row(sr);
-
-                    List<Long> sortedRiverCards = Lists.newArrayList(riverActions.keySet());
-                    Collections.sort(sortedRiverCards, DeckUtils.getCardComparator());
-                    for (Long card : sortedRiverCards) {
-                        equalRiverCardStrategies.put(riverActions.get(card), card);
+                // TODO: Don't include dead cards here
+                List<Long> sortedRiverCards = Lists.newArrayList(DeckUtils.deckWithout(0L));
+                Collections.<Long>sort(sortedRiverCards, DeckUtils.getCardComparator());
+                
+                // FIXME to not suck
+                // alternative: group by hand first to make it obvious what each hand's total strategy is.  Problem is
+                // that clustering won't work right because each hand has different dead river cards.
+                for (Long riverCard : sortedRiverCards) {
+                    Multimap<OneStreetHandStrategy, Long> equalRiverStrategies = ArrayListMultimap.create();
+                    for (Long hand : sortedHands) {
+                        // Because we're not smart about dead cards, skip cards with no strategy.  These should be cards
+                        // in the current hand or already on the board
+                        OneStreetHandStrategy rs = turnAndRiverActions.get(hand, turnStrategy).get(sr, riverCard);
+                        if (rs != null) {
+                            equalRiverStrategies.put(turnAndRiverActions.get(hand, turnStrategy).get(sr, riverCard),
+                                hand);
+                        }
                     }
 
-                    for (OneStreetHandStrategy riverStrategy : equalRiverCardStrategies.keySet()) {
-                        sb.append(indent);
-                        for (Long card : equalRiverCardStrategies.get(riverStrategy)) {
-                            sb.append(Deck.cardMaskString(card));
-                            sb.append(" ");
+                    // This wouldn't be necessary if sortedRiverCards didn't include cards already on the board
+                    if (equalRiverStrategies.keySet().size() > 0) {
+                        sb.append(indent + "  ");
+                        sb.append(Deck.cardMaskString(riverCard));
+                        sb.append(":\n");
+                        sb.append(indent + "    ");
+                    
+                        for (OneStreetHandStrategy riverStrategy : equalRiverStrategies.keySet()) {
+                            for (Long riverHand : equalRiverStrategies.get(riverStrategy)) {
+                                sb.append(Deck.cardMaskString(riverHand, ""));
+                                sb.append(" ");
+                            }
+                            sb.append("\n");
+                            riverStrategy.appendTo(sb, indent + "    ");
                         }
-                        sb.append("\n");
-                        riverStrategy.appendTo(sb, innerIndent);
                     }
                 }
             }
-        }
-
-
-
+        }   
         return sb.toString();
     }
 

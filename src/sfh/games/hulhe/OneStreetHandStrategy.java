@@ -55,6 +55,14 @@ public class OneStreetHandStrategy {
     }
 
     @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((actions == null) ? 0 : actions.hashCode());
+        return result;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
@@ -63,13 +71,12 @@ public class OneStreetHandStrategy {
         if (getClass() != obj.getClass())
             return false;
         OneStreetHandStrategy other = (OneStreetHandStrategy) obj;
-
-        return this.actions.equals(other.actions);
-    }
-
-    @Override
-    public int hashCode() {
-        return actions.hashCode();
+        if (actions == null) {
+            if (other.actions != null)
+                return false;
+        } else if (!actions.equals(other.actions))
+            return false;
+        return true;
     }
 }
 
