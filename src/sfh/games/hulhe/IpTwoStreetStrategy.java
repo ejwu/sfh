@@ -32,7 +32,7 @@ public class IpTwoStreetStrategy
         createDefaultOneStreetHandStrategy();
 
     IpTwoStreetStrategy(Table<Long, OneStreetHandStrategy,
-        Table<StreetResult, Long, OneStreetHandStrategy>> actions) {
+        Table<StreetAction, Long, OneStreetHandStrategy>> actions) {
         super(actions);
     }
 

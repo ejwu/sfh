@@ -36,7 +36,7 @@ public abstract class AbstractTwoStreetHulheStrategy<
     };
 
     // All possible combinations of results for a street that end with another street being seen
-    public enum StreetResult {
+    public enum StreetAction {
         KK, KBC, KBRC, KBR3C, KBR34C, BC, BRC, BR3C, BR34C
     }
 
@@ -44,12 +44,12 @@ public abstract class AbstractTwoStreetHulheStrategy<
     // the turn.
     // Second table is StreetResult->river card->strategy.  Not all StreetResults need to exist.
     // For every StreetResult that does exist, all unknown cards must have a column.
-    protected Table<Long, OneStreetHandStrategy, Table<StreetResult, Long, OneStreetHandStrategy>>
+    protected Table<Long, OneStreetHandStrategy, Table<StreetAction, Long, OneStreetHandStrategy>>
         turnAndRiverActions = HashBasedTable.create();
 
     protected AbstractTwoStreetHulheStrategy(
         Table<Long, OneStreetHandStrategy,
-            Table<StreetResult, Long, OneStreetHandStrategy>> actions) {
+            Table<StreetAction, Long, OneStreetHandStrategy>> actions) {
 
         turnAndRiverActions.putAll(actions);
         checkSanity2();
@@ -76,17 +76,17 @@ public abstract class AbstractTwoStreetHulheStrategy<
      * Create the table of default strategies for every hand.
      */
     protected static Table<Long, OneStreetHandStrategy, Table<
-        StreetResult, Long, OneStreetHandStrategy>> getDefaultStrategy(
+        StreetAction, Long, OneStreetHandStrategy>> getDefaultStrategy(
             Iterable<Long> hands, Long deadCards, OneStreetHandStrategy defaultOshs) {
 
         Table<Long, OneStreetHandStrategy,
-            Table<StreetResult, Long, OneStreetHandStrategy>> allActions = HashBasedTable.create();
+            Table<StreetAction, Long, OneStreetHandStrategy>> allActions = HashBasedTable.create();
 
         for (Long hand : hands) {;
-            Table<StreetResult, Long, OneStreetHandStrategy> riverStrategies =
+            Table<StreetAction, Long, OneStreetHandStrategy> riverStrategies =
                 HashBasedTable.create();
             
-            for (StreetResult streetResult : StreetResult.values()) {
+            for (StreetAction streetResult : StreetAction.values()) {
                 long allDeadCards = deadCards | hand;
                 for (Long card : DeckUtils.deckWithout(allDeadCards)) {
                     riverStrategies.put(streetResult, card, defaultOshs);
@@ -279,7 +279,7 @@ public abstract class AbstractTwoStreetHulheStrategy<
             indent += "  ";
             sb.append(indent);
             sb.append("Turn results:\n");
-            for (StreetResult sr : StreetResult.values()) {
+            for (StreetAction sr : StreetAction.values()) {
                 sb.append(indent);
                 sb.append("-------------------------------------------------------\n");
                 sb.append(indent);
