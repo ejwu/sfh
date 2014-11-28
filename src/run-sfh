@@ -1,0 +1,1 @@
+find . -name *.java | xargs javac -cp ../lib/guava-18.0.jar:../lib/pokersource.jar && java -cp ../lib/guava-18.0.jar:../lib/pokersource.jar:. sfh/SfhRunner
