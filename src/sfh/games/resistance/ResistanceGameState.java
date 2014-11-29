@@ -53,10 +53,11 @@ public class ResistanceGameState implements GameState<ResistanceGoodStrategy, Re
   }
 
   @Override
-  public double getValue(ResistanceGoodStrategy p1, ResistanceEvilStrategy p2) {
+  public double getValue(ResistanceGoodStrategy good, ResistanceEvilStrategy evil) {
     int currentTurn = numPassed + numFailed;
 
-    
+    good.getStrategy(this, currentTurn);
+    evil.getStrategy(this, currentTurn);
 
     return 0.0;
   }
