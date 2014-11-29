@@ -1,7 +1,7 @@
 package pokerai.game.eval.spears2p2;
 
 import java.io.*;
-
+import java.util.Map;
 /**
  * 
  * 
@@ -52,13 +52,19 @@ public class StateTableEvaluator {
 	private static long   stopTimer;
 	
 	private static final String HAND_RANKS_FILE = "C:\\Users\\ejwu\\git\\sfh\\src\\pokerai\\game\\eval\\spears2p2\\handranks.ser";
-	
+	private static final String HAND_RANKS_ENV_KEY = "SFH_HAND_RANKS";
+
 	public static void initialize() {
 		try {
 			System.out.println("Loading evaluation tables ...");
-      File f = new File(HAND_RANKS_FILE);
+      String filename = HAND_RANKS_FILE;
+      Map<String,String> env = System.getenv();
+      if (env.containsKey(HAND_RANKS_ENV_KEY)) {
+          filename = env.get(HAND_RANKS_ENV_KEY);
+      }
+      File f = new File(filename);
       if (!f.exists()) {
-        System.out.println("Evaluation tables do not exist, this is first time run. Generating them ...");
+        System.out.println("Evaluation tables " + filename + " do not exist, this is first time run. Generating them ...");
         handRanks = new int[HAND_RANKS_SIZE];
         generateTables();
         saveTables();
