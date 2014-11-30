@@ -8,8 +8,41 @@ import java.util.*;
 
 public class ResistanceGameState implements GameState<ResistanceGoodStrategy, ResistanceEvilStrategy> {
 
+  // Empty base class is root of game tree, containing no info.
+  public ResistanceGameState() {
+  }
+   
+
+  @Override
+  public double getValue(ResistanceGoodStrategy good, ResistanceEvilStrategy evil) {
+    // Create all possible assignments of good and evil
+    // TODO: be smart
+    List<AssignedState> states = Lists.newArrayList();
+    final boolean t = true;
+    final boolean f = false;
+    states.add(new AssignedState(f, f, t, t, t));
+    states.add(new AssignedState(f, t, f, t, t));
+    states.add(new AssignedState(f, t, t, f, t));
+    states.add(new AssignedState(f, t, t, t, f));
+    states.add(new AssignedState(t, f, f, t, t));
+    states.add(new AssignedState(t, f, t, f, t));
+    states.add(new AssignedState(t, f, t, t, f));
+    states.add(new AssignedState(t, t, f, f, t));
+    states.add(new AssignedState(t, t, f, t, f));
+    states.add(new AssignedState(t, t, t, f, f));
+
+    double value = 0.0;
+    for (AssignedState s : states) {
+      value += s.getValue(good, evil) / states.size();
+    }
+    return value;
+  }
+
+}
+
+class AssignedState extends ResistanceGameState {
   private static final int TURNS_TO_WIN = 3;
-  
+ 
   public static class Turn {
     private Set<String> teamPlayers = Sets.newHashSet();
     private Boolean missionPassed = null;
@@ -36,30 +69,40 @@ public class ResistanceGameState implements GameState<ResistanceGoodStrategy, Re
     }
   }
 
-  private List<Turn> previousTurns = Lists.newArrayList();
+  private final boolean[] isGood;
+  private final int currentTurn;
+  private final List<Turn> previousTurns = Lists.newArrayList();
   private int numPassed = 0;
   private int numFailed = 0;
 
-  public ResistanceGameState() {
-  }
-    
-  public void addTurn(Turn turn) {
-    previousTurns.add(turn);
-    if (turn.isPassed()) {
-      numPassed++;
-    } else {
-      numFailed++;
-    }
+  public AssignedState(boolean... isGood) {
+    this.isGood = isGood;
+    this.currentTurn = 0;
   }
 
-  @Override
+  public AssignedState(AssignedState parent, Team team) {
+    isGood = parent.isGood;
+    currentTurn = parent.currentTurn + 1;
+    previousTurns.addAll(parent.previousTurns);
+    boolean passed = true; // TODO:XXX
+    previousTurns.add(new Turn(passed, team.asStringArray()));
+  }
+  
+@Override 
   public double getValue(ResistanceGoodStrategy good, ResistanceEvilStrategy evil) {
-    int currentTurn = numPassed + numFailed;
+    if (currentTurn == 5) {
+      return (numPassed >= 3) ? 1 : 0;
+    }
+    TeamChoiceStrategy strat = good.getStrategy(this, currentTurn);
+    double value = 0.0;
+    for (ProbableTeam pt : strat) {
+      value += pt.probability * this.withTeam(pt.team).getValue(good, evil);
+    }
+    return value;
+  }
 
-    good.getStrategy(this, currentTurn);
-    evil.getStrategy(this, currentTurn);
-
-    return 0.0;
+  ResistanceGameState withTeam(Team team) {
+    return new AssignedState(this, team);
   }
 
 }

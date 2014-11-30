@@ -1,6 +1,7 @@
 package sfh.games.resistance;
 
 import sfh.Strategy;
+import com.google.common.collect.ImmutableList;
 
 public class ResistanceGoodStrategy extends AbstractResistanceStrategy<ResistanceGameState, ResistanceGoodStrategy, ResistanceEvilStrategy> {
 
@@ -17,7 +18,8 @@ public class ResistanceGoodStrategy extends AbstractResistanceStrategy<Resistanc
         return 0;
     }
 
-    public void getStrategy(ResistanceGameState gameState, int turn) {
+    public TeamChoiceStrategy getStrategy(ResistanceGameState gameState, int turn) {
+        return new TeamChoiceStrategy(ImmutableList.of(new ProbableTeam(1.0, new Team("0","1"))));
       // TODO
     }
 

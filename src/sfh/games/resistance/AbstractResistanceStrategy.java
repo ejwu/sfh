@@ -8,5 +8,5 @@ public abstract class AbstractResistanceStrategy<GS, H, V> implements Strategy<G
   @Override
   abstract public double mergeFrom(H other, double epsilon);
 
-  abstract void getStrategy(GS gameState, int turn);
+  //abstract void getStrategy(GS gameState, int turn);
 }

@@ -16,11 +16,12 @@ public class ResistanceEvilStrategy extends AbstractResistanceStrategy<Resistanc
     public double mergeFrom(ResistanceEvilStrategy other, double epsilon) {
         return 0;
     }
-
-    public void getStrategy(ResistanceGameState gameState, int turn) {
+    /*
+    public TeamChoiceStrategy getStrategy(ResistanceGameState gameState, int turn) {
+        return null;
       // TODO
     }
-
+    */
     public String toString() {
         return "null";
     }
