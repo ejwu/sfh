@@ -18,12 +18,12 @@ public class ResistanceGoodStrategy extends AbstractResistanceStrategy<Resistanc
         return 0;
     }
 
-    public TeamChoiceStrategy getStrategy(ResistanceGameState gameState, int turn) {
-        return new TeamChoiceStrategy(ImmutableList.of(new ProbableTeam(1.0, new Team("0","1"))));
+    public TeamChoiceStrategy getStrategy(ResistanceGameState gameState) {
+        return new TeamChoiceStrategy(ImmutableList.of(new ProbableTeam(1.0, new Team(0,1))));
       // TODO
     }
 
     public String toString() {
-        return "null";
+        return "always 01";
     }
 }

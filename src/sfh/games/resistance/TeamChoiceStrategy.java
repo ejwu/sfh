@@ -4,11 +4,11 @@ import java.util.Iterator;
 
 // A subset of players which attempts a mission together. Immutable.
 class Team {
-    private final String[] who;
-    public Team(String... who) {
+    private final int[] who;
+    public Team(int... who) {
         this.who = who;
     }
-    public String[] asStringArray() {
+    public int[] asIntArray() {
         // TODO: should not return mutable reference
         return who;
     }

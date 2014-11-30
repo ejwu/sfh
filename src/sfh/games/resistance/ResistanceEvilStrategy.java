@@ -16,12 +16,12 @@ public class ResistanceEvilStrategy extends AbstractResistanceStrategy<Resistanc
     public double mergeFrom(ResistanceEvilStrategy other, double epsilon) {
         return 0;
     }
-    /*
-    public TeamChoiceStrategy getStrategy(ResistanceGameState gameState, int turn) {
-        return null;
-      // TODO
+
+    // Returns the probability of failing the current mission.
+    public double getFailStrategy(ResistanceGameState gameState) {
+        return 0.0;
     }
-    */
+    
     public String toString() {
         return "null";
     }

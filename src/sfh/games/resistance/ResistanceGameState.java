@@ -44,15 +44,15 @@ class AssignedState extends ResistanceGameState {
   private static final int TURNS_TO_WIN = 3;
  
   public static class Turn {
-    private Set<String> teamPlayers = Sets.newHashSet();
+    private Set<Integer> teamPlayers = Sets.newHashSet();
     private Boolean missionPassed = null;
 
-    public Turn(boolean missionPassed, String... teamPlayers) {
+    public Turn(boolean missionPassed, int... teamPlayers) {
       this.missionPassed = missionPassed;
       if (teamPlayers.length < 2) {
         throw new IllegalArgumentException("team must be at least 2 players");
       }
-      for (String teamPlayer : teamPlayers) {
+      for (Integer teamPlayer : teamPlayers) {
         if (this.teamPlayers.contains(teamPlayer)) {
           throw new IllegalArgumentException("team can't repeat players");
         }
@@ -64,7 +64,7 @@ class AssignedState extends ResistanceGameState {
       return missionPassed;
     }
 
-    public Set<String> getTeam() {
+    public Set<Integer> getTeam() {
       return teamPlayers;
     }
   }
@@ -72,8 +72,6 @@ class AssignedState extends ResistanceGameState {
   private final boolean[] isGood;
   private final int currentTurn;
   private final List<Turn> previousTurns = Lists.newArrayList();
-  private int numPassed = 0;
-  private int numFailed = 0;
 
   public AssignedState(boolean... isGood) {
     this.isGood = isGood;
@@ -84,16 +82,29 @@ class AssignedState extends ResistanceGameState {
     isGood = parent.isGood;
     currentTurn = parent.currentTurn + 1;
     previousTurns.addAll(parent.previousTurns);
+    
     boolean passed = true; // TODO:XXX
-    previousTurns.add(new Turn(passed, team.asStringArray()));
+    for (int teamPlayer : team.asIntArray()) {
+      if (!isGood[teamPlayer]) {
+        // TODO: get fail prob
+        passed = false;
+      }
+    }
+    previousTurns.add(new Turn(passed, team.asIntArray()));
   }
   
 @Override 
   public double getValue(ResistanceGoodStrategy good, ResistanceEvilStrategy evil) {
     if (currentTurn == 5) {
+      int numPassed = 0;
+      for (Turn t : previousTurns) {
+        if (t.isPassed()) {
+          numPassed++;
+        }
+      }
       return (numPassed >= 3) ? 1 : 0;
     }
-    TeamChoiceStrategy strat = good.getStrategy(this, currentTurn);
+    TeamChoiceStrategy strat = good.getStrategy(this);
     double value = 0.0;
     for (ProbableTeam pt : strat) {
       value += pt.probability * this.withTeam(pt.team).getValue(good, evil);
