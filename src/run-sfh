@@ -1,1 +1,11 @@
-find . -name *.java | xargs javac -cp ../lib/guava-18.0.jar:../lib/pokersource.jar && java -cp ../lib/guava-18.0.jar:../lib/pokersource.jar:. sfh/SfhRunner
+#!/bin/bash
+CLASSPATH=$CLASSPATH:../lib/guava-18.0.jar:../lib/pokersource.jar:.
+javac \
+    ./sfh/GameState.java \
+    ./sfh/SfhRunner.java \
+    ./sfh/Strategy.java \
+    ./sfh/games/resistance/ResistanceEvilStrategy.java \
+    ./sfh/games/resistance/ResistanceGameState.java \
+    ./sfh/games/resistance/ResistanceGoodStrategy.java \
+    ./sfh/games/resistance/AbstractResistanceStrategy.java &&
+java  sfh/SfhRunner
