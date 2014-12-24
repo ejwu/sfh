@@ -1,6 +1,6 @@
 #!/bin/bash
 CLASSPATH=$CLASSPATH:../lib/guava-18.0.jar:../lib/pokersource.jar:.
-javac \
+javac -cp $CLASSPATH \
     ./sfh/GameState.java \
     ./sfh/SfhRunner.java \
     ./sfh/Strategy.java \
@@ -8,4 +8,4 @@ javac \
     ./sfh/games/resistance/ResistanceGameState.java \
     ./sfh/games/resistance/ResistanceGoodStrategy.java \
     ./sfh/games/resistance/AbstractResistanceStrategy.java &&
-java  sfh/SfhRunner
+java -cp $CLASSPATH sfh/SfhRunner
