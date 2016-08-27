@@ -1,3 +1,6 @@
 *.class
 *~
 src/run-sfhsrc/handranks.ser
+.idea/
+out/
+*.iml
