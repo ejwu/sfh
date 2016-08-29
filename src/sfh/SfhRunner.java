@@ -1,25 +1,53 @@
 package sfh;
 
 import com.google.common.collect.Lists;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import sfh.games.hubadugi.HuBadugiGameState;
 import sfh.games.hubadugi.HuBadugiIpStrategy;
 import sfh.games.hubadugi.HuBadugiOopStrategy;
+import sfh.games.hulhe.HulheGameState;
+import sfh.games.hulhe.IpStrategy;
+import sfh.games.hulhe.OopStrategy;
+import sfh.games.roshambo.RoshamboGameState;
+import sfh.games.roshambo.RoshamboStrategy;
 
 import java.util.List;
 
 public class SfhRunner {
+  private static final String FLAG_GAME = "game";
+  private static final String FLAG_ITERATIONS = "iterations";
+  private static OptionSpec<Integer> FLAG_SPEC_ITERATIONS;
+
+  private static final String FLAG_GAME_BADUGI = "badugi";
+  private static final String FLAG_GAME_HULHE = "hulhe";
+  private static final String FLAG_GAME_ROSHAMBO = "roshambo";
+
 
   public static void main(String[] args) {
+    OptionSet options = getOptions(args);
+    int iterations = options.valueOf(FLAG_SPEC_ITERATIONS);
+    if (FLAG_GAME_ROSHAMBO.equals(options.valueOf(FLAG_GAME))) {
+      play(iterations, new RoshamboGameState(), new RoshamboStrategy(), new RoshamboStrategy());
+    } else {
 
-//      ResistanceGoodStrategy good = new ResistanceGoodStrategy();
-//      ResistanceEvilStrategy evil = new ResistanceEvilStrategy();
-//      ResistanceGameState gs = new ResistanceGameState();
+      HuBadugiGameState gs = new HuBadugiGameState();
+      HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
+      HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
 
-    HuBadugiGameState gs = new HuBadugiGameState();
-    HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
-    HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
+      play(iterations, gs, oop, ip);
+    }
+  }
 
-    play(1, gs, oop, ip);
+  private static OptionSet getOptions(String[] args) {
+    OptionParser parser = new OptionParser();
+    parser.accepts(FLAG_GAME).withRequiredArg();
+    FLAG_SPEC_ITERATIONS = parser.accepts(FLAG_ITERATIONS).withRequiredArg()
+        .ofType(Integer.class)
+        .defaultsTo(1);
+
+    return parser.parse(args);
   }
 
   public static <
