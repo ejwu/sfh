@@ -43,7 +43,6 @@ public class Card {
       throw new IllegalArgumentException("BitSet must have exactly 1 bit set");
     }
     cachedIndex = bitSet.nextSetBit(0);
-    System.out.println(cachedIndex);
     if (cachedIndex >= DECK_LENGTH) {
       throw new IllegalArgumentException("Index of set bit must be less than deck length");
     }
@@ -58,6 +57,10 @@ public class Card {
 
     mask = new BitSet(DECK_LENGTH);
     mask.set(cachedIndex);
+  }
+
+  public BitSet getMask() {
+    return mask;
   }
 
   @Override
