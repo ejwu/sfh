@@ -49,6 +49,12 @@ public class Card {
     this.mask = bitSet;
   }
 
+  Card(int bitIndex) {
+    cachedIndex = bitIndex;
+    mask = new BitSet(DECK_LENGTH);
+    mask.set(cachedIndex);
+  }
+
   public Card(String cardString) {
     if (cardString.length() != 2) {
       throw new IllegalArgumentException("Card string must be 2 characters");
