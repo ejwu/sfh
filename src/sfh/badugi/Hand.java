@@ -26,4 +26,20 @@ public class Hand {
     }
     return sb.toString();
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Hand hand = (Hand) o;
+
+    return !(mask != null ? !mask.equals(hand.mask) : hand.mask != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    return mask != null ? mask.hashCode() : 0;
+  }
 }

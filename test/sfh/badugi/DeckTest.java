@@ -22,4 +22,34 @@ public class DeckTest {
     } catch (IllegalArgumentException expected) {
     }
   }
+
+  @Test
+  public void fullDeckShouldBeIterable() {
+    Deck deck = new Deck();
+    int count = 0;
+    for (Card card : deck) {
+      count++;
+    }
+    assertEquals(Card.DECK_LENGTH, count);
+  }
+
+  @Test
+  public void partialDeckShouldBeIterable() {
+    Deck deck = new Deck();
+    deck = deck.without(new Card("5d"));
+    deck = deck.without(new Card("Ks"));
+    deck = deck.without(new Card("Ac"));
+    int count = 0;
+    for (Card card : deck) {
+      count++;
+    }
+    assertEquals(Card.DECK_LENGTH - 3, count);
+  }
+
+  @Test
+  public void generateAllHandShouldHaveRightNumber() {
+    Deck deck = new Deck();
+    int expectedHands = 52 * 51 * 50 * 49 / 24;
+    assertEquals(expectedHands, deck.generateAllHands().size());
+  }
 }
