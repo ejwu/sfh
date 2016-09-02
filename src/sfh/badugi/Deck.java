@@ -1,19 +1,14 @@
 package sfh.badugi;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Deck is somewhat of a misnomer, it's more like a CardSet
  */
-public class Deck implements Iterable<Card> {
-  private BitSet mask;
-
+public class Deck extends CardSet {
   /**
    * Create a full 52 card deck.
    */
@@ -26,15 +21,6 @@ public class Deck implements Iterable<Card> {
 
   private Deck(BitSet mask) {
     this.mask = mask;
-  }
-
-  @Override
-  public Iterator<Card> iterator() {
-    return new CardIterator(mask);
-  }
-
-  public int numCards() {
-    return mask.cardinality();
   }
 
   /**

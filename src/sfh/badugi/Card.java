@@ -2,10 +2,19 @@ package sfh.badugi;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.BitSet;
 
 public class Card {
+  public enum Suit {
+    CLUB, DIAMOND, HEART, SPADE
+  }
+
+  public enum Rank {
+    ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING;
+  }
+
   @VisibleForTesting
   static final ImmutableBiMap<Character, Integer> RANK_MAP = ImmutableBiMap.<Character, Integer>builder()
       .put('A', 0)
@@ -22,6 +31,21 @@ public class Card {
       .put('Q', 11)
       .put('K', 12).build();
 
+  private static final ImmutableMap<Character, Rank> RANK_ENUM_MAP = ImmutableMap.<Character, Rank>builder()
+      .put('A', Rank.ACE)
+      .put('2', Rank.TWO)
+      .put('3', Rank.THREE)
+      .put('4', Rank.FOUR)
+      .put('5', Rank.FIVE)
+      .put('6', Rank.SIX)
+      .put('7', Rank.SEVEN)
+      .put('8', Rank.EIGHT)
+      .put('9', Rank.NINE)
+      .put('T', Rank.TEN)
+      .put('J', Rank.JACK)
+      .put('Q', Rank.QUEEN)
+      .put('K', Rank.KING).build();
+
   @VisibleForTesting
   static final ImmutableBiMap<Character, Integer> SUIT_MAP = ImmutableBiMap.<Character, Integer>builder()
       .put('c', 0)
@@ -35,7 +59,7 @@ public class Card {
 
   private BitSet mask;
   // TODO: See if this actually saves any time
-  // Cache the set bit to possibly avoid a linear lookup.
+  // Cache the set bit to possibly avoid a linear lookup.  This should always be set after construction.
   private int cachedIndex;
 
   public Card(BitSet bitSet) {
@@ -67,6 +91,28 @@ public class Card {
 
   public BitSet getMask() {
     return mask;
+  }
+
+  public Suit getSuit() {
+    char suitChar = SUIT_MAP.inverse().get(cachedIndex / NUM_CARDS_IN_SUIT);
+    if ('c' == suitChar) {
+      return Suit.CLUB;
+    } else if ('d' == suitChar) {
+      return Suit.DIAMOND;
+    } else if ('h' == suitChar) {
+      return Suit.HEART;
+    } else if ('s' == suitChar) {
+      return Suit.SPADE;
+    }
+    throw new IllegalStateException("Card is not correct");
+  }
+
+  public Rank getRank() {
+    Character rankChar = RANK_MAP.inverse().get(cachedIndex % NUM_CARDS_IN_SUIT);
+    if (!RANK_ENUM_MAP.containsKey(rankChar)) {
+      throw new IllegalStateException("Rank is not correct");
+    }
+    return RANK_ENUM_MAP.get(rankChar);
   }
 
   @Override
