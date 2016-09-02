@@ -71,6 +71,15 @@ public class CardSet implements Iterable<Card> {
 
   @Override
   public String toString() {
+    List<Card> cards = getCardsInIncreasingRankOrder();
+    StringBuilder sb = new StringBuilder();
+    for (Card card : cards) {
+      sb.append(card);
+    }
+    return sb.toString();
+  }
+
+  private List<Card> getCardsInIncreasingRankOrder() {
     List<Card> cards = getCards();
     Collections.sort(cards, new Comparator<Card>() {
       @Override
@@ -81,9 +90,13 @@ public class CardSet implements Iterable<Card> {
         return first.getSuit().ordinal() - second.getSuit().ordinal();
       }
     });
+    return cards;
+  }
+
+  public String getRankString() {
     StringBuilder sb = new StringBuilder();
-    for (Card card : cards) {
-      sb.append(card);
+    for (Card card : getCardsInIncreasingRankOrder()) {
+      sb.append(card.toString().charAt(0));
     }
     return sb.toString();
   }

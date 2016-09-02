@@ -40,7 +40,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
       return 1;
     }
     // Playable hands are the same size
-    if (isSamePlayableHand(this, other)) {
+    if (isSamePlayableHand(thisPlayableHand, otherPlayableHand)) {
       return 0;
     }
 
@@ -147,5 +147,9 @@ public class Hand extends CardSet implements Comparable<Hand> {
       }
     }
     return playable;
+  }
+
+  public String getPlayableRankString() {
+    return getPlayableHand().getRankString();
   }
 }
