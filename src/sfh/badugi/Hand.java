@@ -1,26 +1,22 @@
 package sfh.badugi;
 
-import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A badugi hand of exactly 4 cards.
  */
 public class Hand extends CardSet implements Comparable<Hand> {
-  private static Map<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
+  public static ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
 
   public Hand(Card c1, Card c2, Card c3, Card c4) {
     mask = new BitSet(Card.DECK_LENGTH);
@@ -28,6 +24,13 @@ public class Hand extends CardSet implements Comparable<Hand> {
     mask.or(c2.getMask());
     mask.or(c3.getMask());
     mask.or(c4.getMask());
+    if (mask.cardinality() != 4) {
+      throw new IllegalArgumentException("Hand must be made from 4 distinct cards");
+    }
+  }
+
+  public Hand(BitSet mask) {
+    this.mask = mask;
     if (mask.cardinality() != 4) {
       throw new IllegalArgumentException("Hand must be made from 4 distinct cards");
     }
@@ -41,9 +44,9 @@ public class Hand extends CardSet implements Comparable<Hand> {
         new Card(handString.substring(4, 6)), new Card(handString.substring(6)));
   }
 
-  private static Map<BitSet, Integer> initializeCache() {
+  private static ImmutableMap<BitSet, Integer> initializeCache() {
     try (BufferedReader reader = new BufferedReader(new FileReader("./data/badugi/rankedHands.csv"))) {
-      Map<BitSet, Integer> cache = new HashMap<>();
+      ImmutableMap.Builder<BitSet, Integer> cache = ImmutableMap.builder();
       reader.readLine(); // Skip header
       String line = reader.readLine();
       while (line != null) {
@@ -51,7 +54,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
         cache.put(new Hand(split[1].trim()).mask, Integer.valueOf(split[0].trim()));
         line = reader.readLine();
       }
-      return cache;
+      return cache.build();
     } catch (IOException e) {
       // Just blow up if we can't read the file
       throw new RuntimeException(e);

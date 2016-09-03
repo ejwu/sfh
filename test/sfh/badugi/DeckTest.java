@@ -14,7 +14,7 @@ public class DeckTest {
     Deck deck = new Deck();
     assertEquals(Card.DECK_LENGTH, deck.numCards());
     Card card = new Card("5c");
-    Deck without = deck.without(card);
+    CardSet without = deck.without(card);
     assertEquals(Card.DECK_LENGTH - 1, without.numCards());
     try {
       without.without(card);
@@ -35,7 +35,7 @@ public class DeckTest {
 
   @Test
   public void partialDeckShouldBeIterable() {
-    Deck deck = new Deck();
+    CardSet deck = new Deck();
     deck = deck.without(new Card("5d"));
     deck = deck.without(new Card("Ks"));
     deck = deck.without(new Card("Ac"));
@@ -51,5 +51,11 @@ public class DeckTest {
     Deck deck = new Deck();
     int expectedHands = 52 * 51 * 50 * 49 / 24;
     assertEquals(expectedHands, deck.generateAllHands().size());
+  }
+
+  @Test
+  public void generateAllHandsShouldEqualDraw4() {
+    Deck deck = new Deck();
+    assertEquals(deck.generateAllHands().size(), deck.drawNCards(4).size());
   }
 }

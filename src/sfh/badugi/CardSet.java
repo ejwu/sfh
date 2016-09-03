@@ -2,7 +2,9 @@ package sfh.badugi;
 
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -18,6 +20,10 @@ public class CardSet implements Iterable<Card> {
     for (Card card : cards) {
       mask.or(card.getMask());
     }
+  }
+
+  public CardSet(BitSet mask) {
+    this.mask = mask;
   }
 
   public List<Card> getCards() {
@@ -46,6 +52,57 @@ public class CardSet implements Iterable<Card> {
       ranks.add(card.getRank());
     }
     return ranks;
+  }
+
+  /**
+   * @return all combinations of numToDraw cards that can be drawn from this card set
+   */
+  public Collection<CardSet> drawNCards(int numToDraw) {
+    Set<CardSet> generated = new HashSet<>();
+    if (numToDraw == 0) {
+      return generated;
+    }
+
+    for (Card card : getCards()) {
+      if (numToDraw == 1) {
+        generated.add(new CardSet(card));
+      } else {
+        CardSet without = this.without(card);
+        for (CardSet cardSet : without.drawNCards(numToDraw - 1)) {
+          generated.add(cardSet.with(card));
+        }
+      }
+    }
+    return generated;
+  }
+
+  /**
+   * @return a copy of this card set without the given card.
+   * @throws IllegalArgumentException if the card isn't currently in the card set.
+   */
+  public CardSet without(Card card) {
+    if (!mask.intersects(card.getMask())) {
+      throw new IllegalArgumentException("Deck does not contain card: " + card);
+    }
+    BitSet copy = new BitSet(Card.DECK_LENGTH);
+    copy.or(mask);
+    copy.xor(card.getMask());
+    return new CardSet(copy);
+  }
+
+  /**
+   * @return a copy of this card set with the given card.
+   * @throws java.lang.IllegalArgumentException if the card is already in the set
+   */
+  private CardSet with(Card card) {
+    if (mask.intersects(card.getMask())) {
+      throw new IllegalArgumentException(
+          String.format("Card set [%s] already contains card [%s]", this.toString(), card));
+    }
+    BitSet copy = new BitSet(Card.DECK_LENGTH);
+    copy.or(mask);
+    copy.or(card.getMask());
+    return new CardSet(copy);
   }
 
   @Override
