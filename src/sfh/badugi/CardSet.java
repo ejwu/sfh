@@ -2,7 +2,6 @@ package sfh.badugi;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;

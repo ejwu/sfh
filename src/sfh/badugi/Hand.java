@@ -4,16 +4,24 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A badugi hand of exactly 4 cards.
  */
 public class Hand extends CardSet implements Comparable<Hand> {
+  private static Map<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
+
   public Hand(Card c1, Card c2, Card c3, Card c4) {
     mask = new BitSet(Card.DECK_LENGTH);
     mask.or(c1.getMask());
@@ -25,9 +33,38 @@ public class Hand extends CardSet implements Comparable<Hand> {
     }
   }
 
+  /**
+   * @param handString must be a valid 8 character string representing 4 distinct cards
+   */
+  public Hand(String handString) {
+    super(new Card(handString.substring(0, 2)), new Card(handString.substring(2, 4)),
+        new Card(handString.substring(4, 6)), new Card(handString.substring(6)));
+  }
+
+  private static Map<BitSet, Integer> initializeCache() {
+    try (BufferedReader reader = new BufferedReader(new FileReader("./data/badugi/rankedHands.csv"))) {
+      Map<BitSet, Integer> cache = new HashMap<>();
+      reader.readLine(); // Skip header
+      String line = reader.readLine();
+      while (line != null) {
+        String[] split = line.split(", ");
+        cache.put(new Hand(split[1].trim()).mask, Integer.valueOf(split[0].trim()));
+        line = reader.readLine();
+      }
+      return cache;
+    } catch (IOException e) {
+      // Just blow up if we can't read the file
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
   public int compareTo(Hand other) {
-    return hardCompareTo(other);
+    return easyCompareTo(other);
+  }
+
+  public int easyCompareTo(Hand other) {
+    return HAND_RANK_CACHE.get(this.mask) - HAND_RANK_CACHE.get(other.mask);
   }
 
   // TODO: replace this with some cache once it's generateable
