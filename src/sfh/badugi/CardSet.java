@@ -26,6 +26,16 @@ public class CardSet implements Iterable<Card> {
     this.mask = mask;
   }
 
+  // TODO: unify this and List version?
+  public Card[] getCardArray() {
+    Card[] cards = new Card[mask.cardinality()];
+    int index = 0;
+    for (Card card : this) {
+      cards[index++] = card;
+    }
+    return cards;
+  }
+
   public List<Card> getCards() {
     List<Card> cards = Lists.newArrayListWithCapacity(mask.cardinality());
     for (Card card : this) {
@@ -91,18 +101,28 @@ public class CardSet implements Iterable<Card> {
   }
 
   /**
-   * @return a copy of this card set with the given card.
+   * @return a copy of this card set with the given cards.
    * @throws java.lang.IllegalArgumentException if the card is already in the set
    */
-  private CardSet with(Card card) {
-    if (mask.intersects(card.getMask())) {
-      throw new IllegalArgumentException(
-          String.format("Card set [%s] already contains card [%s]", this.toString(), card));
-    }
+  public CardSet with(Card... cards) {
     BitSet copy = new BitSet(Card.DECK_LENGTH);
     copy.or(mask);
-    copy.or(card.getMask());
+    for (Card card : cards) {
+      if (copy.intersects(card.getMask())) {
+        throw new IllegalArgumentException(
+            String.format("Card set [%s] already contains card [%s]", this.toString(), card));
+      }
+      copy.or(card.getMask());
+    }
     return new CardSet(copy);
+  }
+
+  public boolean hasCard(Card card) {
+    return mask.intersects(card.getMask());
+  }
+
+  public boolean hasAnyCard(CardSet cardSet) {
+    return mask.intersects(cardSet.mask);
   }
 
   @Override

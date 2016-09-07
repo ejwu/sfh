@@ -1,6 +1,8 @@
 package sfh.games.hubadugi;
 
+import com.google.common.collect.Lists;
 import sfh.badugi.Card;
+import sfh.badugi.CardSet;
 import sfh.badugi.Deck;
 import sfh.badugi.Hand;
 
@@ -25,7 +27,33 @@ public class BaseHuBadugiStrategy {
    * @return all possible hands that can be drawn from the deck given the current hand and discard strategy
    */
   public List<Hand> generatePossibleHands(Deck deck, Hand hand) {
+    // TODO: remove when optimizing
+    if (deck.hasAnyCard(hand)) {
+      throw new IllegalArgumentException(String.format("Deck %s contains cards in hand %s", deck, hand));
+    }
+    List<Card> discards = discardStrategy.get(hand);
+    if (discards.isEmpty()) {
+      return Lists.<Hand>newArrayList(hand);
+    }
 
-    return null;
+    CardSet afterDiscard = hand;
+    for (Card discard : discards) {
+      // TODO: remove when optimizing
+      if (!hand.hasCard(discard)) {
+        throw new IllegalStateException(String.format("Hand %s cannot discard %s", hand, discards));
+      }
+      if (deck.hasCard(discard)) {
+        throw new IllegalStateException(String.format("Deck %s contains discards %s", deck, discards));
+      }
+      afterDiscard = afterDiscard.without(discard);
+    }
+
+    // TODO: Could calculate right size for this to preallocate
+    List<Hand> generated = new ArrayList<>();
+    for (CardSet drawn : deck.drawNCards(discards.size())) {
+      generated.add(new Hand(afterDiscard.with(drawn.getCardArray())));
+    }
+
+    return generated;
   }
 }

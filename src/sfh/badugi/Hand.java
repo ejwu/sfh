@@ -29,6 +29,10 @@ public class Hand extends CardSet implements Comparable<Hand> {
     }
   }
 
+  public Hand(CardSet cardSet) {
+    super(cardSet.mask);
+  }
+
   public Hand(BitSet mask) {
     this.mask = mask;
     if (mask.cardinality() != 4) {
