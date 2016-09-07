@@ -1,6 +1,8 @@
 package sfh.games.hubadugi;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import sfh.badugi.Card;
 import sfh.badugi.CardSet;
 import sfh.badugi.Deck;
@@ -24,16 +26,18 @@ public class BaseHuBadugiStrategy {
   }
 
   /**
-   * @return all possible hands that can be drawn from the deck given the current hand and discard strategy
+   * @return all possible hands that can be drawn from the deck given the current hand and discard strategy, as well
+   * as the remaining deck after drawing each hand
    */
-  public List<Hand> generatePossibleHands(Deck deck, Hand hand) {
+  public Map<Hand, CardSet> generatePossibleHands(CardSet deck, Hand hand) {
     // TODO: remove when optimizing
     if (deck.hasAnyCard(hand)) {
       throw new IllegalArgumentException(String.format("Deck %s contains cards in hand %s", deck, hand));
     }
     List<Card> discards = discardStrategy.get(hand);
     if (discards.isEmpty()) {
-      return Lists.<Hand>newArrayList(hand);
+      return ImmutableMap.of(hand, deck);
+
     }
 
     CardSet afterDiscard = hand;
@@ -49,11 +53,11 @@ public class BaseHuBadugiStrategy {
     }
 
     // TODO: Could calculate right size for this to preallocate
-    List<Hand> generated = new ArrayList<>();
+    ImmutableMap.Builder<Hand, CardSet> generated = ImmutableMap.builder();
     for (CardSet drawn : deck.drawNCards(discards.size())) {
-      generated.add(new Hand(afterDiscard.with(drawn.getCardArray())));
+      generated.put(new Hand(afterDiscard.with(drawn.getCardArray())), deck.without(drawn));
     }
 
-    return generated;
+    return generated.build();
   }
 }

@@ -101,6 +101,19 @@ public class CardSet implements Iterable<Card> {
   }
 
   /**
+   * @return a copy of this card set without the given cards
+   * @throws IllegalArgumentException if any of the cards to discard aren't in the current set
+   */
+  public CardSet without(CardSet toRemove) {
+    // TODO: inefficient
+    CardSet removed = this;
+    for (Card card : toRemove) {
+      removed = removed.without(card);
+    }
+    return removed;
+  }
+
+  /**
    * @return a copy of this card set with the given cards.
    * @throws java.lang.IllegalArgumentException if the card is already in the set
    */
