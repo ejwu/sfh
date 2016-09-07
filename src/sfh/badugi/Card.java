@@ -120,4 +120,20 @@ public class Card {
     return Character.toString(RANK_MAP.inverse().get(cachedIndex % NUM_CARDS_IN_SUIT)) +
         Character.toString(SUIT_MAP.inverse().get(cachedIndex / NUM_CARDS_IN_SUIT));
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Card card = (Card) o;
+
+    return !(mask != null ? !mask.equals(card.mask) : card.mask != null);
+
+  }
+
+  @Override
+  public int hashCode() {
+    return mask != null ? mask.hashCode() : 0;
+  }
 }
