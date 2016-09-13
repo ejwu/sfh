@@ -86,17 +86,41 @@ public class CardSet implements Iterable<Card> {
   }
 
   /**
+   * Mutate this CardSet by removing a card.  The card must exist within the card set.
+   * @return The card that was removed
+   * @throws IllegalArgumentException if the card isn't currently in the card set.
+   */
+  public Card draw(Card card) {
+    verifyCardInSet(card);
+    mask.xor(card.getMask());
+    return card;
+  }
+
+  /**
+   * Mutate this CardSet by removing a card.  The card must exist within the card set.
+   * @return The card that was removed
+   * @throws IllegalArgumentException if the card isn't currently in the card set.
+   */
+  public Card draw(String cardString) {
+    return draw(new Card(cardString));
+  }
+
+  /**
    * @return a copy of this card set without the given card.
    * @throws IllegalArgumentException if the card isn't currently in the card set.
    */
   public CardSet without(Card card) {
-    if (!mask.intersects(card.getMask())) {
-      throw new IllegalArgumentException("Deck does not contain card: " + card);
-    }
+    verifyCardInSet(card);
     BitSet copy = new BitSet(Card.DECK_LENGTH);
     copy.or(mask);
     copy.xor(card.getMask());
     return new CardSet(copy);
+  }
+
+  private void verifyCardInSet(Card card) {
+    if (!mask.intersects(card.getMask())) {
+      throw new IllegalArgumentException("Deck does not contain card: " + card);
+    }
   }
 
   /**

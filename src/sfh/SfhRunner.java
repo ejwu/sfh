@@ -32,11 +32,11 @@ public class SfhRunner {
       play(iterations, new RoshamboGameState(), new RoshamboStrategy(), new RoshamboStrategy());
     } else {
 
-      HuBadugiGameState gs = new HuBadugiGameState();
-      HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
-      HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
-
-      play(iterations, gs, oop, ip);
+//      HuBadugiGameState gs = new HuBadugiGameState();
+//      HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
+//      HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
+//
+//      play(iterations, gs, oop, ip);
     }
   }
 

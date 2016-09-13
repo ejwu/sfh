@@ -2,7 +2,8 @@ package sfh.games.hubadugi;
 
 import sfh.Strategy;
 
-public class HuBadugiOopStrategy implements Strategy<HuBadugiGameState, HuBadugiOopStrategy, HuBadugiIpStrategy> {
+public class HuBadugiOopStrategy extends BaseHuBadugiStrategy
+    implements Strategy<HuBadugiGameState, HuBadugiOopStrategy, HuBadugiIpStrategy> {
   @Override
   public double mergeFrom(HuBadugiOopStrategy other, double epsilon) {
     return 0;

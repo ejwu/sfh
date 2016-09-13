@@ -37,7 +37,6 @@ public class BaseHuBadugiStrategy {
     List<Card> discards = discardStrategy.get(hand);
     if (discards.isEmpty()) {
       return ImmutableMap.of(hand, deck);
-
     }
 
     CardSet afterDiscard = hand;
