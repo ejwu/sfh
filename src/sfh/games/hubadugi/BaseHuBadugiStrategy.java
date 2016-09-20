@@ -21,7 +21,7 @@ public class BaseHuBadugiStrategy {
 
   public BaseHuBadugiStrategy() {
     for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
-      discardStrategy.put(new Hand(mask), new ArrayList<Card>());
+      discardStrategy.put(new Hand(mask), new ArrayList<>());
     }
   }
 

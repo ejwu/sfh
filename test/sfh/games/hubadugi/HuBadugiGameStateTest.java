@@ -17,8 +17,8 @@ public class HuBadugiGameStateTest {
   @Test
   public void testGetValueOneEqualHand() {
     Deck deck = new Deck();
-    Hand oop = new Hand(deck.draw("Ac"), deck.draw("2d"), deck.draw("3h"), deck.draw("4s"));
-    Hand ip = new Hand(deck.draw("Ad"), deck.draw("2h"), deck.draw("3s"), deck.draw("4c"));
+    Hand oop = deck.drawHand("Ac", "2d", "3h", "4s");
+    Hand ip = deck.drawHand("Ad", "2h", "3s", "4c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(0, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
@@ -28,9 +28,9 @@ public class HuBadugiGameStateTest {
   public void testGetValueOneHandOopWins() {
     Deck deck = new Deck();
     // A234
-    Hand oop = new Hand(deck.draw("Ac"), deck.draw("2d"), deck.draw("3h"), deck.draw("4s"));
+    Hand oop = deck.drawHand("Ac", "2d", "3h", "4s");
     // A235
-    Hand ip = new Hand(deck.draw("Ad"), deck.draw("2h"), deck.draw("3s"), deck.draw("5c"));
+    Hand ip = deck.drawHand("Ad", "2h", "3s", "5c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(1, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
@@ -40,12 +40,12 @@ public class HuBadugiGameStateTest {
   public void testGetValueOneHandIpWins() {
     Deck deck = new Deck();
     // 75
-    Hand oop = new Hand(deck.draw("5c"), deck.draw("5d"), deck.draw("7h"), deck.draw("Kh"));
+    Hand oop = deck.drawHand("5c", "5d", "7h", "Kh");
     // KQJ
-    Hand ip = new Hand(deck.draw("Jd"), deck.draw("Qh"), deck.draw("Kc"), deck.draw("Ks"));
+    Hand ip = deck.drawHand("Jd", "Qh", "Kc", "Ks");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(-1, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
   }
-
+  
 }

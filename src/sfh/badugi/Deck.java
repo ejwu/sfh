@@ -20,6 +20,13 @@ public class Deck extends CardSet {
   }
 
   /**
+   * Convenience method for removing 4 cards from a deck and forming them into a Hand.
+   */
+  public Hand drawHand(String card1, String card2, String card3, String card4) {
+    return new Hand(draw(card1), draw(card2), draw(card3), draw(card4));
+  }
+
+  /**
    * @return all 4 card hands that can be generated from the current state of the deck
    */
   public Collection<Hand> generateAllHands() {
