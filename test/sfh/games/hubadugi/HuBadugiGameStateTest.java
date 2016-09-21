@@ -21,7 +21,7 @@ public class HuBadugiGameStateTest {
     Hand ip = deck.drawHand("Ad", "2h", "3s", "4c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(0, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
+    assertDoubleEquals(0, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
   }
 
   @Test
@@ -33,7 +33,7 @@ public class HuBadugiGameStateTest {
     Hand ip = deck.drawHand("Ad", "2h", "3s", "5c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(1, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
+    assertDoubleEquals(1, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
   }
 
   @Test
@@ -45,7 +45,19 @@ public class HuBadugiGameStateTest {
     Hand ip = deck.drawHand("Jd", "Qh", "Kc", "Ks");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(-1, gameState.getValue(new HuBadugiOopStrategy(), new HuBadugiIpStrategy()));
+    assertDoubleEquals(-1, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
   }
-  
+
+  private HuBadugiOopStrategy getDefaultOopStrategy() {
+    HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
+    strategy.setDefaultZeroDiscardStrategy();
+    return strategy;
+  }
+
+  private HuBadugiIpStrategy getDefaultIpStrategy() {
+    HuBadugiIpStrategy strategy = new HuBadugiIpStrategy();
+    strategy.setDefaultZeroDiscardStrategy();
+    return strategy;
+  }
+
 }
