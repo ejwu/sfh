@@ -13,16 +13,29 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class BaseHuBadugiStrategy {
   // Mapping for every hand to its list of cards to discard
   // TODO: Make this dependent on previous discards, number of cards discarded if in position...probably more
-  protected Map<Hand, List<Card>> discardStrategy = new HashMap<>();
+  protected Map<Hand, CardSet> discardStrategy = new HashMap<>();
 
   public BaseHuBadugiStrategy() {
+  }
+
+  public void setDefaultZeroDiscardStrategy() {
     for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
-      discardStrategy.put(new Hand(mask), new ArrayList<>());
+      setDiscardStrategy(new Hand(mask), new CardSet());
     }
+  }
+
+  public void setDiscardStrategy(Hand hand, CardSet toDiscard) {
+    for (Card discard : toDiscard) {
+      if (!hand.hasCard(discard)) {
+        throw new IllegalArgumentException(String.format("Hand %s cannot discard %s", hand, toDiscard));
+      }
+    }
+    discardStrategy.put(hand, toDiscard);
   }
 
   /**
@@ -34,8 +47,12 @@ public class BaseHuBadugiStrategy {
     if (deck.hasAnyCard(hand)) {
       throw new IllegalArgumentException(String.format("Deck %s contains cards in hand %s", deck, hand));
     }
-    List<Card> discards = discardStrategy.get(hand);
-    if (discards.isEmpty()) {
+    CardSet discards = discardStrategy.get(hand);
+    if (discards == null) {
+      throw new IllegalArgumentException("Strategy does not contain discard strategy for hand " + hand);
+    }
+
+    if (discards.numCards() == 0) {
       return ImmutableMap.of(hand, deck);
     }
 
@@ -53,7 +70,7 @@ public class BaseHuBadugiStrategy {
 
     // TODO: Could calculate right size for this to preallocate
     ImmutableMap.Builder<Hand, CardSet> generated = ImmutableMap.builder();
-    for (CardSet drawn : deck.drawNCards(discards.size())) {
+    for (CardSet drawn : deck.drawNCards(discards.numCards())) {
       generated.put(new Hand(afterDiscard.with(drawn.getCardArray())), deck.without(drawn));
     }
 
