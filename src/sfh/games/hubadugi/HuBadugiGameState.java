@@ -18,24 +18,32 @@ public class HuBadugiGameState implements GameState<HuBadugiOopStrategy, HuBadug
     this.ipHand = ipHand;
   }
 
+  /**
+   * Calculates the expected value for OOP in a 1 bet pot with no betting.
+   */
   @Override
   public double getValue(HuBadugiOopStrategy oop, HuBadugiIpStrategy ip) {
     // Single draw, no betting
     Map<Hand, CardSet> oopHands = oop.generatePossibleHands(deck, oopHand);
     double cumulativeOopValue = 0.0;
     for (Map.Entry<Hand, CardSet> handWithRemainingDeck : oopHands.entrySet()) {
+      // For every possible deck state after OOP draws, try every possible result of IP drawing
       Map<Hand, CardSet> ipHands = ip.generatePossibleHands(handWithRemainingDeck.getValue(), ipHand);
+      // Total value of a particular OOP hand against all possible IP hands
       double cumulativeValueOfOopHand = 0.0;
       for (Hand potentialIpHand : ipHands.keySet()) {
         Hand potentialOopHand = handWithRemainingDeck.getKey();
         if (potentialOopHand.compareTo(potentialIpHand) > 0) {
-          cumulativeValueOfOopHand -= 1;
+          // OOP loses and gets no part of the pot
         } else if (potentialOopHand.compareTo(potentialIpHand) < 0) {
+          // OOP wins and gets the whole pot
           cumulativeValueOfOopHand += 1;
         } else {
-          // cumulative value doesn't change for a tie
+          // Ties get half the pot
+          cumulativeValueOfOopHand += 0.5;
         }
       }
+      // Add the average expected value of this OOP hand to the sum
       cumulativeOopValue += cumulativeValueOfOopHand / ipHands.keySet().size();
     }
     return cumulativeOopValue / oopHands.keySet().size();

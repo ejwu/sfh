@@ -61,6 +61,13 @@ public class HandTest {
     assertTrue(a23.compareTo(a25) < 0);
   }
 
+  @Test
+  public void wheelsShouldTie() {
+    Hand first = new Hand("Ac2d3h4s");
+    Hand second = new Hand("Ad2h3c4s");
+    assertEquals(0, first.compareTo(second));
+  }
+
   // Only used to generate the text cache of hand rankings
   @Ignore
   public void bsMethodForWritingCache() throws Exception {
