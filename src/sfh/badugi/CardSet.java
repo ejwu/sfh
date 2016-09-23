@@ -21,6 +21,13 @@ public class CardSet implements Iterable<Card> {
     }
   }
 
+  public CardSet(String... cardStrings) {
+    mask = new BitSet();
+    for (String cardString : cardStrings) {
+      mask.or(new Card(cardString).getMask());
+    }
+  }
+
   public CardSet(BitSet mask) {
     this.mask = mask;
   }
