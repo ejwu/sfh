@@ -25,7 +25,7 @@ public class BaseHuBadugiStrategy {
 
   public void setDefaultZeroDiscardStrategy() {
     for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
-      setDiscardStrategy(new Hand(mask), new CardSet());
+      setDiscardStrategy(new Hand(mask), new CardSet(new BitSet()));
     }
   }
 
