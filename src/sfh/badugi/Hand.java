@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -94,6 +95,28 @@ public class Hand extends CardSet implements Comparable<Hand> {
       return 1;
     }
     throw new IllegalStateException("Failed to compare " + this + " with " + other);
+  }
+
+  public Collection<CardSet> getAllValidDiscards() {
+    List<CardSet> discards = new ArrayList<>();
+    // discard 0
+    discards.add(new CardSet(new BitSet()));
+
+    // discard 1
+    for (Card card : this) {
+      discards.add(new CardSet(card));
+    }
+
+    // discard 2
+    discards.addAll(getTwoCardSubsets());
+
+    // discard 3
+    discards.addAll(getThreeCardSubsets());
+
+    // discard 4
+    discards.add(this);
+
+    return discards;
   }
 
   /**

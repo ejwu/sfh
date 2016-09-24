@@ -9,6 +9,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.io.FileWriter;
+import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
@@ -66,6 +68,39 @@ public class HandTest {
     Hand first = new Hand("Ac2d3h4s");
     Hand second = new Hand("Ad2h3c4s");
     assertEquals(0, first.compareTo(second));
+  }
+
+  @Test
+  public void testValidDiscards() {
+    Hand hand = new Hand("8dTc4cJs");
+    Collection<CardSet> discards = hand.getAllValidDiscards();
+
+    // 1 0-card discard + 4 1-card + 6 2-card + 4 3-card + 1 4-card = 16
+    assertEquals(16, discards.size());
+
+    // 0 discards
+    assertTrue(discards.contains(new CardSet(new BitSet())));
+
+    // 1 discard
+    for (Card card : hand) {
+      assertTrue(discards.contains(new CardSet(card)));
+    }
+
+    // 2 discards
+    assertTrue(discards.contains(new CardSet("8d", "Tc")));
+    assertTrue(discards.contains(new CardSet("8d", "4c")));
+    assertTrue(discards.contains(new CardSet("8d", "Js")));
+    assertTrue(discards.contains(new CardSet("Tc", "4c")));
+    assertTrue(discards.contains(new CardSet("Tc", "Js")));
+    assertTrue(discards.contains(new CardSet("4c", "Js")));
+
+    // 3 discards
+    for (Card card : hand) {
+      assertTrue(discards.contains(hand.without(card)));
+    }
+
+    // 4 discards
+    assertTrue(discards.contains(hand));
   }
 
   // Only used to generate the text cache of hand rankings
