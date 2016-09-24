@@ -11,20 +11,13 @@ import sfh.badugi.Hand;
 
 import java.util.BitSet;
 
-import static org.junit.Assert.assertEquals;
-
 @RunWith(JUnit4.class)
-public class HuBadugiGameStateTest {
+public class HuBadugiGameStateTest extends BaseStrategyTest {
   private Deck deck;
 
   @Before
   public void setUp() {
     deck = Deck.createDeck();
-  }
-
-  // TODO: Move this to some base test case
-  private void assertDoubleEquals(double expected, double actual) {
-    assertEquals(expected, actual, 0.000000001);
   }
 
   @Test
@@ -233,17 +226,4 @@ public class HuBadugiGameStateTest {
     strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;
   }
-
-  private HuBadugiOopStrategy getDefaultOopStrategy() {
-    HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy.setDefaultZeroDiscardStrategy();
-    return strategy;
-  }
-
-  private HuBadugiIpStrategy getDefaultIpStrategy() {
-    HuBadugiIpStrategy strategy = new HuBadugiIpStrategy();
-    strategy.setDefaultZeroDiscardStrategy();
-    return strategy;
-  }
-
 }

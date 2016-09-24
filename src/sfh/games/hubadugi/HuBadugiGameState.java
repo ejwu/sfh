@@ -18,6 +18,15 @@ public class HuBadugiGameState implements GameState<HuBadugiOopStrategy, HuBadug
     this.ipHand = ipHand;
   }
 
+  // TODO: unclear if this should be exposed, but strategies need this to figure out best responses
+  Hand getOopHand() {
+    return oopHand;
+  }
+
+  Hand getIpHand() {
+    return ipHand;
+  }
+
   /**
    * Calculates the expected value for OOP in a 1 bet pot with no betting.
    */

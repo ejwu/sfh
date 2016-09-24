@@ -1,19 +1,13 @@
 package sfh.games.hubadugi;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import sfh.badugi.Card;
 import sfh.badugi.CardSet;
-import sfh.badugi.Deck;
 import sfh.badugi.Hand;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class BaseHuBadugiStrategy {
   // Mapping for every hand to its list of cards to discard
@@ -36,6 +30,10 @@ public class BaseHuBadugiStrategy {
       }
     }
     discardStrategy.put(hand, toDiscard);
+  }
+
+  public CardSet getDiscardStrategy(Hand hand) {
+    return discardStrategy.get(hand);
   }
 
   /**
