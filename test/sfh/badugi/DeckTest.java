@@ -11,13 +11,13 @@ import static org.junit.Assert.fail;
 public class DeckTest {
   @Test
   public void newDeckIsRightSize() {
-    Deck deck = new Deck();
+    Deck deck = Deck.createDeck();
     assertEquals(Card.DECK_LENGTH, deck.numCards());
   }
 
   @Test
   public void fullDeckShouldBeIterable() {
-    Deck deck = new Deck();
+    Deck deck = Deck.createDeck();
     int count = 0;
     for (Card card : deck) {
       count++;
@@ -27,7 +27,7 @@ public class DeckTest {
 
   @Test
   public void partialDeckShouldBeIterable() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     deck = deck.without(new Card("5d"));
     deck = deck.without(new Card("Ks"));
     deck = deck.without(new Card("Ac"));
@@ -40,14 +40,14 @@ public class DeckTest {
 
   @Test
   public void generateAllHandShouldHaveRightNumber() {
-    Deck deck = new Deck();
+    Deck deck = Deck.createDeck();
     int expectedHands = 52 * 51 * 50 * 49 / 24;
     assertEquals(expectedHands, deck.generateAllHands().size());
   }
 
   @Test
   public void generateAllHandsShouldEqualDraw4() {
-    Deck deck = new Deck();
+    Deck deck = Deck.createDeck();
     assertEquals(deck.generateAllHands().size(), deck.drawNCards(4).size());
   }
 }

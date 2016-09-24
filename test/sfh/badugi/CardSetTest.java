@@ -16,7 +16,7 @@ public class CardSetTest {
 
   @Test
   public void withoutShouldFailIfCardNotPresent() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     int size = deck.numCards();
     Card card = new Card("5c");
     CardSet without = deck.without(card);
@@ -30,7 +30,7 @@ public class CardSetTest {
 
   @Test
   public void withShouldFailIfCardPresent() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     Card card = new Card("3c");
     try {
       deck.with(card);
@@ -43,7 +43,7 @@ public class CardSetTest {
 
   @Test
   public void testHasCard() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     for (Card card : deck) {
       assertTrue(deck.hasCard(card));
     }
@@ -54,7 +54,7 @@ public class CardSetTest {
 
   @Test
   public void testhasAnyCard() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     CardSet toRemove = new CardSet(new Card("Ac"), new Card("2c"), new Card("5d"), new Card("Qs"));
     CardSet leftToRemove = new CardSet(toRemove.mask);
     while (leftToRemove.numCards() > 0) {
@@ -68,7 +68,7 @@ public class CardSetTest {
 
   @Test
   public void getCardsShouldBeIdentical() {
-    CardSet deck = new Deck();
+    CardSet deck = Deck.createDeck();
     Card[] asArray = deck.getCardArray();
     List<Card> asList = deck.getCards();
     assertEquals(asArray.length, asList.size());

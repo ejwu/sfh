@@ -22,8 +22,8 @@ public class BaseHuBadugiStrategyTest {
   @Test
   public void drawingForHandWithNoDiscardStrategyShouldThrow() {
     BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
-    Deck deck = new Deck();
-    Hand hand = new Hand(deck.draw("Ac"), deck.draw("2h"), deck.draw("3d"), deck.draw("4s"));
+    Deck deck = Deck.createDeck();
+    Hand hand = Hand.createHand(deck.draw("Ac"), deck.draw("2h"), deck.draw("3d"), deck.draw("4s"));
     try {
       strategy.generatePossibleHands(deck, hand);
       fail();
@@ -35,8 +35,8 @@ public class BaseHuBadugiStrategyTest {
   public void drawingForHandWithZeroDiscardStrategy() {
     BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
     strategy.setDefaultZeroDiscardStrategy();
-    Deck deck = new Deck();
-    Hand hand = new Hand(deck.draw("Ac"), deck.draw("2h"), deck.draw("3d"), deck.draw("4s"));
+    Deck deck = Deck.createDeck();
+    Hand hand = Hand.createHand(deck.draw("Ac"), deck.draw("2h"), deck.draw("3d"), deck.draw("4s"));
     Map<Hand, CardSet> drawn = strategy.generatePossibleHands(deck, hand);
     assertEquals(1, drawn.size());
     assertTrue(drawn.containsKey(hand));
@@ -46,7 +46,7 @@ public class BaseHuBadugiStrategyTest {
   @Test
   public void discardStrategyMustBeValid() {
     BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
-    Hand hand = new Hand(new Card("Ac"), new Card("2h"), new Card("3d"), new Card("4s"));
+    Hand hand = Hand.createHand(new Card("Ac"), new Card("2h"), new Card("3d"), new Card("4s"));
     try {
       strategy.setDiscardStrategy(hand, new CardSet(new Card("Ad")));
       fail();
@@ -57,12 +57,12 @@ public class BaseHuBadugiStrategyTest {
   @Test
   public void discardOne() {
     BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
-    Deck deck = new Deck();
+    Deck deck = Deck.createDeck();
     Card keep1 = deck.draw("Ac");
     Card keep2 = deck.draw("2d");
     Card keep3 = deck.draw("3h");
     Card discard = deck.draw("Kh");
-    Hand hand = new Hand(keep1, keep2, keep3, discard);
+    Hand hand = Hand.createHand(keep1, keep2, keep3, discard);
     strategy.setDiscardStrategy(hand, new CardSet(discard));
     Map<Hand, CardSet> drawn = strategy.generatePossibleHands(deck, hand);
 

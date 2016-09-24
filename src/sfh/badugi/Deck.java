@@ -9,21 +9,26 @@ import java.util.Set;
  * Deck is somewhat of a misnomer, it's more like a CardSet
  */
 public class Deck extends CardSet {
+  private Deck(BitSet mask) {
+    super(mask);
+  }
+
   /**
    * Create a full 52 card deck.
    */
-  public Deck() {
-    mask = new BitSet(Card.DECK_LENGTH);
+  public static Deck createDeck() {
+    BitSet mask = new BitSet(Card.DECK_LENGTH);
     for (int i = 0; i < Card.DECK_LENGTH; i++) {
       mask.set(i);
     }
+    return new Deck(mask);
   }
 
   /**
    * Convenience method for removing 4 cards from a deck and forming them into a Hand.
    */
   public Hand drawHand(String card1, String card2, String card3, String card4) {
-    return new Hand(draw(card1), draw(card2), draw(card3), draw(card4));
+    return Hand.createHand(draw(card1), draw(card2), draw(card3), draw(card4));
   }
 
   /**
@@ -39,7 +44,7 @@ public class Deck extends CardSet {
         for (Card third : withoutSecond) {
           CardSet withoutThird = withoutSecond.without(third);
           for (Card fourth : withoutThird) {
-            allHands.add(new Hand(first, second, third, fourth));
+            allHands.add(Hand.createHand(first, second, third, fourth));
           }
         }
       }

@@ -21,14 +21,14 @@ import static org.junit.Assert.fail;
 public class HandTest {
   @Test
   public void constructHand() {
-    Hand hand = new Hand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("4s"));
+    Hand hand = Hand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("4s"));
     assertEquals("Ac2d3h4s", hand.toString());
   }
 
   @Test
   public void handWithDuplicateCardsShouldThrow() {
     try {
-      new Hand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("Ac"));
+      Hand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("Ac"));
       fail("Shouldn't be able to construct hand with duplicate cards");
     } catch (IllegalArgumentException expected) {
     }
@@ -36,7 +36,7 @@ public class HandTest {
 
   @Test
   public void best24HandsShouldBeEqual() {
-    List<Hand> allHands = Lists.newArrayList(new Deck().generateAllHands());
+    List<Hand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
     Collections.sort(allHands);
     Hand bestHand = allHands.get(0);
     int count = 0;
@@ -56,8 +56,8 @@ public class HandTest {
   // 1671,   Ah2d3s5h,     Ah2d3s,        A23
   @Test
   public void a23ShouldBeatA25() {
-    Hand a25 = new Hand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
-    Hand a23 = new Hand(new Card("Ah"), new Card("2d"), new Card("3s"), new Card("5h"));
+    Hand a25 = Hand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
+    Hand a23 = Hand.createHand(new Card("Ah"), new Card("2d"), new Card("3s"), new Card("5h"));
     assertTrue(a23.compareTo(a25) < 0);
   }
 
@@ -71,7 +71,7 @@ public class HandTest {
   // Only used to generate the text cache of hand rankings
   @Ignore
   public void bsMethodForWritingCache() throws Exception {
-    List<Hand> allHands = Lists.newArrayList(new Deck().generateAllHands());
+    List<Hand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
     Collections.sort(allHands);
     Multimap<Integer, Hand> sortedHands = ArrayListMultimap.create();
     int handRank = 0;

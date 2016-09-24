@@ -18,15 +18,14 @@ import java.util.List;
 public class Hand extends CardSet implements Comparable<Hand> {
   public static ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
 
-  public Hand(Card c1, Card c2, Card c3, Card c4) {
-    mask = new BitSet(Card.DECK_LENGTH);
+
+  public static Hand createHand(Card c1, Card c2, Card c3, Card c4) {
+    BitSet mask = new BitSet(Card.DECK_LENGTH);
     mask.or(c1.getMask());
     mask.or(c2.getMask());
     mask.or(c3.getMask());
     mask.or(c4.getMask());
-    if (mask.cardinality() != 4) {
-      throw new IllegalArgumentException("Hand must be made from 4 distinct cards");
-    }
+    return new Hand(mask);
   }
 
   public Hand(CardSet cardSet) {
@@ -34,7 +33,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
   }
 
   public Hand(BitSet mask) {
-    this.mask = mask;
+    super(mask);
     if (mask.cardinality() != 4) {
       throw new IllegalArgumentException("Hand must be made from 4 distinct cards");
     }

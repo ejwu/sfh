@@ -19,7 +19,7 @@ public class HuBadugiGameStateTest {
 
   @Before
   public void setUp() {
-    deck = new Deck();
+    deck = Deck.createDeck();
   }
 
   // TODO: Move this to some base test case
@@ -202,7 +202,7 @@ public class HuBadugiGameStateTest {
 
   // Test that situations are symmetric and generate the correct values when IP and OOP hands are swapped
   private void testBoth(Hand oopHand, Hand ipHand, CardSet oopDiscards, CardSet ipDiscards, double oopValue) {
-    Deck deckWithoutHands = new Deck();
+    Deck deckWithoutHands = Deck.createDeck();
     for (Card card : oopHand) {
       deckWithoutHands.draw(card);
     }
