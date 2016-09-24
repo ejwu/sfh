@@ -9,6 +9,8 @@ import sfh.badugi.CardSet;
 import sfh.badugi.Deck;
 import sfh.badugi.Hand;
 
+import java.util.BitSet;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
@@ -93,29 +95,26 @@ public class HuBadugiGameStateTest {
   }
 
   @Test
-  public void testGetValueSameOneCardDrawRanges() {
+  public void testGetValueIdentical1CardDraw() {
+    // Both A23, drawing to spades
     Hand oop = deck.drawHand("Ac", "2d", "3h", "Kh");
     Hand ip = deck.drawHand("Ad", "2h", "3c", "Kc");
-    HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
+    CardSet oopDiscards = new CardSet("Kh");
+    CardSet ipDiscards = new CardSet("Kc");
 
-    // Both hands draw to A23
-    HuBadugiOopStrategy oopStrategy = getOopStrategyWithDiscards(oop, "Kh");
-    HuBadugiIpStrategy ipStrategy = getIpStrategyWithDiscards(ip, "Kc");
-    // Same hands, same strategies, should be equal EV
-    assertDoubleEquals(0.5, gameState.getValue(oopStrategy, ipStrategy));
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.5);
   }
 
   @Test
-  public void testGetValuePatOopVs2CardDrawIp() {
+  public void testGetValuePatVs2CardDraw() {
     // A23
     Hand oop = deck.drawHand("Ad", "2h", "3c", "Kd");
     // 45, so no two card draw can beat OOP unless it makes a badugi
     // None of the dead cards help make a badugi.
     Hand ip = deck.drawHand("4d", "5h", "4h", "5d");
-    HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-
+    CardSet oopDiscards = new CardSet(new BitSet());
     // Draw to 45
-    HuBadugiIpStrategy ipStrategy = getIpStrategyWithDiscards(ip, "4h", "5d");
+    CardSet ipDiscards = new CardSet("4h", "5d");
 
     // 44 cards in the deck.  IP can draw 10+11 nonpairing offsuit cards with the first card (all the clubs and spades
     // A-3 and 6-K, except the dead 3c).  There are 10 badugi making second cards if the first card is a club, or 9
@@ -123,20 +122,115 @@ public class HuBadugiGameStateTest {
     // 10/44 * 10/43 (drawing a good club, then spade) +
     // 10/44 * 9/43 (drawing a non-3 spade, then a club) +
     // 1/44 * 10/43 (drawing the 3s, then a club)
-    assertDoubleEquals(1 - ((10.0 / 44 * 10.0 / 43) + (10.0 / 44 * 9.0 / 43) + (1.0 / 44 * 10.0 / 43)),
-        gameState.getValue(getDefaultOopStrategy(), ipStrategy));
+    testBoth(oop, ip, oopDiscards, ipDiscards,
+        1 - ((10.0 / 44 * 10.0 / 43) + (10.0 / 44 * 9.0 / 43) + (1.0 / 44 * 10.0 / 43)));
+  }
+
+  @Test
+  public void testSame2CardDraws() {
+    Hand oop = deck.drawHand("As", "2h", "Ah", "2s");
+    Hand ip = deck.drawHand("Ad", "2c", "Ac", "2d");
+    CardSet oopDiscards = new CardSet("Ah", "2s");
+    CardSet ipDiscards = new CardSet("Ac", "2d");
+
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.5);
+  }
+
+  @Test
+  public void testSame2CardDrawsBadIpDeadCards() {
+    Hand oop = deck.drawHand("As", "2h", "Ah", "2s");
+    Hand ip = deck.drawHand("Ad", "2c", "Kc", "Kh");
+    CardSet oopDiscards = new CardSet("Ah", "2s");
+    CardSet ipDiscards = new CardSet("Kc", "Kh");
+
+    // Actual value not calculated.
+    // This value is higher than testSame2CardDraws because the IP hand is discarding useful cards.
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.5095217223);
+  }
+
+  @Test
+  public void testDifferent2CardDraws() {
+    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    Hand ip = deck.drawHand("Ah", "3d", "Qh", "Qd");
+    CardSet oopDiscards = new CardSet("Qs", "Qc");
+    CardSet ipDiscards = new CardSet("Qh", "Qd");
+
+    // Intuitively OOP has an advantage due to having a better draw.  Actual value hasn't been calculated, this test
+    // mostly tests that the symmetric nature is correct.
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.5582082882);
+  }
+
+  @Test
+  public void testDifferent2CardDrawsBadIpDeadCards() {
+    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    Hand ip = deck.drawHand("Ah", "3d", "Ks", "Kc");
+    CardSet oopDiscards = new CardSet("Qs", "Qc");
+    CardSet ipDiscards = new CardSet("Ks", "Kc");
+
+    // Intuitively OOP has an advantage due to having a better draw.  Actual value hasn't been calculated, this test
+    // mostly tests that the symmetric nature is correct.
+    // The value for this is higher than testDifferent2CardDraws since the IP draw is worse due to discarding useful
+    // cards.
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.58574768);
+  }
+
+
+  @Test
+  public void testDifferent2CardDrawsWorseIpHand() {
+    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    Hand ip = deck.drawHand("3h", "4d", "Qh", "Qd");
+    CardSet oopDiscards = new CardSet("Qs", "Qc");
+    CardSet ipDiscards = new CardSet("Qh", "Qd");
+
+    // Intuitively OOP has an advantage due to having a better draw.  Actual value hasn't been calculated, this test
+    // mostly tests that the symmetric nature is correct.
+    // The value for this is higher than testDifferent2CardDraws since the IP draw is worse due to keeping worse cards.
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.568552595);
+  }
+
+  @Test
+  public void testDifferent2CardDrawsEvenWorseIpHand() {
+    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    Hand ip = deck.drawHand("7h", "8d", "Qh", "Qd");
+    CardSet oopDiscards = new CardSet("Qs", "Qc");
+    CardSet ipDiscards = new CardSet("Qh", "Qd");
+
+    // Actual value hasn't been calculated.
+    // The value for this is should be higher than testDifferent2CardDrawsWorseIpHand.
+    testBoth(oop, ip, oopDiscards, ipDiscards, 0.62198129909);
+  }
+
+  // Test that situations are symmetric and generate the correct values when IP and OOP hands are swapped
+  private void testBoth(Hand oopHand, Hand ipHand, CardSet oopDiscards, CardSet ipDiscards, double oopValue) {
+    Deck deckWithoutHands = new Deck();
+    for (Card card : oopHand) {
+      deckWithoutHands.draw(card);
+    }
+    for (Card card : ipHand) {
+      deckWithoutHands.draw(card);
+    }
+
+    HuBadugiGameState regular = new HuBadugiGameState(deckWithoutHands, oopHand, ipHand);
+    HuBadugiOopStrategy regularOopStrategy = getOopStrategyWithDiscards(oopHand, oopDiscards);
+    HuBadugiIpStrategy regularIpStrategy = getIpStrategyWithDiscards(ipHand, ipDiscards);
+    assertDoubleEquals(oopValue, regular.getValue(regularOopStrategy, regularIpStrategy));
+
+    HuBadugiGameState reversed = new HuBadugiGameState(deckWithoutHands, ipHand, oopHand);
+    HuBadugiOopStrategy reversedOopStrategy = getOopStrategyWithDiscards(ipHand, ipDiscards);
+    HuBadugiIpStrategy reversedIpStrategy = getIpStrategyWithDiscards(oopHand, oopDiscards);
+    assertDoubleEquals(1 - oopValue, reversed.getValue(reversedOopStrategy, reversedIpStrategy));
   }
 
   // TODO: these are identical except for type, seems bad
-  private HuBadugiOopStrategy getOopStrategyWithDiscards(Hand hand, String... toDiscard) {
+  private HuBadugiOopStrategy getOopStrategyWithDiscards(Hand hand, CardSet toDiscard) {
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy.setDiscardStrategy(hand, new CardSet(toDiscard));
+    strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;
   }
 
-  private HuBadugiIpStrategy getIpStrategyWithDiscards(Hand hand, String... toDiscard) {
+  private HuBadugiIpStrategy getIpStrategyWithDiscards(Hand hand, CardSet toDiscard) {
     HuBadugiIpStrategy strategy = new HuBadugiIpStrategy();
-    strategy.setDiscardStrategy(hand, new CardSet(toDiscard));
+    strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;
   }
 
