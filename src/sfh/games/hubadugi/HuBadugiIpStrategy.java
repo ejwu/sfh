@@ -7,7 +7,7 @@ public class HuBadugiIpStrategy extends BaseHuBadugiStrategy
 
   @Override
   public HuBadugiIpStrategy getBestResponse(HuBadugiGameState o, HuBadugiOopStrategy villain) {
-    return null;
+    return this;
   }
 
   @Override

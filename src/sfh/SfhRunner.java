@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import sfh.badugi.Deck;
+import sfh.badugi.Hand;
 import sfh.games.hubadugi.HuBadugiGameState;
 import sfh.games.hubadugi.HuBadugiIpStrategy;
 import sfh.games.hubadugi.HuBadugiOopStrategy;
@@ -30,13 +32,15 @@ public class SfhRunner {
     int iterations = options.valueOf(FLAG_SPEC_ITERATIONS);
     if (FLAG_GAME_ROSHAMBO.equals(options.valueOf(FLAG_GAME))) {
       play(iterations, new RoshamboGameState(), new RoshamboStrategy(), new RoshamboStrategy());
-    } else {
+    } else if (FLAG_GAME_BADUGI.equals(options.valueOf(FLAG_GAME))) {
+      Deck deck = Deck.createDeck();
+      Hand oopHand = deck.drawHand("5c", "7d", "9s", "9d");
+      Hand ipHand = deck.drawHand("4c", "6d", "8s", "Ks");
+      HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
+      HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
+      HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
 
-//      HuBadugiGameState gs = new HuBadugiGameState();
-//      HuBadugiIpStrategy ip = new HuBadugiIpStrategy();
-//      HuBadugiOopStrategy oop = new HuBadugiOopStrategy();
-//
-//      play(iterations, gs, oop, ip);
+      play(iterations, gs, oop, ip);
     }
   }
 

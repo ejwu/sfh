@@ -75,4 +75,17 @@ public class BaseHuBadugiStrategy {
 
     return generated.build();
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
+      Hand hand = new Hand(mask);
+      CardSet discards = discardStrategy.get(hand);
+      if (discards != null && discards.numCards() > 0) {
+        sb.append(hand).append(" discards ").append(discardStrategy.get(hand)).append("\n");
+      }
+    }
+    return sb.toString();
+  }
 }

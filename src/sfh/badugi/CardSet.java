@@ -191,6 +191,9 @@ public class CardSet implements Iterable<Card> {
   @Override
   public String toString() {
     List<Card> cards = getCardsInIncreasingRankOrder();
+    if (cards.isEmpty()) {
+      return "no cards";
+    }
     StringBuilder sb = new StringBuilder();
     for (Card card : cards) {
       sb.append(card);

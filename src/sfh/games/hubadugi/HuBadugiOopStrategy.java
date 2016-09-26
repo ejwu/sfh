@@ -8,6 +8,9 @@ public class HuBadugiOopStrategy extends BaseHuBadugiStrategy
     implements Strategy<HuBadugiGameState, HuBadugiOopStrategy, HuBadugiIpStrategy> {
   @Override
   public double mergeFrom(HuBadugiOopStrategy other, double epsilon) {
+    for (Hand hand : other.discardStrategy.keySet()) {
+      setDiscardStrategy(hand, other.getDiscardStrategy(hand));
+    }
     return 0;
   }
 
