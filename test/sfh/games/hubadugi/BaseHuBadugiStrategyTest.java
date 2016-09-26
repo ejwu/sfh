@@ -19,17 +19,6 @@ import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
 public class BaseHuBadugiStrategyTest {
-  @Test
-  public void drawingForHandWithNoDiscardStrategyShouldThrow() {
-    BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
-    Deck deck = Deck.createDeck();
-    Hand hand = Hand.createHand(deck.draw("Ac"), deck.draw("2h"), deck.draw("3d"), deck.draw("4s"));
-    try {
-      strategy.generatePossibleHands(deck, hand);
-      fail();
-    } catch (IllegalArgumentException expected) {
-    }
-  }
 
   @Test
   public void drawingForHandWithZeroDiscardStrategy() {

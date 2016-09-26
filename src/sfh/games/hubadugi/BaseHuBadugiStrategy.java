@@ -15,6 +15,7 @@ public class BaseHuBadugiStrategy {
   protected Map<Hand, CardSet> discardStrategy = new HashMap<>();
 
   public BaseHuBadugiStrategy() {
+    setDefaultZeroDiscardStrategy();
   }
 
   public void setDefaultZeroDiscardStrategy() {
