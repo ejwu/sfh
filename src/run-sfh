@@ -7,5 +7,7 @@ javac -cp $CLASSPATH \
     ./sfh/games/resistance/ResistanceEvilStrategy.java \
     ./sfh/games/resistance/ResistanceGameState.java \
     ./sfh/games/resistance/ResistanceGoodStrategy.java \
-    ./sfh/games/resistance/AbstractResistanceStrategy.java &&
+    ./sfh/games/resistance/AbstractResistanceStrategy.java \
+    ./sfh/games/hubadugi/HuBadugiGameState.java \
+    ./sfh/badugi/CardSet.java &&
 java -cp $CLASSPATH sfh/SfhRunner $*

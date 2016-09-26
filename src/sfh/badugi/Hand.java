@@ -49,7 +49,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
   }
 
   private static ImmutableMap<BitSet, Integer> initializeCache() {
-    try (BufferedReader reader = new BufferedReader(new FileReader("./data/badugi/rankedHands.csv"))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader("../data/badugi/rankedHands.csv"))) {
       ImmutableMap.Builder<BitSet, Integer> cache = ImmutableMap.builder();
       reader.readLine(); // Skip header
       String line = reader.readLine();
