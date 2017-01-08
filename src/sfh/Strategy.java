@@ -7,7 +7,7 @@ public interface Strategy<GS, H, V> {
 	 * Get the best response to villain's strategy.
 	 * @return hero's new strategy
 	 */
-	public H getBestResponse(GS gs, V villain);
+	H getBestResponse(GS gs, V villain);
 
 	/**
 	 * Merge the other strategy into this one, updating by epsilon.
@@ -16,5 +16,5 @@ public interface Strategy<GS, H, V> {
 	 *
 	 * @return a measure of the difference between the original and new strategies
 	 */
-	public double mergeFrom(H other, double epsilon);
+	double mergeFrom(H other, double epsilon);
 }

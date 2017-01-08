@@ -86,6 +86,10 @@ public class BaseHuBadugiStrategy {
         sb.append(hand).append(" discards ").append(discardStrategy.get(hand)).append("\n");
       }
     }
+    if (sb.length() == 0) {
+      return "All hands stand pat";
+    }
     return sb.toString();
   }
+
 }

@@ -26,6 +26,7 @@ public class SfhRunner {
   private static final String FLAG_GAME_HULHE = "hulhe";
   private static final String FLAG_GAME_ROSHAMBO = "roshambo";
 
+  private static final String SPACER = "        ";
 
   public static void main(String[] args) {
     OptionSet options = getOptions(args);
@@ -60,8 +61,8 @@ public class SfhRunner {
       V extends Strategy<GS, V, H>>
   void play(int iterations, GS gs, H strategy1, V strategy2) {
     System.out.println("Original UTG strategy:\n\n" + strategy1);
-    System.out.println("Original IP strategy:\n\n" + strategy2);
-    System.out.println("Original UTG EV: " + gs.getValue(strategy1, strategy2));
+    System.out.printf("\n%sOriginal IP strategy:\n\n%s", SPACER, indented(strategy2.toString()));
+    System.out.println("\nOriginal UTG EV: " + gs.getValue(strategy1, strategy2));
 
     List<Double> oopDiff = Lists.newArrayList();
     List<Double> ipDiff = Lists.newArrayList();
@@ -85,19 +86,20 @@ public class SfhRunner {
       System.out.println("EV: " + gs.getValue(strategy1, strategy2));
 
       ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
-      System.out.println("\n--------------------\n#" + i + " IP strategy:\n\n" + strategy2);
+      System.out.printf("\n%s------------------\n%s#%d IP strategy:\n\n%s\n",
+          SPACER, SPACER, i, indented(strategy2.toString()));
       double value = gs.getValue(strategy1, strategy2);
-      System.out.println("EV: " + value);
+      System.out.printf("%sEV: %f\n", SPACER, value);
       oopValue.add(value);
       long elapsed = (System.currentTimeMillis() - startTime);
-      System.out.println(" avg " + ((float)elapsed/(i+1)) + " mseconds/iter");
+      System.out.println(((float)elapsed/(i+1)) + " mseconds/iter");
     }
 
     System.out.println("\n-----------------------------\nFinal strategies:\n");
     System.out.println("OOP:");
     System.out.println(strategy1);
-    System.out.println("IP");
-    System.out.println(strategy2);
+    System.out.println(indented("IP:\n"));
+    System.out.println(indented(strategy2.toString()));
     System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
 
     System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
@@ -119,6 +121,14 @@ public class SfhRunner {
       sb.append(',');
     }
     System.out.println(sb);
+  }
+
+  private static String indented(String string) {
+    StringBuilder indented = new StringBuilder();
+    for (String line : string.split("\n")) {
+      indented.append(SPACER).append(line).append("\n");
+    }
+    return indented.toString();
   }
 
 }
