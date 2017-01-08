@@ -60,9 +60,9 @@ public class SfhRunner {
       H extends Strategy<GS, H, V>,
       V extends Strategy<GS, V, H>>
   void play(int iterations, GS gs, H strategy1, V strategy2) {
-    System.out.println("Original UTG strategy:\n\n" + strategy1);
+    System.out.println("Original OOP strategy:\n\n" + strategy1);
     System.out.printf("\n%sOriginal IP strategy:\n\n%s", SPACER, indented(strategy2.toString()));
-    System.out.println("\nOriginal UTG EV: " + gs.getValue(strategy1, strategy2));
+    System.out.println("\nOriginal OOP EV: " + gs.getValue(strategy1, strategy2));
 
     List<Double> oopDiff = Lists.newArrayList();
     List<Double> ipDiff = Lists.newArrayList();
@@ -82,7 +82,7 @@ public class SfhRunner {
       epsilon = 5.0 / (iterations + 5);
 
       oopDiff.add(strategy1.mergeFrom(strategy1.getBestResponse(gs, strategy2), epsilon));
-      System.out.println("\n--------------------\n#" + i + " UTG strategy:\n\n" + strategy1);
+      System.out.println("\n--------------------\n#" + i + " OOP strategy:\n\n" + strategy1);
       System.out.println("EV: " + gs.getValue(strategy1, strategy2));
 
       ipDiff.add(strategy2.mergeFrom(strategy2.getBestResponse(gs, strategy1), epsilon));
@@ -100,7 +100,7 @@ public class SfhRunner {
     System.out.println(strategy1);
     System.out.println(indented("IP:\n"));
     System.out.println(indented(strategy2.toString()));
-    System.out.println("Final UTG EV: " + gs.getValue(strategy1, strategy2));
+    System.out.println("Final OOP EV: " + gs.getValue(strategy1, strategy2));
 
     System.out.println((System.currentTimeMillis() - startTime) + " mseconds");
 
