@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#Usage: time ./run-sfh --game=badugi --iterations=1
 CLASSPATH=$CLASSPATH:../lib/guava-18.0.jar:../lib/pokersource.jar:../lib/jopt-simple-5.0.2.jar:.
 javac -cp $CLASSPATH \
     ./sfh/GameState.java \

@@ -74,4 +74,20 @@ public class BaseHuBadugiStrategyTest {
       assertFalse(drawnHand.hasCard(discard));
     }
   }
+
+  @Test
+  public void generatePossibleHandsWithDupes() {
+    BaseHuBadugiStrategy strategy = new BaseHuBadugiStrategy();
+    Deck deck = Deck.createDeck();
+    Card keep1 = deck.draw("Ac");
+    Card keep2 = deck.draw("2d");
+    Card discard1 = deck.draw("Kh");
+    Card discard2 = deck.draw("Ks");
+    Hand hand = Hand.createHand(keep1, keep2, discard1, discard2);
+    strategy.setDiscardStrategy(hand, new CardSet(discard1, discard2));
+
+    Map<Hand, CardSet> drawn = strategy.generatePossibleHands(deck, hand);
+
+    assertEquals(1128, drawn.keySet().size());
+  }
 }

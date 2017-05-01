@@ -174,21 +174,6 @@ public class CardSet implements Iterable<Card> {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    CardSet hand = (CardSet) o;
-
-    return !(mask != null ? !mask.equals(hand.mask) : hand.mask != null);
-  }
-
-  @Override
-  public int hashCode() {
-    return mask != null ? mask.hashCode() : 0;
-  }
-
-  @Override
   public String toString() {
     List<Card> cards = getCardsInIncreasingRankOrder();
     if (cards.isEmpty()) {
@@ -221,5 +206,21 @@ public class CardSet implements Iterable<Card> {
       sb.append(card.toString().charAt(0));
     }
     return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CardSet cards = (CardSet) o;
+
+    return mask != null ? mask.equals(cards.mask) : cards.mask == null;
+
+  }
+
+  @Override
+  public int hashCode() {
+    return mask != null ? mask.hashCode() : 0;
   }
 }

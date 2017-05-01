@@ -98,7 +98,7 @@ public class SfhRunner {
     System.out.println("\n-----------------------------\nFinal strategies:\n");
     System.out.println("OOP:");
     System.out.println(strategy1);
-    System.out.println(indented("IP:\n"));
+    System.out.println(indented("IP:"));
     System.out.println(indented(strategy2.toString()));
     System.out.println("Final OOP EV: " + gs.getValue(strategy1, strategy2));
 
