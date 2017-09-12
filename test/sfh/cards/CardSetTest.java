@@ -1,8 +1,4 @@
-package sfh.badugi;
-
-import sfh.cards.Card;
-import sfh.cards.CardSet;
-import sfh.cards.Deck;
+package sfh.cards;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

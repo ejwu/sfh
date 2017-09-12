@@ -1,4 +1,4 @@
-package sfh.badugi;
+package sfh.cards;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
