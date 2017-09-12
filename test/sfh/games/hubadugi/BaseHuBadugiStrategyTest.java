@@ -4,9 +4,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import sfh.badugi.BadugiHand;
-import sfh.badugi.Card;
-import sfh.badugi.CardSet;
-import sfh.badugi.Deck;
+import sfh.cards.Card;
+import sfh.cards.CardSet;
+import sfh.cards.Deck;
 
 import java.util.HashSet;
 import java.util.Map;

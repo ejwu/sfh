@@ -1,5 +1,9 @@
 package sfh.badugi;
 
+import sfh.cards.Card;
+import sfh.cards.CardSet;
+import sfh.cards.Deck;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -56,7 +60,7 @@ public class CardSetTest {
   public void testhasAnyCard() {
     CardSet deck = Deck.createDeck();
     CardSet toRemove = new CardSet(new Card("Ac"), new Card("2c"), new Card("5d"), new Card("Qs"));
-    CardSet leftToRemove = new CardSet(toRemove.mask);
+    CardSet leftToRemove = new CardSet(toRemove.getMask());
     while (leftToRemove.numCards() > 0) {
       assertTrue(deck.hasAnyCard(toRemove));
       Card cardToRemove = leftToRemove.getCards().get(0);

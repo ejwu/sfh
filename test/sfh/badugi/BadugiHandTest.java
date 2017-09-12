@@ -7,6 +7,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import sfh.cards.Card;
+import sfh.cards.CardSet;
+import sfh.cards.Deck;
 
 import java.io.FileWriter;
 import java.util.BitSet;
