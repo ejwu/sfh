@@ -20,17 +20,17 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(JUnit4.class)
-public class HandTest {
+public class BadugiHandTest {
   @Test
   public void constructHand() {
-    Hand hand = Hand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("4s"));
+    BadugiHand hand = BadugiHand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("4s"));
     assertEquals("Ac2d3h4s", hand.toString());
   }
 
   @Test
   public void handWithDuplicateCardsShouldThrow() {
     try {
-      Hand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("Ac"));
+      BadugiHand.createHand(new Card("Ac"), new Card("2d"), new Card("3h"), new Card("Ac"));
       fail("Shouldn't be able to construct hand with duplicate cards");
     } catch (IllegalArgumentException expected) {
     }
@@ -38,11 +38,11 @@ public class HandTest {
 
   @Test
   public void best24HandsShouldBeEqual() {
-    List<Hand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
+    List<BadugiHand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
     Collections.sort(allHands);
-    Hand bestHand = allHands.get(0);
+    BadugiHand bestHand = allHands.get(0);
     int count = 0;
-    for (Hand hand : allHands) {
+    for (BadugiHand hand : allHands) {
       // 24 nut badugi hands = 4 * 3 * 2 * 1
       if (count < 24) {
         assertEquals(0, hand.compareTo(bestHand));
@@ -58,21 +58,21 @@ public class HandTest {
   // 1671,   Ah2d3s5h,     Ah2d3s,        A23
   @Test
   public void a23ShouldBeatA25() {
-    Hand a25 = Hand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
-    Hand a23 = Hand.createHand(new Card("Ah"), new Card("2d"), new Card("3s"), new Card("5h"));
+    BadugiHand a25 = BadugiHand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
+    BadugiHand a23 = BadugiHand.createHand(new Card("Ah"), new Card("2d"), new Card("3s"), new Card("5h"));
     assertTrue(a23.compareTo(a25) < 0);
   }
 
   @Test
   public void wheelsShouldTie() {
-    Hand first = new Hand("Ac2d3h4s");
-    Hand second = new Hand("Ad2h3c4s");
+    BadugiHand first = new BadugiHand("Ac2d3h4s");
+    BadugiHand second = new BadugiHand("Ad2h3c4s");
     assertEquals(0, first.compareTo(second));
   }
 
   @Test
   public void testValidDiscards() {
-    Hand hand = new Hand("8dTc4cJs");
+    BadugiHand hand = new BadugiHand("8dTc4cJs");
     Collection<CardSet> discards = hand.getAllValidDiscards();
 
     // 1 0-card discard + 4 1-card + 6 2-card + 4 3-card + 1 4-card = 16
@@ -106,12 +106,12 @@ public class HandTest {
   // Only used to generate the text cache of hand rankings
   @Ignore
   public void bsMethodForWritingCache() throws Exception {
-    List<Hand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
+    List<BadugiHand> allHands = Lists.newArrayList(Deck.createDeck().generateAllHands());
     Collections.sort(allHands);
-    Multimap<Integer, Hand> sortedHands = ArrayListMultimap.create();
+    Multimap<Integer, BadugiHand> sortedHands = ArrayListMultimap.create();
     int handRank = 0;
-    Hand currentHand = allHands.get(0);
-    for (Hand hand : allHands) {
+    BadugiHand currentHand = allHands.get(0);
+    for (BadugiHand hand : allHands) {
       if (hand.compareTo(currentHand) != 0) {
         handRank++;
         currentHand = hand;
@@ -122,7 +122,7 @@ public class HandTest {
     StringBuilder csvString = new StringBuilder();
     csvString.append(String.format("%5s, %10s, %10s, %10s\n", "rank", "hand", "playable", "readable"));
     for (Integer rank : new TreeSet<>(sortedHands.keySet())) {
-      for (Hand hand : sortedHands.get(rank)) {
+      for (BadugiHand hand : sortedHands.get(rank)) {
         csvString.append(String.format("%5d, %10s, %10s, %10s\n",
             rank, hand, hand.getPlayableHand(), hand.getPlayableRankString()));
       }

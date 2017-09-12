@@ -1,6 +1,6 @@
 package sfh.cards;
 
-import sfh.badugi.Hand;
+import sfh.badugi.BadugiHand;
 
 import java.util.BitSet;
 import java.util.Collection;
@@ -27,18 +27,18 @@ public class Deck extends CardSet {
   }
 
   /**
-   * Convenience method for removing 4 cards from a deck and forming them into a Hand.
+   * Convenience method for removing 4 cards from a deck and forming them into a BadugiHand.
    */
-  public Hand drawHand(String card1, String card2, String card3, String card4) {
-    return Hand.createHand(draw(card1), draw(card2), draw(card3), draw(card4));
+  public BadugiHand drawHand(String card1, String card2, String card3, String card4) {
+    return BadugiHand.createHand(draw(card1), draw(card2), draw(card3), draw(card4));
   }
 
   /**
    * @return all 4 card hands that can be generated from the current state of the deck
    */
-  public Collection<Hand> generateAllHands() {
+  public Collection<BadugiHand> generateAllHands() {
     // TODO: Iterate in a smarter order so we don't overgenerate hands by a factor of 24
-    Set<Hand> allHands = new HashSet<>();
+    Set<BadugiHand> allHands = new HashSet<>();
     for (Card first : this) {
       CardSet withoutFirst = this.without(first);
       for (Card second : withoutFirst) {
@@ -46,7 +46,7 @@ public class Deck extends CardSet {
         for (Card third : withoutSecond) {
           CardSet withoutThird = withoutSecond.without(third);
           for (Card fourth : withoutThird) {
-            allHands.add(Hand.createHand(first, second, third, fourth));
+            allHands.add(BadugiHand.createHand(first, second, third, fourth));
           }
         }
       }

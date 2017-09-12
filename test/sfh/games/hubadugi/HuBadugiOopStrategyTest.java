@@ -3,10 +3,10 @@ package sfh.games.hubadugi;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import sfh.badugi.BadugiHand;
 import sfh.badugi.Card;
 import sfh.badugi.CardSet;
 import sfh.badugi.Deck;
-import sfh.badugi.Hand;
 
 import java.util.BitSet;
 
@@ -18,8 +18,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   @Test
   public void shouldDraw4WithNoWheelCardsAgainstWheel() {
     Deck deck = Deck.createDeck();
-    Hand oopHand = deck.drawHand("Kc", "Kd", "Kh", "Ks");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("Kc", "Kd", "Kh", "Ks");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
@@ -30,8 +30,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   @Test
   public void shouldDraw3WithOneWheelCardAgainstWheel() {
     Deck deck = Deck.createDeck();
-    Hand oopHand = deck.drawHand("2c", "Kd", "Kh", "Ks");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("2c", "Kd", "Kh", "Ks");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
@@ -42,8 +42,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   @Test
   public void shouldDraw2WithTwoWheelCardsAgainstWheel() {
     Deck deck = Deck.createDeck();
-    Hand oopHand = deck.drawHand("2c", "4d", "Kh", "Ks");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("2c", "4d", "Kh", "Ks");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
@@ -54,8 +54,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   @Test
   public void shouldDraw1WithThreeWheelCardsAgainstWheel() {
     Deck deck = Deck.createDeck();
-    Hand oopHand = deck.drawHand("2c", "3d", "4h", "Ks");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("2c", "3d", "4h", "Ks");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
@@ -66,8 +66,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   @Test
   public void shouldDraw0WithWheelAgainstWheel() {
     Deck deck = Deck.createDeck();
-    Hand oopHand = deck.drawHand("2c", "3d", "4h", "As");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("2c", "3d", "4h", "As");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
@@ -79,8 +79,8 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
   public void shouldDraw2WithDead1CardDrawAgainstWheel() {
     Deck deck = Deck.createDeck();
     // OOP needs Ac to make wheel, but it's in IP's hand
-    Hand oopHand = deck.drawHand("2h", "3s", "4d", "Ks");
-    Hand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oopHand = deck.drawHand("2h", "3s", "4d", "Ks");
+    BadugiHand ipHand = deck.drawHand("Ac", "2d", "3h", "4s");
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();

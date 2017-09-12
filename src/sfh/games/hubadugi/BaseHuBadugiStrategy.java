@@ -1,7 +1,7 @@
 package sfh.games.hubadugi;
 
 import com.google.common.collect.ImmutableMap;
-import sfh.badugi.Hand;
+import sfh.badugi.BadugiHand;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
 
@@ -12,28 +12,28 @@ import java.util.Map;
 public class BaseHuBadugiStrategy {
   // Mapping for every hand to its list of cards to discard
   // TODO: Make this dependent on previous discards, number of cards discarded if in position...probably more
-  protected Map<Hand, CardSet> discardStrategy = new HashMap<>();
+  protected Map<BadugiHand, CardSet> discardStrategy = new HashMap<>();
 
   public BaseHuBadugiStrategy() {
     setDefaultZeroDiscardStrategy();
   }
 
   public void setDefaultZeroDiscardStrategy() {
-    for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
-      setDiscardStrategy(new Hand(mask), new CardSet(new BitSet()));
+    for (BitSet mask : BadugiHand.HAND_RANK_CACHE.keySet()) {
+      setDiscardStrategy(new BadugiHand(mask), new CardSet(new BitSet()));
     }
   }
 
-  public void setDiscardStrategy(Hand hand, CardSet toDiscard) {
+  public void setDiscardStrategy(BadugiHand hand, CardSet toDiscard) {
     for (Card discard : toDiscard) {
       if (!hand.hasCard(discard)) {
-        throw new IllegalArgumentException(String.format("Hand %s cannot discard %s", hand, toDiscard));
+        throw new IllegalArgumentException(String.format("BadugiHand %s cannot discard %s", hand, toDiscard));
       }
     }
     discardStrategy.put(hand, toDiscard);
   }
 
-  public CardSet getDiscardStrategy(Hand hand) {
+  public CardSet getDiscardStrategy(BadugiHand hand) {
     return discardStrategy.get(hand);
   }
 
@@ -41,7 +41,7 @@ public class BaseHuBadugiStrategy {
    * @return all possible hands that can be drawn from the deck given the current hand and discard strategy, as well
    * as the remaining deck after drawing each hand
    */
-  public Map<Hand, CardSet> generatePossibleHands(CardSet deck, Hand hand) {
+  public Map<BadugiHand, CardSet> generatePossibleHands(CardSet deck, BadugiHand hand) {
     // TODO: remove when optimizing
     if (deck.hasAnyCard(hand)) {
       throw new IllegalArgumentException(String.format("Deck %s contains cards in hand %s", deck, hand));
@@ -59,7 +59,7 @@ public class BaseHuBadugiStrategy {
     for (Card discard : discards) {
       // TODO: remove when optimizing
       if (!hand.hasCard(discard)) {
-        throw new IllegalStateException(String.format("Hand %s cannot discard %s", hand, discards));
+        throw new IllegalStateException(String.format("BadugiHand %s cannot discard %s", hand, discards));
       }
       if (deck.hasCard(discard)) {
         throw new IllegalStateException(String.format("Deck %s contains discards %s", deck, discards));
@@ -68,9 +68,9 @@ public class BaseHuBadugiStrategy {
     }
 
     // TODO: Could calculate right size for this to preallocate
-    ImmutableMap.Builder<Hand, CardSet> generated = ImmutableMap.builder();
+    ImmutableMap.Builder<BadugiHand, CardSet> generated = ImmutableMap.builder();
     for (CardSet drawn : deck.drawNCards(discards.numCards())) {
-      generated.put(new Hand(afterDiscard.with(drawn.getCardArray())), deck.without(drawn));
+      generated.put(new BadugiHand(afterDiscard.with(drawn.getCardArray())), deck.without(drawn));
     }
 
     return generated.build();
@@ -79,8 +79,8 @@ public class BaseHuBadugiStrategy {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (BitSet mask : Hand.HAND_RANK_CACHE.keySet()) {
-      Hand hand = new Hand(mask);
+    for (BitSet mask : BadugiHand.HAND_RANK_CACHE.keySet()) {
+      BadugiHand hand = new BadugiHand(mask);
       CardSet discards = discardStrategy.get(hand);
       if (discards != null && discards.numCards() > 0) {
         sb.append(hand).append(" discards ").append(discardStrategy.get(hand)).append("\n");

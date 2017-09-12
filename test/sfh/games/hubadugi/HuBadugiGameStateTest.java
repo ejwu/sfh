@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import sfh.badugi.BadugiHand;
 import sfh.badugi.Card;
 import sfh.badugi.CardSet;
 import sfh.badugi.Deck;
-import sfh.badugi.Hand;
 
 import java.util.BitSet;
 
@@ -22,8 +22,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testGetValueOneEqualHand() {
-    Hand oop = deck.drawHand("Ac", "2d", "3h", "4s");
-    Hand ip = deck.drawHand("Ad", "2h", "3s", "4c");
+    BadugiHand oop = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand ip = deck.drawHand("Ad", "2h", "3s", "4c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(0.5, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
@@ -32,9 +32,9 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValueOneHandOopWins() {
     // A234
-    Hand oop = deck.drawHand("Ac", "2d", "3h", "4s");
+    BadugiHand oop = deck.drawHand("Ac", "2d", "3h", "4s");
     // A235
-    Hand ip = deck.drawHand("Ad", "2h", "3s", "5c");
+    BadugiHand ip = deck.drawHand("Ad", "2h", "3s", "5c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(1, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
@@ -43,9 +43,9 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValueOneHandIpWins() {
     // 75
-    Hand oop = deck.drawHand("5c", "5d", "7h", "Kh");
+    BadugiHand oop = deck.drawHand("5c", "5d", "7h", "Kh");
     // KQJ
-    Hand ip = deck.drawHand("Jd", "Qh", "Kc", "Ks");
+    BadugiHand ip = deck.drawHand("Jd", "Qh", "Kc", "Ks");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     assertDoubleEquals(0, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
@@ -54,9 +54,9 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValueOneOopHandVsIpRangeNeedingBadugi() {
     // A23K
-    Hand oop = deck.drawHand("Ac", "2d", "3h", "Ks");
+    BadugiHand oop = deck.drawHand("Ac", "2d", "3h", "Ks");
     // A24
-    Hand ip = deck.drawHand("Ad", "2h", "4s", "Kh");
+    BadugiHand ip = deck.drawHand("Ad", "2h", "4s", "Kh");
 
     HuBadugiIpStrategy ipStrategy = new HuBadugiIpStrategy();
     // IP hand discards the K
@@ -72,9 +72,9 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValueOopRangeNeedingBadugiVsOneIpHand() {
     // 358
-    Hand oop = deck.drawHand("3d", "5s", "8c", "8s");
+    BadugiHand oop = deck.drawHand("3d", "5s", "8c", "8s");
     // A25
-    Hand ip = deck.drawHand("As", "2h", "5d", "5c");
+    BadugiHand ip = deck.drawHand("As", "2h", "5d", "5c");
 
     HuBadugiOopStrategy oopStrategy = new HuBadugiOopStrategy();
     // OOP hand draws to 358
@@ -90,8 +90,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValueIdentical1CardDraw() {
     // Both A23, drawing to spades
-    Hand oop = deck.drawHand("Ac", "2d", "3h", "Kh");
-    Hand ip = deck.drawHand("Ad", "2h", "3c", "Kc");
+    BadugiHand oop = deck.drawHand("Ac", "2d", "3h", "Kh");
+    BadugiHand ip = deck.drawHand("Ad", "2h", "3c", "Kc");
     CardSet oopDiscards = new CardSet("Kh");
     CardSet ipDiscards = new CardSet("Kc");
 
@@ -101,10 +101,10 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   @Test
   public void testGetValuePatVs2CardDraw() {
     // A23
-    Hand oop = deck.drawHand("Ad", "2h", "3c", "Kd");
+    BadugiHand oop = deck.drawHand("Ad", "2h", "3c", "Kd");
     // 45, so no two card draw can beat OOP unless it makes a badugi
     // None of the dead cards help make a badugi.
-    Hand ip = deck.drawHand("4d", "5h", "4h", "5d");
+    BadugiHand ip = deck.drawHand("4d", "5h", "4h", "5d");
     CardSet oopDiscards = new CardSet(new BitSet());
     // Draw to 45
     CardSet ipDiscards = new CardSet("4h", "5d");
@@ -121,8 +121,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testSame2CardDraws() {
-    Hand oop = deck.drawHand("As", "2h", "Ah", "2s");
-    Hand ip = deck.drawHand("Ad", "2c", "Ac", "2d");
+    BadugiHand oop = deck.drawHand("As", "2h", "Ah", "2s");
+    BadugiHand ip = deck.drawHand("Ad", "2c", "Ac", "2d");
     CardSet oopDiscards = new CardSet("Ah", "2s");
     CardSet ipDiscards = new CardSet("Ac", "2d");
 
@@ -131,8 +131,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testSame2CardDrawsBadIpDeadCards() {
-    Hand oop = deck.drawHand("As", "2h", "Ah", "2s");
-    Hand ip = deck.drawHand("Ad", "2c", "Kc", "Kh");
+    BadugiHand oop = deck.drawHand("As", "2h", "Ah", "2s");
+    BadugiHand ip = deck.drawHand("Ad", "2c", "Kc", "Kh");
     CardSet oopDiscards = new CardSet("Ah", "2s");
     CardSet ipDiscards = new CardSet("Kc", "Kh");
 
@@ -143,8 +143,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testDifferent2CardDraws() {
-    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
-    Hand ip = deck.drawHand("Ah", "3d", "Qh", "Qd");
+    BadugiHand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    BadugiHand ip = deck.drawHand("Ah", "3d", "Qh", "Qd");
     CardSet oopDiscards = new CardSet("Qs", "Qc");
     CardSet ipDiscards = new CardSet("Qh", "Qd");
 
@@ -155,8 +155,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testDifferent2CardDrawsBadIpDeadCards() {
-    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
-    Hand ip = deck.drawHand("Ah", "3d", "Ks", "Kc");
+    BadugiHand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    BadugiHand ip = deck.drawHand("Ah", "3d", "Ks", "Kc");
     CardSet oopDiscards = new CardSet("Qs", "Qc");
     CardSet ipDiscards = new CardSet("Ks", "Kc");
 
@@ -170,8 +170,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testDifferent2CardDrawsWorseIpHand() {
-    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
-    Hand ip = deck.drawHand("3h", "4d", "Qh", "Qd");
+    BadugiHand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    BadugiHand ip = deck.drawHand("3h", "4d", "Qh", "Qd");
     CardSet oopDiscards = new CardSet("Qs", "Qc");
     CardSet ipDiscards = new CardSet("Qh", "Qd");
 
@@ -183,8 +183,8 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
 
   @Test
   public void testDifferent2CardDrawsEvenWorseIpHand() {
-    Hand oop = deck.drawHand("As", "2c", "Qs", "Qc");
-    Hand ip = deck.drawHand("7h", "8d", "Qh", "Qd");
+    BadugiHand oop = deck.drawHand("As", "2c", "Qs", "Qc");
+    BadugiHand ip = deck.drawHand("7h", "8d", "Qh", "Qd");
     CardSet oopDiscards = new CardSet("Qs", "Qc");
     CardSet ipDiscards = new CardSet("Qh", "Qd");
 
@@ -194,7 +194,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   }
 
   // Test that situations are symmetric and generate the correct values when IP and OOP hands are swapped
-  private void testBoth(Hand oopHand, Hand ipHand, CardSet oopDiscards, CardSet ipDiscards, double oopValue) {
+  private void testBoth(BadugiHand oopHand, BadugiHand ipHand, CardSet oopDiscards, CardSet ipDiscards, double oopValue) {
     Deck deckWithoutHands = Deck.createDeck();
     for (Card card : oopHand) {
       deckWithoutHands.draw(card);
@@ -215,13 +215,13 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
   }
 
   // TODO: these are identical except for type, seems bad
-  private HuBadugiOopStrategy getOopStrategyWithDiscards(Hand hand, CardSet toDiscard) {
+  private HuBadugiOopStrategy getOopStrategyWithDiscards(BadugiHand hand, CardSet toDiscard) {
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
     strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;
   }
 
-  private HuBadugiIpStrategy getIpStrategyWithDiscards(Hand hand, CardSet toDiscard) {
+  private HuBadugiIpStrategy getIpStrategyWithDiscards(BadugiHand hand, CardSet toDiscard) {
     HuBadugiIpStrategy strategy = new HuBadugiIpStrategy();
     strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;

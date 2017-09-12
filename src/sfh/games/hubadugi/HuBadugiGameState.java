@@ -5,12 +5,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import sfh.GameState;
-import sfh.badugi.Hand;
+import sfh.badugi.BadugiHand;
 import sfh.cards.CardSet;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class HuBadugiGameState implements GameState<HuBadugiOopStrategy, HuBadugiIpStrategy> {
@@ -26,21 +24,21 @@ public class HuBadugiGameState implements GameState<HuBadugiOopStrategy, HuBadug
       });
 
   private CardSet deck;
-  private Hand oopHand;
-  private Hand ipHand;
+  private BadugiHand oopHand;
+  private BadugiHand ipHand;
 
-  public HuBadugiGameState(CardSet deck, Hand oopHand, Hand ipHand) {
+  public HuBadugiGameState(CardSet deck, BadugiHand oopHand, BadugiHand ipHand) {
     this.deck = deck;
     this.oopHand = oopHand;
     this.ipHand = ipHand;
   }
 
   // TODO: unclear if this should be exposed, but strategies need this to figure out best responses
-  Hand getOopHand() {
+  BadugiHand getOopHand() {
     return oopHand;
   }
 
-  Hand getIpHand() {
+  BadugiHand getIpHand() {
     return ipHand;
   }
 
@@ -61,21 +59,21 @@ public class HuBadugiGameState implements GameState<HuBadugiOopStrategy, HuBadug
    */
   public double calculateValue(HuBadugiOopStrategy oop, HuBadugiIpStrategy ip) {
     // Single draw, no betting
-    Map<Hand, CardSet> oopHands = oop.generatePossibleHands(deck, oopHand);
+    Map<BadugiHand, CardSet> oopHands = oop.generatePossibleHands(deck, oopHand);
     double cumulativeOopValue = 0.0;
     System.out.println(oopHands.size() + " total OOP hands");
     int totalComp = 0;
     int totalIpHands = 0;
 
     Stopwatch sw = Stopwatch.createStarted();
-    for (Map.Entry<Hand, CardSet> handWithRemainingDeck : oopHands.entrySet()) {
+    for (Map.Entry<BadugiHand, CardSet> handWithRemainingDeck : oopHands.entrySet()) {
       // For every possible deck state after OOP draws, try every possible result of IP drawing
-      Map<Hand, CardSet> ipHands = ip.generatePossibleHands(handWithRemainingDeck.getValue(), ipHand);
+      Map<BadugiHand, CardSet> ipHands = ip.generatePossibleHands(handWithRemainingDeck.getValue(), ipHand);
       // Total value of a particular OOP hand against all possible IP hands
       double cumulativeValueOfOopHand = 0.0;
       totalIpHands += ipHands.size();
-      for (Hand potentialIpHand : ipHands.keySet()) {
-        Hand potentialOopHand = handWithRemainingDeck.getKey();
+      for (BadugiHand potentialIpHand : ipHands.keySet()) {
+        BadugiHand potentialOopHand = handWithRemainingDeck.getKey();
         totalComp++;
 
         if (potentialOopHand.compareTo(potentialIpHand) > 0) {

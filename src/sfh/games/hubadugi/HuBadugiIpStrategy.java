@@ -1,7 +1,7 @@
 package sfh.games.hubadugi;
 
 import sfh.Strategy;
-import sfh.badugi.Hand;
+import sfh.badugi.BadugiHand;
 import sfh.cards.CardSet;
 
 public class HuBadugiIpStrategy extends BaseHuBadugiStrategy
@@ -9,7 +9,7 @@ public class HuBadugiIpStrategy extends BaseHuBadugiStrategy
 
   @Override
   public double mergeFrom(HuBadugiIpStrategy other, double epsilon) {
-    for (Hand hand : other.discardStrategy.keySet()) {
+    for (BadugiHand hand : other.discardStrategy.keySet()) {
       setDiscardStrategy(hand, other.getDiscardStrategy(hand));
     }
     return 0;
@@ -17,7 +17,7 @@ public class HuBadugiIpStrategy extends BaseHuBadugiStrategy
 
   @Override
   public HuBadugiIpStrategy getBestResponse(HuBadugiGameState gs, HuBadugiOopStrategy villain) {
-    Hand ipHand = gs.getIpHand();
+    BadugiHand ipHand = gs.getIpHand();
     HuBadugiIpStrategy bestStrategy = null;
     double bestValue = Double.MAX_VALUE;
     for (CardSet discard : ipHand.getAllValidDiscards()) {

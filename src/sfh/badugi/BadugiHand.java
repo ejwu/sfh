@@ -18,34 +18,34 @@ import java.util.List;
 /**
  * A badugi hand of exactly 4 cards.
  */
-public class Hand extends CardSet implements Comparable<Hand> {
+public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
   public static ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
 
 
-  public static Hand createHand(Card c1, Card c2, Card c3, Card c4) {
+  public static BadugiHand createHand(Card c1, Card c2, Card c3, Card c4) {
     BitSet mask = new BitSet(Card.DECK_LENGTH);
     mask.or(c1.getMask());
     mask.or(c2.getMask());
     mask.or(c3.getMask());
     mask.or(c4.getMask());
-    return new Hand(mask);
+    return new BadugiHand(mask);
   }
 
-  public Hand(CardSet cardSet) {
+  public BadugiHand(CardSet cardSet) {
     this(cardSet.getMask());
   }
 
-  public Hand(BitSet mask) {
+  public BadugiHand(BitSet mask) {
     super(mask);
     if (mask.cardinality() != 4) {
-      throw new IllegalArgumentException("Hand must be made from 4 distinct cards");
+      throw new IllegalArgumentException("BadugiHand must be made from 4 distinct cards");
     }
   }
 
   /**
    * @param handString must be a valid 8 character string representing 4 distinct cards
    */
-  public Hand(String handString) {
+  public BadugiHand(String handString) {
     super(new Card(handString.substring(0, 2)), new Card(handString.substring(2, 4)),
         new Card(handString.substring(4, 6)), new Card(handString.substring(6)));
   }
@@ -57,7 +57,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
       String line = reader.readLine();
       while (line != null) {
         String[] split = line.split(", ");
-        cache.put(new Hand(split[1].trim()).mask, Integer.valueOf(split[0].trim()));
+        cache.put(new BadugiHand(split[1].trim()).mask, Integer.valueOf(split[0].trim()));
         line = reader.readLine();
       }
       return cache.build();
@@ -68,16 +68,16 @@ public class Hand extends CardSet implements Comparable<Hand> {
   }
 
   @Override
-  public int compareTo(Hand other) {
+  public int compareTo(BadugiHand other) {
     return easyCompareTo(other);
   }
 
-  public int easyCompareTo(Hand other) {
+  public int easyCompareTo(BadugiHand other) {
     return HAND_RANK_CACHE.get(this.mask) - HAND_RANK_CACHE.get(other.mask);
   }
 
   // TODO: replace this with some cache once it's generateable
-  public int hardCompareTo(Hand other) {
+  public int hardCompareTo(BadugiHand other) {
     CardSet thisPlayableHand = getPlayableHand();
     CardSet otherPlayableHand = other.getPlayableHand();
     if (thisPlayableHand.numCards() > otherPlayableHand.numCards()) {
