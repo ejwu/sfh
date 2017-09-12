@@ -1,4 +1,4 @@
-package sfh.badugi;
+package sfh.cards;
 
 import java.util.BitSet;
 import java.util.Iterator;

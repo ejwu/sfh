@@ -1,4 +1,4 @@
-package sfh.badugi;
+package sfh.cards;
 
 import com.google.common.collect.Lists;
 
@@ -11,6 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Wrapper around a bitset representing some subset of cards out of a 52 card deck.
+ */
 public class CardSet implements Iterable<Card> {
   protected BitSet mask;
 
@@ -48,6 +51,10 @@ public class CardSet implements Iterable<Card> {
       cards.add(card);
     }
     return cards;
+  }
+
+  public BitSet getMask() {
+    return mask;
   }
 
   public int numCards() {

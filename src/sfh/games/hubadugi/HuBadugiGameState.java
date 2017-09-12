@@ -5,8 +5,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import sfh.GameState;
-import sfh.badugi.CardSet;
 import sfh.badugi.Hand;
+import sfh.cards.CardSet;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorCompletionService;

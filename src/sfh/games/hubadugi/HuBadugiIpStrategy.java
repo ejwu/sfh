@@ -1,8 +1,8 @@
 package sfh.games.hubadugi;
 
 import sfh.Strategy;
-import sfh.badugi.CardSet;
 import sfh.badugi.Hand;
+import sfh.cards.CardSet;
 
 public class HuBadugiIpStrategy extends BaseHuBadugiStrategy
     implements Strategy<HuBadugiGameState, HuBadugiIpStrategy, HuBadugiOopStrategy> {

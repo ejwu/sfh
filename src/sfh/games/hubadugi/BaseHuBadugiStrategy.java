@@ -1,9 +1,9 @@
 package sfh.games.hubadugi;
 
 import com.google.common.collect.ImmutableMap;
-import sfh.badugi.Card;
-import sfh.badugi.CardSet;
 import sfh.badugi.Hand;
+import sfh.cards.Card;
+import sfh.cards.CardSet;
 
 import java.util.BitSet;
 import java.util.HashMap;

@@ -11,5 +11,6 @@ javac -cp $CLASSPATH \
     ./sfh/games/resistance/ResistanceGoodStrategy.java \
     ./sfh/games/resistance/AbstractResistanceStrategy.java \
     ./sfh/games/hubadugi/HuBadugiGameState.java \
-    ./sfh/badugi/CardSet.java &&
+    ./sfh/cards/CardSet.java \
+    ./sfh/cards/Deck.java &&
 java -cp $CLASSPATH sfh/SfhRunner $*

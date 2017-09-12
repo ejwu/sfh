@@ -2,6 +2,8 @@ package sfh.badugi;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import sfh.cards.Card;
+import sfh.cards.CardSet;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,7 +32,7 @@ public class Hand extends CardSet implements Comparable<Hand> {
   }
 
   public Hand(CardSet cardSet) {
-    super(cardSet.mask);
+    this(cardSet.getMask());
   }
 
   public Hand(BitSet mask) {

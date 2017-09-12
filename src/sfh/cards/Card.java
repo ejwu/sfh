@@ -1,4 +1,4 @@
-package sfh.badugi;
+package sfh.cards;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableBiMap;
@@ -54,8 +54,7 @@ public class Card {
       .put('s', 3).build();
 
   private static final int NUM_CARDS_IN_SUIT = RANK_MAP.size();
-  @VisibleForTesting
-  static final int DECK_LENGTH = RANK_MAP.size() * SUIT_MAP.size();
+  public static final int DECK_LENGTH = RANK_MAP.size() * SUIT_MAP.size();
 
   private BitSet mask;
   // TODO: See if this actually saves any time
