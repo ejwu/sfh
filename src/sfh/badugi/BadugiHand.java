@@ -157,6 +157,10 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
     return new CardSet(lowestCard);
   }
 
+  public boolean isBadugi() {
+    return getPlayableHand().getCards().size() == 4;
+  }
+
   /**
    * @param cardSets All card sets must be the same cardinality and be fully playable.
    * @return the best CardSet.  In the case of ties, return any equivalent CardSet

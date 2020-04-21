@@ -11,6 +11,9 @@ import java.util.List;
 
 public class RangeUtils {
 
+  /**
+   * Output various useful ranges.
+   */
   public static void rangesByHandType() {
     List<BadugiHand> hands = new ArrayList<>();
     for (BitSet bs : BadugiHand.HAND_RANK_CACHE.keySet()) {
@@ -49,6 +52,39 @@ public class RangeUtils {
 
     System.out.println(drawnHands.size() + " hands drawn from A2(KK)");
     outputAsVentiles(drawnHands);
+
+    List<BadugiHand> patHandsFromDraw2 = new ArrayList<>();
+    for (BadugiHand hand : drawnHands) {
+      if (hand.isBadugi()) {
+        patHandsFromDraw2.add(hand);
+      }
+    }
+    System.out.println(patHandsFromDraw2.size() + " pat hands drawn from A2(KK)");
+    outputAsVentiles(patHandsFromDraw2);
+
+    deck = Deck.createDeck();
+    twoCardDraw = deck.drawHand("6c", "7d", "Kc", "Kd");
+    twoCard = twoCardDraw.without(new CardSet("Kc", "Kd"));
+    draws = deck.drawNCards(2);
+
+    drawnHands.clear();
+    for (CardSet draw : draws) {
+      BadugiHand newHand = new BadugiHand(twoCard, draw);
+      drawnHands.add(newHand);
+    }
+
+    System.out.println(drawnHands.size() + " hands drawn from 67(KK)");
+    outputAsVentiles(drawnHands);
+
+    patHandsFromDraw2 = new ArrayList<>();
+    for (BadugiHand hand : drawnHands) {
+      if (hand.isBadugi()) {
+        patHandsFromDraw2.add(hand);
+      }
+    }
+    System.out.println(patHandsFromDraw2.size() + " pat hands drawn from 67(KK)");
+    outputAsVentiles(patHandsFromDraw2);
+
   }
 
   public static void outputAsVentiles(List<BadugiHand> hands) {
@@ -63,4 +99,19 @@ public class RangeUtils {
       count++;
     }
   }
+
+  /**
+   * Parse a comma separated string into a collection of hands.
+   *
+   * "+" indicates a better hand, i.e. QJT9+ is every Q badugi or better.
+   * TODO? Maybe some sort of exclusion notation, such that A8+ might not want to include 76.
+   * @param rangeString QJT9+, 765+, A5+, etc.
+   */
+  public Collection<BadugiHand> parseRangeString(String rangeString) {
+    for (String playableHand : rangeString.split(",")) {
+      String hand = playableHand.trim();
+    }
+    return null;
+  }
+
 }
