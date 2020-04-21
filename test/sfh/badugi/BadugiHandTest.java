@@ -67,6 +67,13 @@ public class BadugiHandTest {
   }
 
   @Test
+  public void a34ShouldBeatA25() {
+    BadugiHand a25 = BadugiHand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
+    BadugiHand a34 = BadugiHand.createHand(new Card("Ah"), new Card("3d"), new Card("4s"), new Card("5s"));
+    assertTrue(a34.compareTo(a25) < 0);
+  }
+
+  @Test
   public void wheelsShouldTie() {
     BadugiHand first = new BadugiHand("Ac2d3h4s");
     BadugiHand second = new BadugiHand("Ad2h3c4s");

@@ -24,6 +24,13 @@ public class CardSet implements Iterable<Card> {
     }
   }
 
+  public CardSet(CardSet... cardSets) {
+    mask = new BitSet();
+    for (CardSet cardSet : cardSets) {
+      mask.or(cardSet.getMask());
+    }
+  }
+
   public CardSet(String... cardStrings) {
     mask = new BitSet();
     for (String cardString : cardStrings) {
@@ -133,7 +140,7 @@ public class CardSet implements Iterable<Card> {
 
   private void verifyCardInSet(Card card) {
     if (!mask.intersects(card.getMask())) {
-      throw new IllegalArgumentException("Deck does not contain card: " + card);
+      throw new IllegalArgumentException("CardSet does not contain card: " + card);
     }
   }
 

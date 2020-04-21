@@ -50,6 +50,10 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
         new Card(handString.substring(4, 6)), new Card(handString.substring(6)));
   }
 
+  public BadugiHand(CardSet... cardSets) {
+    super(cardSets);
+  }
+
   private static ImmutableMap<BitSet, Integer> initializeCache() {
     try (BufferedReader reader = new BufferedReader(new FileReader("../data/badugi/rankedHands.csv"))) {
       ImmutableMap.Builder<BitSet, Integer> cache = ImmutableMap.builder();
@@ -63,6 +67,7 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
       return cache.build();
     } catch (IOException e) {
       // Just blow up if we can't read the file
+      System.out.println("Can't find path, current path (Intellij might want \"/src\" appended to this): " + System.getProperty("user.dir"));
       throw new RuntimeException(e);
     }
   }
