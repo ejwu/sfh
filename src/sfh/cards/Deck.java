@@ -1,11 +1,15 @@
 package sfh.cards;
 
+import com.google.common.collect.Sets;
 import sfh.badugi.BadugiHand;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Deck is somewhat of a misnomer, it's more like a CardSet
@@ -37,21 +41,10 @@ public class Deck extends CardSet {
    * @return all 4 card hands that can be generated from the current state of the deck
    */
   public Collection<BadugiHand> generateAllHands() {
-    // TODO: Iterate in a smarter order so we don't overgenerate hands by a factor of 24
     Set<BadugiHand> allHands = new HashSet<>();
-    for (Card first : this) {
-      CardSet withoutFirst = this.without(first);
-      for (Card second : withoutFirst) {
-        CardSet withoutSecond = withoutFirst.without(second);
-        for (Card third : withoutSecond) {
-          CardSet withoutThird = withoutSecond.without(third);
-          for (Card fourth : withoutThird) {
-            allHands.add(BadugiHand.createHand(first, second, third, fourth));
-          }
-        }
-      }
+    for (Set<Card> hand : Sets.combinations(Sets.newHashSet(getCards()), 4)) {
+      allHands.add(new BadugiHand(hand));
     }
     return allHands;
   }
-
 }

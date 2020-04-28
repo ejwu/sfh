@@ -35,6 +35,10 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
     this(cardSet.getMask());
   }
 
+  public BadugiHand(Collection<Card> cards) {
+    super(new CardSet(cards.toArray(new Card[]{})));
+  }
+
   public BadugiHand(BitSet mask) {
     super(mask);
     if (mask.cardinality() != 4) {
@@ -72,6 +76,9 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
     }
   }
 
+  /**
+   * Note that this is not consistent with equals(), and as such putting these in a TreeSet or similar will not work.
+   */
   @Override
   public int compareTo(BadugiHand other) {
     return easyCompareTo(other);
@@ -159,6 +166,13 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
 
   public boolean isBadugi() {
     return getPlayableHand().getCards().size() == 4;
+  }
+
+  /**
+   * Because I can never remember what compareTo() returns.
+   */
+  public boolean isBetterThan(BadugiHand other) {
+    return this.compareTo(other) > 1;
   }
 
   /**
