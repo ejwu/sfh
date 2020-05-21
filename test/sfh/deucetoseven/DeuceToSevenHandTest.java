@@ -1,5 +1,6 @@
 package sfh.deucetoseven;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -297,5 +298,10 @@ public class DeuceToSevenHandTest {
   private void assertHandEquals(DeuceToSevenHand first, DeuceToSevenHand second) {
     assertEquals(0, first.compareTo(second));
     assertEquals(0, second.compareTo(first));
+  }
+
+  @Ignore
+  public void generateFile() throws Exception {
+    DeuceToSevenHand.generateHandRankFile();
   }
 }

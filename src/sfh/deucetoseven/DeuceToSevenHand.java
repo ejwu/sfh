@@ -1,15 +1,21 @@
 package sfh.deucetoseven;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.collect.Streams;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
 import sfh.cards.Deck;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +28,31 @@ import java.util.stream.Collectors;
 public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSevenHand> {
   @VisibleForTesting
   static final String ERROR_WRONG_NUM_CARDS = "2-7 hand must have 5 cards";
+
+  private static final ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
+
+  private static ImmutableMap<BitSet, Integer> initializeCache() {
+    try (BufferedReader reader = new BufferedReader(new FileReader("../data/deucetoseven/rankedHands.csv"))) {
+      ImmutableMap.Builder<BitSet, Integer> builder = ImmutableMap.builder();
+      reader.readLine(); // Skip header
+      String line = reader.readLine();
+      while (line != null) {
+        if (line.startsWith("first")) {
+          // Skip markers for first pair, two pair, etc.
+          line = reader.readLine();
+        }
+        // Format is rank, hand, total hands (total hands isn't needed)
+        String[] split = line.split(", ");
+        builder.put(new DeuceToSevenHand(split[1].trim()).mask, Integer.valueOf(split[0].trim()));
+        line = reader.readLine();
+      }
+      return builder.build();
+    } catch (IOException e) {
+      // Just blow up if we can't read the file
+      System.out.println("Can't find path, current path (Intellij might want \"/src\" appended to this): " + System.getProperty("user.dir"));
+      throw new RuntimeException(e);
+    }
+  }
 
   @VisibleForTesting
   DeuceToSevenHand(Card... cards) {
@@ -42,10 +73,13 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
   /**
    * Note that this implementation is not consistent with equals(), since different hands
    * can have the same rank in 2-7.
+   *
+   * Also note that this assumes a single 52 card deck with no wild cards, so comparisons for full houses and trips
+   * don't look beyond the trips since normally only one person can have them.
    */
   @Override
   public int compareTo(DeuceToSevenHand other) {
-    return hardCompareTo(other);
+    return easyCompareTo(other);
   }
 
   private boolean onlyFirstExists(Card.Rank first, Card.Rank second) {
@@ -80,6 +114,10 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
       return first.compareTo(second) * -1;
     }
     return null;
+  }
+
+  private int easyCompareTo(DeuceToSevenHand other) {
+    return HAND_RANK_CACHE.get(other.getMask()) - HAND_RANK_CACHE.get(this.getMask());
   }
 
   /**
@@ -371,13 +409,80 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
     return cards;
   }
 
-  public Collection<DeuceToSevenHand> generateAllHands() {
+  public static Collection<DeuceToSevenHand> generateAllHands() {
     Set<Card> deck = Sets.newHashSet(Deck.createDeck().getCards());
     List<DeuceToSevenHand> allHands = new ArrayList<>();
     for (Set<Card> hand : Sets.combinations(deck, 5)) {
       allHands.add(new DeuceToSevenHand(hand.toArray(new Card[]{})));
     }
     return allHands;
+  }
+
+  public static void generateHandRankFile() throws IOException {
+    List<DeuceToSevenHand> allHands = new ArrayList<>(generateAllHands());
+    System.out.println(allHands.size());
+
+
+    Collections.sort(allHands);
+    Collections.reverse(allHands);
+
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("ranked2-7Hands.csv"))) {
+      writer.write("    rank,      cards, total hands\n");
+      DeuceToSevenHand previous = allHands.get(0);
+      int rankIndex = 0;
+      int totalHands = 0;
+      boolean onePair = false;
+      boolean twoPair = false;
+      boolean trips = false;
+      boolean straight = false;
+      boolean flush = false;
+      boolean boat = false;
+      boolean quads = false;
+      boolean straightFlush = false;
+      for (DeuceToSevenHand hand : allHands) {
+        if (!onePair && hand.getOnePair() != null) {
+          onePair = true;
+          writer.write("first pair\n");
+        }
+        if (!twoPair && hand.getTwoPair() != null) {
+          twoPair = true;
+          writer.write("first two pair\n");
+        }
+        if (!trips && hand.getTrips() != null) {
+          trips = true;
+          writer.write("first trips\n");
+        }
+        if (!straight && hand.getStraight() != null) {
+          straight = true;
+          writer.write("first straight\n");
+        }
+        if (!flush && hand.isFlush()) {
+          flush = true;
+          writer.write("first flush\n");
+        }
+        if (!boat && hand.getFullHouse() != null) {
+          boat = true;
+          writer.write("first boat\n");
+        }
+        if (!quads && hand.getQuads() != null) {
+          quads = true;
+          writer.write("first quads\n");
+        }
+        if (!straightFlush && hand.getStraightFlush() != null) {
+          straightFlush = true;
+          writer.write("first straightflush\n");
+        }
+
+        if (hand.compareTo(previous) != 0) {
+          rankIndex++;
+        }
+        previous = hand;
+        writer.write(String.format("%8d, %s, %10d\n", rankIndex, hand, totalHands));
+        totalHands++;
+      }
+      writer.flush();
+    }
+
   }
 
 }
