@@ -1,5 +1,7 @@
 package sfh.cards;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import java.util.BitSet;
@@ -36,6 +38,10 @@ public class CardSet implements Iterable<Card> {
     for (String cardString : cardStrings) {
       mask.or(new Card(cardString).getMask());
     }
+  }
+
+  public CardSet(String handString) {
+    this(Iterables.toArray(Splitter.fixedLength(2).split(handString), String.class));
   }
 
   public CardSet(BitSet mask) {
@@ -82,6 +88,10 @@ public class CardSet implements Iterable<Card> {
       ranks.add(card.getRank());
     }
     return ranks;
+  }
+
+  public boolean isFlush() {
+    return getSuitSet().size() == 1;
   }
 
   /**
@@ -200,7 +210,7 @@ public class CardSet implements Iterable<Card> {
     return sb.toString();
   }
 
-  private List<Card> getCardsInIncreasingRankOrder() {
+  protected List<Card> getCardsInIncreasingRankOrder() {
     List<Card> cards = getCards();
     Collections.sort(cards, new Comparator<Card>() {
       @Override
