@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TreeSet;
 
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -63,14 +64,14 @@ public class BadugiHandTest {
   public void a23ShouldBeatA25() {
     BadugiHand a25 = BadugiHand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
     BadugiHand a23 = BadugiHand.createHand(new Card("Ah"), new Card("2d"), new Card("3s"), new Card("5h"));
-    assertTrue(a23.compareTo(a25) < 0);
+    assertTrue(a23.isBetterThan(a25));
   }
 
   @Test
   public void a34ShouldBeatA25() {
     BadugiHand a25 = BadugiHand.createHand(new Card("As"), new Card("2c"), new Card("3s"), new Card("5h"));
     BadugiHand a34 = BadugiHand.createHand(new Card("Ah"), new Card("3d"), new Card("4s"), new Card("5s"));
-    assertTrue(a34.compareTo(a25) < 0);
+    assertTrue(a34.isBetterThan(a25));
   }
 
   @Test
@@ -78,6 +79,7 @@ public class BadugiHandTest {
     BadugiHand first = new BadugiHand("Ac2d3h4s");
     BadugiHand second = new BadugiHand("Ad2h3c4s");
     assertEquals(0, first.compareTo(second));
+    assertFalse(first.isBetterThan(second));
   }
 
   @Test

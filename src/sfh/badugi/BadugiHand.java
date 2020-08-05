@@ -2,6 +2,8 @@ package sfh.badugi;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
 
@@ -14,12 +16,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * A badugi hand of exactly 4 cards.
  */
 public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
+  // A cache of hand to rank
   public static ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
+  // A cache of rank to hands, ordered by rank.  TreeMultimap is helpful to keep ranks in
+  // order and allows searching for all hands better than a given rank.
+  public static Multimap<Integer, BitSet> RANK_HAND_CACHE = initializeReverseCache();
 
 
   public static BadugiHand createHand(Card c1, Card c2, Card c3, Card c4) {
@@ -74,6 +81,54 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
       System.out.println("Can't find path, current path (Intellij might want \"/src\" appended to this): " + System.getProperty("user.dir"));
       throw new RuntimeException(e);
     }
+  }
+
+  private static Multimap<Integer, BitSet> initializeReverseCache() {
+    // Per Guava documentation, keySets from this Multimap can be safely cast to SortedSet
+    Multimap<Integer, BitSet> reverseCache = MultimapBuilder.treeKeys().arrayListValues().build();
+    for (BitSet hand : HAND_RANK_CACHE.keySet()) {
+      reverseCache.put(HAND_RANK_CACHE.get(hand), hand);
+    }
+
+    return reverseCache;
+  }
+
+  private static final int BEST_3_CARD_RANK = 715; // A23
+  private static final int BEST_2_CARD_RANK = 1001; // A2
+  private static final int BEST_1_CARD_RANK = 1079; // A
+
+  /**
+   * TODO: This is kind of a hack and badly organized and needs to be looked over some more
+   * @param onlySameCardinality if true, only return hands of the same cardinality as the given hand
+   * @return all hands better than the given hand, not including the given hand.
+   */
+  static Collection<BadugiHand> getBetterHandsFromCache(BadugiHand hand, boolean onlySameCardinality) {
+    List<BadugiHand> betterHands = new ArrayList<>();
+    int threshold = 0;
+    if (onlySameCardinality) {
+      switch (hand.getPlayableHand().numCards()) {
+        case 3:
+          threshold = BEST_3_CARD_RANK;
+          break;
+        case 2:
+          threshold = BEST_2_CARD_RANK;
+          break;
+        case 1:
+          threshold = BEST_1_CARD_RANK;
+          break;
+        // 4 card hands can just use 0 threshold, as can calls allowing different cardinality
+      }
+    }
+    // Per Guava documentation for MultimapBuilder, this cast is safe
+    SortedSet<Integer> keySet = (SortedSet<Integer>) RANK_HAND_CACHE.keySet();
+    SortedSet<Integer> betterRanks = keySet.subSet(threshold, HAND_RANK_CACHE.get(hand.getMask()));
+    for (Integer betterRank : betterRanks) {
+      for (BitSet bs : RANK_HAND_CACHE.get(betterRank)) {
+        betterHands.add(new BadugiHand(bs));
+      }
+    }
+
+    return betterHands;
   }
 
   /**
@@ -172,7 +227,7 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
    * Because I can never remember what compareTo() returns.
    */
   public boolean isBetterThan(BadugiHand other) {
-    return this.compareTo(other) > 1;
+    return this.compareTo(other) < 0;
   }
 
   /**
