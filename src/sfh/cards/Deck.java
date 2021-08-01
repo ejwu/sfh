@@ -1,5 +1,7 @@
 package sfh.cards;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 import sfh.badugi.BadugiHand;
 
@@ -35,6 +37,18 @@ public class Deck extends CardSet {
    */
   public BadugiHand drawHand(String card1, String card2, String card3, String card4) {
     return BadugiHand.createHand(draw(card1), draw(card2), draw(card3), draw(card4));
+  }
+
+  /**
+   * Convenience method for making writing tests a little simpler.
+   */
+  @VisibleForTesting
+  public CardSet drawHand(String handString) {
+    List<Card> cards = new ArrayList<>();
+    for (String cardString : Splitter.fixedLength(2).split(handString)) {
+      cards.add(draw(cardString));
+    }
+    return new CardSet(cards.toArray(new Card[]{}));
   }
 
   /**

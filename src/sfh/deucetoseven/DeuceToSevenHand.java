@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
 import sfh.cards.Deck;
+import sfh.games.common.hudraw.DrawHand;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,11 +26,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSevenHand> {
+public class DeuceToSevenHand extends DrawHand implements Comparable<DeuceToSevenHand> {
   @VisibleForTesting
   static final String ERROR_WRONG_NUM_CARDS = "2-7 hand must have 5 cards";
 
-  private static final ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
+  public static final ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
 
   private static ImmutableMap<BitSet, Integer> initializeCache() {
     try (BufferedReader reader = new BufferedReader(new FileReader("../data/deucetoseven/rankedHands.csv"))) {
@@ -51,6 +52,20 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
       // Just blow up if we can't read the file
       System.out.println("Can't find path, current path (Intellij might want \"/src\" appended to this): " + System.getProperty("user.dir"));
       throw new RuntimeException(e);
+    }
+  }
+
+  public DeuceToSevenHand(BitSet mask) {
+    super(mask);
+    if (mask.cardinality() != 5) {
+      throw new IllegalArgumentException("DeuceToSevenHand must be made from 5 distinct cards");
+    }
+  }
+
+  public DeuceToSevenHand(CardSet cardSet) {
+    super(cardSet);
+    if (cardSet.numCards() != 5) {
+      throw new IllegalArgumentException("DeuceToSevenHand must be made from 5 distinct cards, was " + cardSet);
     }
   }
 
@@ -485,4 +500,73 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
 
   }
 
+  @Override
+  public Collection<CardSet> getAllValidDiscards() {
+    List<CardSet> discards = new ArrayList<>();
+    // discard 0
+    discards.add(new CardSet(new BitSet()));
+
+    // discard 1
+    for (Card card : this) {
+      discards.add(new CardSet(card));
+    }
+
+    // discard 2
+    discards.addAll(getTwoCardSubsets());
+
+    // discard 3
+    discards.addAll(getThreeCardSubsets());
+
+    // discard 4
+    discards.addAll(getFourCardSubsets());
+
+    // discard 5
+    discards.add(this);
+
+    return discards;
+  }
+
+  private List<CardSet> getTwoCardSubsets() {
+    List<Card> cards = getCards();
+    List<CardSet> twoCards = new ArrayList<>();
+    twoCards.add(new CardSet(cards.get(0), cards.get(1)));
+    twoCards.add(new CardSet(cards.get(0), cards.get(2)));
+    twoCards.add(new CardSet(cards.get(0), cards.get(3)));
+    twoCards.add(new CardSet(cards.get(0), cards.get(4)));
+    twoCards.add(new CardSet(cards.get(1), cards.get(2)));
+    twoCards.add(new CardSet(cards.get(1), cards.get(3)));
+    twoCards.add(new CardSet(cards.get(1), cards.get(4)));
+    twoCards.add(new CardSet(cards.get(2), cards.get(3)));
+    twoCards.add(new CardSet(cards.get(2), cards.get(4)));
+    twoCards.add(new CardSet(cards.get(3), cards.get(4)));
+
+    return twoCards;
+  }
+
+  private List<CardSet> getThreeCardSubsets() {
+    List<Card> cards = getCards();
+    List<CardSet> threeCards = new ArrayList<>();
+    threeCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(2)));
+    threeCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(3)));
+    threeCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(4)));
+    threeCards.add(new CardSet(cards.get(0), cards.get(2), cards.get(3)));
+    threeCards.add(new CardSet(cards.get(0), cards.get(2), cards.get(4)));
+    threeCards.add(new CardSet(cards.get(0), cards.get(3), cards.get(4)));
+    threeCards.add(new CardSet(cards.get(1), cards.get(2), cards.get(3)));
+    threeCards.add(new CardSet(cards.get(1), cards.get(2), cards.get(4)));
+    threeCards.add(new CardSet(cards.get(1), cards.get(3), cards.get(4)));
+    threeCards.add(new CardSet(cards.get(2), cards.get(3), cards.get(4)));
+    return threeCards;
+  }
+
+  private List<CardSet> getFourCardSubsets() {
+    List<Card> cards = getCards();
+    List<CardSet> fourCards = new ArrayList<>();
+    fourCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(2), cards.get(3)));
+    fourCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(2), cards.get(4)));
+    fourCards.add(new CardSet(cards.get(0), cards.get(1), cards.get(3), cards.get(4)));
+    fourCards.add(new CardSet(cards.get(0), cards.get(2), cards.get(3), cards.get(4)));
+    fourCards.add(new CardSet(cards.get(1), cards.get(2), cards.get(3), cards.get(4)));
+    return fourCards;
+  }
 }

@@ -23,7 +23,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     assertEquals(oopHand, strategy.getDiscardStrategy(oopHand));
   }
 
@@ -35,7 +35,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     assertEquals(new CardSet("Kd", "Kh", "Ks"), strategy.getDiscardStrategy(oopHand));
   }
 
@@ -47,7 +47,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     assertEquals(new CardSet("Kh", "Ks"), strategy.getDiscardStrategy(oopHand));
   }
 
@@ -59,7 +59,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     assertEquals(new CardSet("Ks"), strategy.getDiscardStrategy(oopHand));
   }
 
@@ -71,7 +71,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     assertEquals(new CardSet(new BitSet()), strategy.getDiscardStrategy(oopHand));
   }
 
@@ -84,7 +84,7 @@ public class HuBadugiOopStrategyTest extends BaseStrategyTest {
     HuBadugiGameState gs = new HuBadugiGameState(deck, oopHand, ipHand);
 
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
-    strategy = strategy.getBestResponse(gs, getDefaultIpStrategy());
+    strategy = strategy.getBestResponse(gs, getDefaultIpBadugiStrategy());
     CardSet bestDiscards = strategy.getDiscardStrategy(oopHand);
 
     // Best discard will always include 2 cards, including the Ks.  2h/3s/4d are all equivalent

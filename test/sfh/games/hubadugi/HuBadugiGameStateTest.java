@@ -26,7 +26,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     BadugiHand ip = deck.drawHand("Ad", "2h", "3s", "4c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(0.5, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
+    assertDoubleEquals(0.5, gameState.getValue(getDefaultOopBadugiStrategy(), getDefaultIpBadugiStrategy()));
   }
 
   @Test
@@ -37,7 +37,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     BadugiHand ip = deck.drawHand("Ad", "2h", "3s", "5c");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(1, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
+    assertDoubleEquals(1, gameState.getValue(getDefaultOopBadugiStrategy(), getDefaultIpBadugiStrategy()));
   }
 
   @Test
@@ -48,7 +48,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     BadugiHand ip = deck.drawHand("Jd", "Qh", "Kc", "Ks");
 
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
-    assertDoubleEquals(0, gameState.getValue(getDefaultOopStrategy(), getDefaultIpStrategy()));
+    assertDoubleEquals(0, gameState.getValue(getDefaultOopBadugiStrategy(), getDefaultIpBadugiStrategy()));
   }
 
   @Test
@@ -65,7 +65,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     // 44 cards left in deck, 3 and 5-Q of clubs are winners (9).  IP wins 9/44 times,  OOP wins 35/44, or
     // .79545454...
-    double value = gameState.getValue(getDefaultOopStrategy(), ipStrategy);
+    double value = gameState.getValue(getDefaultOopBadugiStrategy(), ipStrategy);
     assertDoubleEquals(35.0 / 44.0, value);
   }
 
@@ -83,7 +83,7 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     HuBadugiGameState gameState = new HuBadugiGameState(deck, oop, ip);
     // 44 cards in deck, A, 4, 6-7, 9-K of hearts are winners (9) for OOP.  2h is in IP's hand.
     // EV for OOP is 9/44 == .2045454545...
-    double value = gameState.getValue(oopStrategy, getDefaultIpStrategy());
+    double value = gameState.getValue(oopStrategy, getDefaultIpBadugiStrategy());
     assertDoubleEquals(9.0 / 44.0, value);
   }
 
@@ -226,4 +226,5 @@ public class HuBadugiGameStateTest extends BaseStrategyTest {
     strategy.setDiscardStrategy(hand, toDiscard);
     return strategy;
   }
+
 }

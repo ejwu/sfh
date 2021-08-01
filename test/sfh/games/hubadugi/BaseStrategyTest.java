@@ -8,16 +8,17 @@ public class BaseStrategyTest {
     assertEquals(expected, actual, 0.000000001);
   }
 
-  protected HuBadugiOopStrategy getDefaultOopStrategy() {
+  protected HuBadugiOopStrategy getDefaultOopBadugiStrategy() {
     HuBadugiOopStrategy strategy = new HuBadugiOopStrategy();
     strategy.setDefaultZeroDiscardStrategy();
     return strategy;
   }
 
-  protected HuBadugiIpStrategy getDefaultIpStrategy() {
+  protected HuBadugiIpStrategy getDefaultIpBadugiStrategy() {
     HuBadugiIpStrategy strategy = new HuBadugiIpStrategy();
     strategy.setDefaultZeroDiscardStrategy();
     return strategy;
   }
+
 
 }

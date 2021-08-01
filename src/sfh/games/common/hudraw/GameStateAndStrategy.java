@@ -1,15 +1,15 @@
-package sfh.games.hubadugi;
+package sfh.games.common.hudraw;
 
 /**
  * Encapsulate a game state and pair of strategies to make them cacheable.
  * TODO: Unclear if this happens enough to bother with caching.
  */
 public class GameStateAndStrategy {
-  private HuBadugiGameState gs;
-  private HuBadugiOopStrategy oop;
-  private HuBadugiIpStrategy ip;
+  private HuDrawGameState<BaseHuDrawStrategy, BaseHuDrawStrategy> gs;
+  private BaseHuDrawStrategy oop;
+  private BaseHuDrawStrategy ip;
 
-  public GameStateAndStrategy(HuBadugiGameState gs, HuBadugiOopStrategy oop, HuBadugiIpStrategy ip) {
+  public GameStateAndStrategy(HuDrawGameState gs, BaseHuDrawStrategy oop, BaseHuDrawStrategy ip) {
     this.gs = gs;
     this.oop = oop;
     this.ip = ip;

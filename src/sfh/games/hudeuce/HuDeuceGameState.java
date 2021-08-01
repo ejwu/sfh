@@ -1,18 +1,19 @@
-package sfh.games.hubadugi;
+package sfh.games.hudeuce;
 
 import com.google.common.base.Stopwatch;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import sfh.badugi.BadugiHand;
 import sfh.cards.CardSet;
+import sfh.deucetoseven.DeuceToSevenHand;
 import sfh.games.common.hudraw.GameStateAndStrategy;
 import sfh.games.common.hudraw.HuDrawGameState;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, HuBadugiIpStrategy> {
+public class HuDeuceGameState
+    implements HuDrawGameState<HuDeuceOopStrategy, HuDeuceIpStrategy> {
 
   private static final LoadingCache<GameStateAndStrategy, Double> CACHE = CacheBuilder.newBuilder()
       .initialCapacity(1000000)
@@ -25,26 +26,25 @@ public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, H
       });
 
   private CardSet deck;
-  private BadugiHand oopHand;
-  private BadugiHand ipHand;
+  private DeuceToSevenHand oopHand;
+  private DeuceToSevenHand ipHand;
 
-  public HuBadugiGameState(CardSet deck, BadugiHand oopHand, BadugiHand ipHand) {
+  public HuDeuceGameState(CardSet deck, DeuceToSevenHand oopHand, DeuceToSevenHand ipHand) {
     this.deck = deck;
     this.oopHand = oopHand;
     this.ipHand = ipHand;
   }
 
-  // TODO: unclear if this should be exposed, but strategies need this to figure out best responses
-  BadugiHand getOopHand() {
+  DeuceToSevenHand getOopHand() {
     return oopHand;
   }
 
-  BadugiHand getIpHand() {
+  DeuceToSevenHand getIpHand() {
     return ipHand;
   }
 
   @Override
-  public double getValue(HuBadugiOopStrategy oop, HuBadugiIpStrategy ip) {
+  public double getValue(HuDeuceOopStrategy oop, HuDeuceIpStrategy ip) {
     try {
       System.out.println(CACHE.stats());
       GameStateAndStrategy gss = new GameStateAndStrategy(this, oop, ip);
@@ -56,37 +56,48 @@ public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, H
   }
 
   @Override
-  public double calculateValue(HuBadugiOopStrategy oop, HuBadugiIpStrategy ip) {
+  synchronized public double calculateValue(HuDeuceOopStrategy oop, HuDeuceIpStrategy ip) {
     // Single draw, no betting
-    Map<BadugiHand, CardSet> oopHands = oop.generatePossibleHands(deck, oopHand);
+    Map<DeuceToSevenHand, CardSet> oopHands = oop.generatePossibleHands(deck, oopHand);
     double cumulativeOopValue = 0.0;
     System.out.println(oopHands.size() + " total OOP hands");
     int totalComp = 0;
     int totalIpHands = 0;
 
     Stopwatch sw = Stopwatch.createStarted();
-    for (Map.Entry<BadugiHand, CardSet> handWithRemainingDeck : oopHands.entrySet()) {
+    for (Map.Entry<DeuceToSevenHand, CardSet> handWithRemainingDeck : oopHands.entrySet()) {
       // For every possible deck state after OOP draws, try every possible result of IP drawing
-      Map<BadugiHand, CardSet> ipHands = ip.generatePossibleHands(handWithRemainingDeck.getValue(), ipHand);
+      Map<DeuceToSevenHand, CardSet> ipHands = ip.generatePossibleHands(handWithRemainingDeck.getValue(), ipHand);
       // Total value of a particular OOP hand against all possible IP hands
       double cumulativeValueOfOopHand = 0.0;
       totalIpHands += ipHands.size();
-      for (BadugiHand potentialIpHand : ipHands.keySet()) {
-        BadugiHand potentialOopHand = handWithRemainingDeck.getKey();
+      for (DeuceToSevenHand potentialIpHand : ipHands.keySet()) {
+        DeuceToSevenHand potentialOopHand = handWithRemainingDeck.getKey();
         totalComp++;
 
+        System.out.println("comparing " + potentialOopHand + " to " + potentialIpHand);
+
         if (potentialOopHand.compareTo(potentialIpHand) > 0) {
+          System.out.println("IP");
           // OOP loses and gets no part of the pot
         } else if (potentialOopHand.compareTo(potentialIpHand) < 0) {
           // OOP wins and gets the whole pot
+          System.out.println("OOP");
           cumulativeValueOfOopHand += 1;
         } else {
+          System.out.println("tie");
           // Ties get half the pot
           cumulativeValueOfOopHand += 0.5;
         }
+        System.out.println("cumvalue: " + cumulativeValueOfOopHand);
       }
+
       // Add the average expected value of this OOP hand to the sum
       cumulativeOopValue += cumulativeValueOfOopHand / ipHands.keySet().size();
+
+      System.out.println(cumulativeValueOfOopHand);
+      System.out.println(ipHands.keySet().size());
+      System.out.println(cumulativeOopValue);
     }
 
 
@@ -96,6 +107,7 @@ public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, H
     System.out.println(elapsed + " ms");
     System.out.println((double) elapsed / oopHands.size() + " ms/oop hand");
     return cumulativeOopValue / oopHands.keySet().size();
+
   }
 
   @Override
@@ -103,7 +115,7 @@ public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, H
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    HuBadugiGameState that = (HuBadugiGameState) o;
+    HuDeuceGameState that = (HuDeuceGameState) o;
 
     if (deck != null ? !deck.equals(that.deck) : that.deck != null) return false;
     if (oopHand != null ? !oopHand.equals(that.oopHand) : that.oopHand != null) return false;
@@ -119,3 +131,4 @@ public class HuBadugiGameState implements HuDrawGameState<HuBadugiOopStrategy, H
     return result;
   }
 }
+

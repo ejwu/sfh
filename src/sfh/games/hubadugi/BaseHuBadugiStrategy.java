@@ -4,37 +4,22 @@ import com.google.common.collect.ImmutableMap;
 import sfh.badugi.BadugiHand;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
+import sfh.games.common.hudraw.BaseHuDrawStrategy;
 
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Map;
 
-public class BaseHuBadugiStrategy {
-  // Mapping for every hand to its list of cards to discard
-  // TODO: Make this dependent on previous discards, number of cards discarded if in position...probably more
-  protected Map<BadugiHand, CardSet> discardStrategy = new HashMap<>();
+public class BaseHuBadugiStrategy extends BaseHuDrawStrategy<BadugiHand> {
 
   public BaseHuBadugiStrategy() {
-    setDefaultZeroDiscardStrategy();
+    super();
   }
 
+  @Override
   public void setDefaultZeroDiscardStrategy() {
     for (BitSet mask : BadugiHand.HAND_RANK_CACHE.keySet()) {
       setDiscardStrategy(new BadugiHand(mask), new CardSet(new BitSet()));
     }
-  }
-
-  public void setDiscardStrategy(BadugiHand hand, CardSet toDiscard) {
-    for (Card discard : toDiscard) {
-      if (!hand.hasCard(discard)) {
-        throw new IllegalArgumentException(String.format("BadugiHand %s cannot discard %s", hand, toDiscard));
-      }
-    }
-    discardStrategy.put(hand, toDiscard);
-  }
-
-  public CardSet getDiscardStrategy(BadugiHand hand) {
-    return discardStrategy.get(hand);
   }
 
   /**

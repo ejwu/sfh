@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import sfh.cards.Card;
 import sfh.cards.CardSet;
+import sfh.games.common.hudraw.DrawHand;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,7 +22,7 @@ import java.util.SortedSet;
 /**
  * A badugi hand of exactly 4 cards.
  */
-public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
+public class BadugiHand extends DrawHand implements Comparable<BadugiHand> {
   // A cache of hand to rank
   public static ImmutableMap<BitSet, Integer> HAND_RANK_CACHE = initializeCache();
   // A cache of rank to hands, ordered by rank.  TreeMultimap is helpful to keep ranks in
@@ -43,7 +44,7 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
   }
 
   public BadugiHand(Collection<Card> cards) {
-    super(new CardSet(cards.toArray(new Card[]{})));
+    super(cards);
   }
 
   public BadugiHand(BitSet mask) {
@@ -166,6 +167,7 @@ public class BadugiHand extends CardSet implements Comparable<BadugiHand> {
     throw new IllegalStateException("Failed to compare " + this + " with " + other);
   }
 
+  @Override
   public Collection<CardSet> getAllValidDiscards() {
     List<CardSet> discards = new ArrayList<>();
     // discard 0
