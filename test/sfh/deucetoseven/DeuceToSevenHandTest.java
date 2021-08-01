@@ -289,8 +289,8 @@ public class DeuceToSevenHandTest {
   // TODO: One pair and high card tests
 
   private void assertIsBetterThan(DeuceToSevenHand first, DeuceToSevenHand second) {
-    assertTrue(first.compareTo(second) > 0);
-    assertTrue(second.compareTo(first) < 0);
+    assertTrue(first.compareTo(second) < 0);
+    assertTrue(second.compareTo(first) > 0);
     assertNotEquals(first, second);
   }
 

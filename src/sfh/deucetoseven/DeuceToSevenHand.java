@@ -117,7 +117,7 @@ public class DeuceToSevenHand extends CardSet implements Comparable<DeuceToSeven
   }
 
   private int easyCompareTo(DeuceToSevenHand other) {
-    return HAND_RANK_CACHE.get(other.getMask()) - HAND_RANK_CACHE.get(this.getMask());
+    return HAND_RANK_CACHE.get(this.getMask()) - HAND_RANK_CACHE.get(other.getMask());
   }
 
   /**
