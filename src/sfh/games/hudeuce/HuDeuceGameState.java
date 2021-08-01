@@ -75,29 +75,19 @@ public class HuDeuceGameState
         DeuceToSevenHand potentialOopHand = handWithRemainingDeck.getKey();
         totalComp++;
 
-        System.out.println("comparing " + potentialOopHand + " to " + potentialIpHand);
-
         if (potentialOopHand.compareTo(potentialIpHand) > 0) {
-          System.out.println("IP");
           // OOP loses and gets no part of the pot
         } else if (potentialOopHand.compareTo(potentialIpHand) < 0) {
           // OOP wins and gets the whole pot
-          System.out.println("OOP");
           cumulativeValueOfOopHand += 1;
         } else {
-          System.out.println("tie");
           // Ties get half the pot
           cumulativeValueOfOopHand += 0.5;
         }
-        System.out.println("cumvalue: " + cumulativeValueOfOopHand);
       }
 
       // Add the average expected value of this OOP hand to the sum
       cumulativeOopValue += cumulativeValueOfOopHand / ipHands.keySet().size();
-
-      System.out.println(cumulativeValueOfOopHand);
-      System.out.println(ipHands.keySet().size());
-      System.out.println(cumulativeOopValue);
     }
 
 
