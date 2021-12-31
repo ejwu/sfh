@@ -33,11 +33,11 @@ public class RangeUtils {
       }
     }
     System.out.println(patHands.size() + " pat hands");
-    outputAsVentiles(patHands);
+    outputAsVentiles(patHands, true);
     System.out.println(threeCardHands.size() + " 3 card hands");
-    outputAsVentiles(threeCardHands);
+    outputAsVentiles(threeCardHands, true);
     System.out.println(twoCardHands.size() + " 2 card hands");
-    outputAsVentiles(twoCardHands);
+    outputAsVentiles(twoCardHands, true);
 
     Deck deck = Deck.createDeck();
     BadugiHand twoCardDraw = deck.drawHand("Ac", "2d", "Kc", "Kd");
@@ -51,7 +51,7 @@ public class RangeUtils {
     }
 
     System.out.println(drawnHands.size() + " hands drawn from A2(KK)");
-    outputAsVentiles(drawnHands);
+    outputAsVentiles(drawnHands, true);
 
     List<BadugiHand> patHandsFromDraw2 = new ArrayList<>();
     for (BadugiHand hand : drawnHands) {
@@ -60,7 +60,7 @@ public class RangeUtils {
       }
     }
     System.out.println(patHandsFromDraw2.size() + " pat hands drawn from A2(KK)");
-    outputAsVentiles(patHandsFromDraw2);
+    outputAsVentiles(patHandsFromDraw2, true);
 
     deck = Deck.createDeck();
     twoCardDraw = deck.drawHand("6c", "7d", "Kc", "Kd");
@@ -74,7 +74,7 @@ public class RangeUtils {
     }
 
     System.out.println(drawnHands.size() + " hands drawn from 67(KK)");
-    outputAsVentiles(drawnHands);
+    outputAsVentiles(drawnHands, true);
 
     patHandsFromDraw2 = new ArrayList<>();
     for (BadugiHand hand : drawnHands) {
@@ -83,20 +83,67 @@ public class RangeUtils {
       }
     }
     System.out.println(patHandsFromDraw2.size() + " pat hands drawn from 67(KK)");
-    outputAsVentiles(patHandsFromDraw2);
+    outputAsVentiles(patHandsFromDraw2, true);
 
+    deck = Deck.createDeck();
+    twoCardDraw = deck.drawHand("Ac", "8d", "Kc", "Kd");
+    twoCard = twoCardDraw.without(new CardSet("8d", "Kc", "Kd"));
+    draws = deck.drawNCards(3);
+
+    drawnHands.clear();
+    for (CardSet draw : draws) {
+      BadugiHand newHand = new BadugiHand(twoCard, draw);
+      drawnHands.add(newHand);
+    }
+
+    System.out.println(drawnHands.size() + " hands drawn from A(8KK)");
+    outputAsVentiles(drawnHands, true);
+
+    patHandsFromDraw2 = new ArrayList<>();
+    for (BadugiHand hand : drawnHands) {
+      if (hand.isBadugi()) {
+        patHandsFromDraw2.add(hand);
+      }
+    }
+    System.out.println(patHandsFromDraw2.size() + " pat hands drawn from A(8KK)");
+    outputAsVentiles(patHandsFromDraw2, true);
   }
 
-  public static void outputAsVentiles(List<BadugiHand> hands) {
-    int ventileSize = hands.size() / 20;
+  public static void outputAsVentiles(List<BadugiHand> hands, boolean highResolutionHighHands) {
+    double ventileSize = hands.size() / 20.0;
     int count = 0;
+    double ventilesPassed = 0.0;
+    int ninetyFifthPercentileCount = 0;
+    // Starting at 95
+    double nextPercentile = 0.0;
     Collections.sort(hands);
     Collections.reverse(hands);
     for (BadugiHand hand : hands) {
-      if (count % ventileSize == 0) {
-        System.out.println(String.format("%3d (%d): %s", count / ventileSize, count, hand.getPlayableRankString()));
+      if (count >= ventilesPassed) {
+        System.out.println(String.format("%3d (%d): %s", 5 * Math.round(count / ventileSize), count, hand.getPlayableRankString()));
+        if (5 * Math.round(count / ventileSize) == 95) {
+          ninetyFifthPercentileCount = count;
+          nextPercentile = ventilesPassed;
+        }
+        ventilesPassed += ventileSize;
       }
       count++;
+    }
+
+    if (highResolutionHighHands) {
+      double percentileSize = hands.size() / 100.0;
+      nextPercentile += percentileSize;
+      count = ninetyFifthPercentileCount;
+      for (BadugiHand hand : hands.subList(ninetyFifthPercentileCount, hands.size())) {
+        if (count >= nextPercentile) {
+          System.out.println(String.format("%3d (%d): %s", Math.round(count / percentileSize), count, hand.getPlayableRankString()));
+          nextPercentile += percentileSize;
+        }
+        count++;
+        if (count == hands.size()) {
+          System.out.println(String.format("%3d (%d): %s", Math.round(count / percentileSize), count, hand.getPlayableRankString()));
+        }
+      }
     }
   }
 
